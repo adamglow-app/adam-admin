@@ -4,25 +4,20 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { checkSession } from "@/lib/auth";
-import { initSuperTokens } from "@/lib/supertokens";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
 	const [isChecking, setIsChecking] = useState(true);
 
 	useEffect(() => {
-		initSuperTokens();
-	}, []);
-
-	useEffect(() => {
 		async function verifySession() {
 			try {
 				const hasSession = await checkSession();
 				if (!hasSession) {
-					router.push("/login");
+					router.replace("/login");
 				}
 			} catch {
-				router.push("/login");
+				router.replace("/login");
 			} finally {
 				setIsChecking(false);
 			}

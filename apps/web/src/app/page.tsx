@@ -4,14 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { checkSession } from "@/lib/auth";
-import { initSuperTokens } from "@/lib/supertokens";
 
 export default function Home() {
 	const router = useRouter();
-
-	useEffect(() => {
-		initSuperTokens();
-	}, []);
 
 	const { data: hasSession, isLoading } = useQuery({
 		queryKey: ["session-check"],

@@ -2,8 +2,10 @@ import SuperTokens from "supertokens-web-js";
 import EmailPassword from "supertokens-web-js/recipe/emailpassword";
 import Session from "supertokens-web-js/recipe/session";
 
+let isInitialized = false;
+
 export function initSuperTokens() {
-	if (typeof window !== "undefined") {
+	if (typeof window !== "undefined" && !isInitialized) {
 		SuperTokens.init({
 			appInfo: {
 				appName: "adam-admin",
@@ -12,5 +14,6 @@ export function initSuperTokens() {
 			},
 			recipeList: [EmailPassword.init(), Session.init()],
 		});
+		isInitialized = true;
 	}
 }

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { checkSession } from "@/lib/auth";
-import { initSuperTokens } from "@/lib/supertokens";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -13,15 +12,12 @@ export default function LoginPage() {
 		queryKey: ["session"],
 		queryFn: checkSession,
 		retry: false,
+		refetchOnWindowFocus: false,
 	});
 
 	useEffect(() => {
-		initSuperTokens();
-	}, []);
-
-	useEffect(() => {
 		if (!isLoading && hasSession) {
-			router.replace("/");
+			router.replace("/dashboard");
 		}
 	}, [hasSession, isLoading, router]);
 

@@ -22,12 +22,13 @@ export function LoginForm() {
 		try {
 			await login(email, password);
 			toast.success("Login successful");
-			router.push("/");
-			router.refresh();
+
+			// Redirect to dashboard immediately after successful login
+			// Session is automatically handled by SuperTokens SDK
+			router.replace("/dashboard");
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Login failed";
 			toast.error(message);
-		} finally {
 			setIsLoading(false);
 		}
 	}
