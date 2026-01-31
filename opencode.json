@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "SuperTokens": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "supertokens-mcp-plugin"],
+      "environment": {
+        "APP_NAME": "SelfTalk",
+        "API_DOMAIN": "http://localhost:4000",
+        "WEBSITE_DOMAIN": "http://localhost:3000",
+        "API_BASE_PATH": "http://localhost:4000/auth",
+        "WEBSITE_BASE_PATH": "http://localhost:3000/auth",
+        "CONNECTION_URI": "https://st-prod-f7bb31b1-c9d6-11f0-80b2-5f32dd763fa5.aws.supertokens.io",
+        "API_KEY": "rD0aojMxdnOCWOCkuZD3v-3CSn"
+      }
+    },
+    "chrome-devtools": {
+      "command": ["npx", "-y", "chrome-devtools-mcp@latest"],
+      "type": "local"
+    }
+  }
+}
