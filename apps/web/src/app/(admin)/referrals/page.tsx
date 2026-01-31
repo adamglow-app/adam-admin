@@ -159,7 +159,7 @@ export default function ReferralsPage() {
 			</div>
 
 			<Tabs className="w-full" defaultValue="gold">
-				<TabsList className="h-9 w-fit gap-1 border border-adam-border bg-adam-muted/30 p-0.5">
+				<TabsList className="h-9 w-fit gap-1 border border-adam-border bg-white p-0.5">
 					<TabsTrigger
 						className="px-4 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
 						value="gold"

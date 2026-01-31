@@ -105,7 +105,7 @@ function PriceCard({
 						className={`flex h-10 w-10 items-center justify-center rounded-lg ${
 							isGold
 								? "border border-amber-200 bg-amber-50"
-								: "border border-slate-200 bg-slate-50"
+								: "border border-slate-200 bg-white"
 						}`}
 					>
 						<span
@@ -121,7 +121,7 @@ function PriceCard({
 			<CardContent className="space-y-3">
 				{price && previousPrice && (
 					<div
-						className={`flex items-center gap-2 rounded-lg bg-adam-muted/50 px-3 py-2 ${priceChangeClass}`}
+						className={`flex items-center gap-2 rounded-lg bg-white px-3 py-2 ${priceChangeClass}`}
 					>
 						{priceChangeIcon}
 						<span className="font-medium text-sm">

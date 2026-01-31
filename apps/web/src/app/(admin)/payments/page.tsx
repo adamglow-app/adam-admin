@@ -36,28 +36,31 @@ function RefundHistorySkeleton() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{Array.from({ length: 5 }).map((_, i) => (
-						<TableRow
-							className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
-							key={`skeleton-${i}`}
-						>
-							<TableCell>
-								<Skeleton className="h-4 w-32" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-40" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-6 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-28" />
-							</TableCell>
-						</TableRow>
-					))}
+					{Array.from({ length: 5 }).map((_, i) => {
+						const skeletonKey = `refund-skeleton-${i}`;
+						return (
+							<TableRow
+								className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
+								key={skeletonKey}
+							>
+								<TableCell>
+									<Skeleton className="h-4 w-32" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-40" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-6 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-28" />
+								</TableCell>
+							</TableRow>
+						);
+					})}
 				</TableBody>
 			</Table>
 		</div>
@@ -203,9 +206,8 @@ export default function PaymentsPage() {
 					<CardTitle className="text-base">Recent Refunds</CardTitle>
 				</CardHeader>
 				<CardContent>
-					{refundsLoading ? (
-						<RefundHistorySkeleton />
-					) : refundsError ? (
+					{refundsLoading && <RefundHistorySkeleton />}
+					{refundsError && (
 						<Card className="border border-red-200 bg-red-50">
 							<CardContent className="flex flex-col items-center justify-center p-8">
 								<div className="rounded-full bg-red-100 p-3">
@@ -218,6 +220,7 @@ export default function PaymentsPage() {
 										viewBox="0 0 24 24"
 										width="24"
 									>
+										<title>Error Icon</title>
 										<path
 											d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
 											strokeLinecap="round"
@@ -244,9 +247,11 @@ export default function PaymentsPage() {
 								</Button>
 							</CardContent>
 						</Card>
-					) : refunds.length === 0 ? (
+					)}
+					{!(refundsLoading || refundsError) && refunds.length === 0 && (
 						<EmptyRefunds />
-					) : (
+					)}
+					{!(refundsLoading || refundsError) && refunds.length > 0 && (
 						<div className="rounded-md border border-adam-border shadow-sm">
 							<Table>
 								<TableHeader>

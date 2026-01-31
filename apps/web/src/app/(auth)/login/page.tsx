@@ -27,15 +27,15 @@ export default function LoginPage() {
 
 	if (isLoading) {
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-gray-100">
+			<div className="flex min-h-screen items-center justify-center bg-white">
 				<div className="w-full max-w-md">
 					<div className="mb-6 text-center">
-						<div className="mx-auto mb-4 h-8 w-48 animate-pulse rounded bg-gray-200" />
+						<div className="mx-auto mb-4 h-8 w-48 rounded bg-white" />
 					</div>
 					<div className="space-y-4">
-						<div className="h-10 animate-pulse rounded bg-gray-200" />
-						<div className="h-10 animate-pulse rounded bg-gray-200" />
-						<div className="h-10 animate-pulse rounded bg-gray-200" />
+						<div className="h-10 rounded bg-white" />
+						<div className="h-10 rounded bg-white" />
+						<div className="h-10 rounded bg-white" />
 					</div>
 				</div>
 			</div>
@@ -47,7 +47,7 @@ export default function LoginPage() {
 	}
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gray-100">
+		<div className="flex min-h-screen items-center justify-center bg-white">
 			<LoginForm />
 		</div>
 	);

@@ -49,17 +49,17 @@ export function Sidebar() {
 							<li key={item.name}>
 								<Link
 									className={cn(
-										"flex items-center gap-3 rounded-lg px-4 py-2.5 font-medium text-sm transition-all duration-200",
+										"flex items-center gap-3 rounded-lg px-4 py-2.5 font-medium text-sm",
 										isActive
-											? "bg-gray-100 text-gray-900"
-											: "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+											? "bg-white text-gray-900"
+											: "text-gray-600 hover:bg-white hover:text-gray-900"
 									)}
 									// @ts-expect-error Next.js 16 href type is complex
 									href={item.href}
 								>
 									<item.icon
 										className={cn(
-											"h-5 w-5 transition-colors",
+											"h-5 w-5",
 											isActive ? "text-gray-900" : "text-gray-400"
 										)}
 									/>
@@ -73,7 +73,7 @@ export function Sidebar() {
 
 			<div className="border-gray-100 border-t p-4">
 				<button
-					className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 font-medium text-gray-600 text-sm transition-all duration-200 hover:bg-gray-50 hover:text-gray-900"
+					className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 font-medium text-gray-600 text-sm hover:bg-white hover:text-gray-900"
 					onClick={() => logout()}
 					type="button"
 				>

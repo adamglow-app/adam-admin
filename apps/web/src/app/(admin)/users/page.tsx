@@ -42,37 +42,40 @@ function UsersTableSkeleton() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{Array.from({ length: 5 }).map((_, i) => (
-						<TableRow
-							className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
-							key={`skeleton-${i}`}
-						>
-							<TableCell>
-								<div className="space-y-1">
-									<Skeleton className="h-4 w-40" />
-									<Skeleton className="h-3 w-24" />
-								</div>
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-28" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-6 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-6 w-24" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-24" />
-							</TableCell>
-						</TableRow>
-					))}
+					{Array.from({ length: 5 }).map((_, i) => {
+						const skeletonKey = `user-skeleton-${i}`;
+						return (
+							<TableRow
+								className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
+								key={skeletonKey}
+							>
+								<TableCell>
+									<div className="space-y-1">
+										<Skeleton className="h-4 w-40" />
+										<Skeleton className="h-3 w-24" />
+									</div>
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-28" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-6 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-6 w-24" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-24" />
+								</TableCell>
+							</TableRow>
+						);
+					})}
 				</TableBody>
 			</Table>
 		</div>
@@ -110,7 +113,7 @@ export default function UsersPage() {
 				user.email.toLowerCase().includes(searchLower) ||
 				user.firstName.toLowerCase().includes(searchLower) ||
 				user.lastName.toLowerCase().includes(searchLower) ||
-				(user.phoneNumber && user.phoneNumber.includes(search))
+				user.phoneNumber?.includes(search)
 			);
 		});
 	}, [data?.users, search]);
@@ -213,11 +216,9 @@ export default function UsersPage() {
 				</p>
 			</div>
 
-			{isLoading ? (
-				<UsersTableSkeleton />
-			) : filteredUsers.length === 0 ? (
-				<EmptyTable />
-			) : (
+			{isLoading && <UsersTableSkeleton />}
+			{!isLoading && filteredUsers.length === 0 && <EmptyTable />}
+			{!isLoading && filteredUsers.length > 0 && (
 				<>
 					<div className="overflow-hidden rounded-lg border border-adam-border bg-white shadow-sm">
 						<Table>
@@ -294,7 +295,7 @@ export default function UsersPage() {
 										</TableCell>
 										<TableCell>
 											<Badge
-												className="bg-adam-muted/50 text-adam-grey hover:bg-adam-muted"
+												className="bg-white text-adam-grey hover:bg-adam-muted"
 												variant="secondary"
 											>
 												{user.referralCode || "-"}

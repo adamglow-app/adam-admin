@@ -35,9 +35,9 @@ export default function Home() {
 
 	if (isLoading) {
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-gray-50">
+			<div className="flex min-h-screen items-center justify-center bg-white">
 				<div className="flex flex-col items-center gap-4">
-					<div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+					<div className="h-8 w-48 rounded bg-white" />
 					<div className="text-gray-500 text-sm">
 						Checking authentication...
 					</div>
@@ -47,9 +47,9 @@ export default function Home() {
 	}
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gray-50">
+		<div className="flex min-h-screen items-center justify-center bg-white">
 			<div className="flex flex-col items-center gap-4">
-				<div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+				<div className="h-8 w-48 rounded bg-white" />
 				<div className="text-gray-500 text-sm">Checking authentication...</div>
 			</div>
 		</div>

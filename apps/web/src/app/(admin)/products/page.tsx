@@ -494,7 +494,7 @@ export default function ProductsPage() {
 				className={
 					metal === "gold"
 						? "border-amber-200 bg-amber-50 text-amber-700"
-						: "border-slate-200 bg-slate-50 text-slate-700"
+						: "border-gray-200 bg-white text-gray-700"
 				}
 				variant="outline"
 			>
@@ -606,7 +606,7 @@ export default function ProductsPage() {
 													width={40}
 												/>
 											) : (
-												<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-adam-muted">
+												<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white">
 													<ImagePlaceholderIcon className="h-5 w-5 text-adam-grey" />
 												</div>
 											)}
