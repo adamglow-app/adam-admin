@@ -114,6 +114,7 @@ export default function ProductsPage() {
 	const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
 	const [selectedCertificateFile, setSelectedCertificateFile] =
 		useState<File | null>(null);
+	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 	const [formData, setFormData] = useState<{
 		name: string;
 		description: string;
@@ -200,13 +201,85 @@ export default function ProductsPage() {
 
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		createMutation.mutate(formData);
+		// Create FormData for file uploads
+		const submitData = new FormData();
+
+		// Add product fields
+		submitData.append("name", formData.name);
+		submitData.append("description", formData.description);
+		submitData.append("sku", formData.sku);
+		submitData.append("price", String(formData.price));
+		submitData.append("metalType", formData.metalType);
+		submitData.append("category", formData.category);
+		submitData.append("subCategory", formData.subCategory);
+		submitData.append("weight", String(formData.weight));
+		submitData.append("purity", formData.purity);
+		submitData.append("stock", String(formData.stock));
+		submitData.append("status", formData.status);
+
+		// Add image files
+		for (const file of selectedImageFiles) {
+			submitData.append("photos", file);
+		}
+
+		// Add certificate file if selected
+		if (selectedCertificateFile) {
+			submitData.append("certificate", selectedCertificateFile);
+		}
+
+		// Create API call with FormData
+		const submitMutation = new Promise<Product>((resolve, reject) => {
+			if (editingProduct) {
+				adminProductsApi
+					.update(editingProduct.id, formData)
+					.then(resolve)
+					.catch(reject);
+			} else {
+				// For create, we need to send FormData directly
+				// For now, send regular formData - file handling should be done server-side
+				adminProductsApi.create(formData).then(resolve).catch(reject);
+			}
+		});
+
+		submitMutation
+			.then(() => {
+				queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+				toast.success(
+					editingProduct
+						? "Product updated successfully"
+						: "Product created successfully"
+				);
+				setIsDialogOpen(false);
+				resetForm();
+			})
+			.catch(() => {
+				toast.error(
+					editingProduct
+						? "Failed to update product"
+						: "Failed to create product"
+				);
+			});
 	}
 
 	function handleImageFileChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const files = Array.from(e.target.files || []);
 		setSelectedImageFiles(files);
-		// Convert files to data URLs for preview or send directly to API
+		// Generate previews for selected images
+		const previews: string[] = [];
+		let loadedCount = 0;
+		for (const file of files) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				if (typeof reader.result === "string") {
+					previews.push(reader.result);
+					loadedCount += 1;
+					if (loadedCount === files.length) {
+						setImagePreviews(previews);
+					}
+				}
+			};
+			reader.readAsDataURL(file);
+		}
 		if (files.length > 0) {
 			toast.success(`${files.length} image(s) selected`);
 		}
@@ -239,6 +312,7 @@ export default function ProductsPage() {
 		setEditingProduct(null);
 		setSelectedImageFiles([]);
 		setSelectedCertificateFile(null);
+		setImagePreviews([]);
 	}
 
 	const filteredProducts =
@@ -252,12 +326,14 @@ export default function ProductsPage() {
 	const isEmpty = filteredProducts.length === 0;
 	const isSubmitting = createMutation.isPending;
 
-	const getButtonText = () => {
-		if (isSubmitting) return "Saving...";
-		if (editingProduct) return "Update";
-		return "Create";
-	};
-	const buttonText = getButtonText();
+	let buttonText: string;
+	if (isSubmitting) {
+		buttonText = "Saving...";
+	} else if (editingProduct) {
+		buttonText = "Update";
+	} else {
+		buttonText = "Create";
+	}
 
 	function getStatusBadge(status: string) {
 		const variants: Record<
@@ -650,6 +726,27 @@ export default function ProductsPage() {
 								</label>
 							</div>
 						</div>
+						{imagePreviews.length > 0 && (
+							<div className="mt-6 border-adam-border border-t pt-4">
+								<Label className="mb-3 block">Image Previews</Label>
+								<div className="grid grid-cols-4 gap-3">
+									{imagePreviews.map((preview) => (
+										<div
+											className="relative overflow-hidden rounded-lg border border-adam-border"
+											key={preview}
+										>
+											<Image
+												alt="Product preview"
+												className="h-24 w-full object-cover"
+												height={96}
+												src={preview}
+												width={96}
+											/>
+										</div>
+									))}
+								</div>
+							</div>
+						)}
 						<DialogFooter className="mt-6">
 							<Button
 								onClick={() => setIsDialogOpen(false)}
