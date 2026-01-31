@@ -654,7 +654,7 @@ export default function ProductsPage() {
 				</div>
 			)}
 			<Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
-				<DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto">
+				<DialogContent className="max-h-[90vh] w-full max-w-6xl overflow-y-auto">
 					<DialogHeader>
 						<DialogTitle>
 							{editingProduct ? "Edit Product" : "Add New Product"}
@@ -812,7 +812,7 @@ export default function ProductsPage() {
 									</SelectContent>
 								</Select>
 							</div>
-							<div className="space-y-2 md:col-span-2">
+							<div className="space-y-2 md:col-span-3">
 								<Label>Product Images</Label>
 								<button
 									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
@@ -850,7 +850,7 @@ export default function ProductsPage() {
 									/>
 								</button>
 							</div>
-							<div className="space-y-2 md:col-span-2">
+							<div className="space-y-2 md:col-span-3">
 								<Label>Certificate (Optional)</Label>
 								<button
 									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${

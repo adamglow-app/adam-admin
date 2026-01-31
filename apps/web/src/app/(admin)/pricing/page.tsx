@@ -445,20 +445,22 @@ export default function PricingPage() {
 					</p>
 				</div>
 				<Tabs className="w-full" defaultValue="gold">
-					<TabsList className="h-12 w-fit gap-1 border-0 bg-white p-0 pl-4">
-						<TabsTrigger
-							className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
-							value="gold"
-						>
-							Gold
-						</TabsTrigger>
-						<TabsTrigger
-							className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
-							value="silver"
-						>
-							Silver
-						</TabsTrigger>
-					</TabsList>
+					<div className="pt-2">
+						<TabsList className="h-12 w-fit gap-1 border-0 bg-white p-0 pl-4">
+							<TabsTrigger
+								className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
+								value="gold"
+							>
+								Gold
+							</TabsTrigger>
+							<TabsTrigger
+								className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
+								value="silver"
+							>
+								Silver
+							</TabsTrigger>
+						</TabsList>
+					</div>
 
 					<TabsContent className="m-0 p-4" value="gold">
 						<HistoryTable metalType="gold" />

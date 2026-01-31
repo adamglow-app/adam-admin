@@ -19,10 +19,10 @@ import { adminUsersApi } from "@/lib/api/admin/users";
 
 function UsersTableSkeleton() {
 	return (
-		<div className="rounded-md border border-adam-border">
+		<div className="rounded-lg border border-adam-border bg-white shadow-sm">
 			<Table>
 				<TableHeader>
-					<TableRow className="bg-adam-muted/30">
+					<TableRow className="border-adam-border/50 border-b bg-white">
 						{[
 							"User",
 							"Phone",
@@ -32,7 +32,10 @@ function UsersTableSkeleton() {
 							"Referral",
 							"Joined",
 						].map((header) => (
-							<TableHead className="font-medium" key={header}>
+							<TableHead
+								className="font-semibold text-adam-grey text-sm"
+								key={header}
+							>
 								{header}
 							</TableHead>
 						))}
@@ -213,13 +216,13 @@ export default function UsersPage() {
 				<EmptyTable />
 			) : (
 				<>
-					<div className="overflow-hidden rounded-lg border border-adam-border bg-white">
+					<div className="overflow-hidden rounded-lg border border-adam-border bg-white shadow-sm">
 						<Table>
 							<TableHeader>
-								<TableRow className="bg-adam-muted/50 hover:bg-adam-muted/50">
-									<TableHead className="font-medium">
+								<TableRow className="border-adam-border/50 border-b bg-white hover:bg-white">
+									<TableHead className="font-semibold text-adam-grey text-sm">
 										<Button
-											className="p-0 hover:bg-transparent"
+											className="p-0 text-adam-grey hover:bg-transparent"
 											onClick={() => handleSort("email")}
 											variant="ghost"
 										>
@@ -227,18 +230,22 @@ export default function UsersPage() {
 											<ArrowUpDown className="ml-2 h-4 w-4" />
 										</Button>
 									</TableHead>
-									<TableHead className="font-medium">Phone</TableHead>
+									<TableHead className="font-semibold text-adam-grey text-sm">
+										Phone
+									</TableHead>
 									<TableHead className="font-medium">KYC Status</TableHead>
-									<TableHead className="text-right font-medium">
+									<TableHead className="text-right font-semibold text-adam-grey text-sm">
 										Gold Balance
 									</TableHead>
-									<TableHead className="text-right font-medium">
+									<TableHead className="text-right font-semibold text-adam-grey text-sm">
 										Silver Balance
 									</TableHead>
-									<TableHead className="font-medium">Referral Code</TableHead>
-									<TableHead className="font-medium">
+									<TableHead className="font-semibold text-adam-grey text-sm">
+										Referral Code
+									</TableHead>
+									<TableHead className="font-semibold text-adam-grey text-sm">
 										<Button
-											className="p-0 hover:bg-transparent"
+											className="p-0 text-adam-grey hover:bg-transparent"
 											onClick={() => handleSort("createdAt")}
 											variant="ghost"
 										>
@@ -251,7 +258,7 @@ export default function UsersPage() {
 							<TableBody>
 								{paginatedUsers.map((user) => (
 									<TableRow
-										className="border-adam-border/50 transition-colors hover:bg-adam-muted/20"
+										className="border-adam-border/30 border-b transition-colors hover:bg-adam-secondary/5"
 										key={user.id}
 									>
 										<TableCell>
