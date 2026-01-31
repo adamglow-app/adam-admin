@@ -35,7 +35,7 @@ function AnimatedCard({
 
 function StatCardSkeleton() {
 	return (
-		<Card className="border border-gray-200 bg-white">
+		<Card className="border border-adam-border bg-white">
 			<CardContent className="p-4">
 				<div className="flex items-center justify-between">
 					<div className="space-y-2">
@@ -70,12 +70,12 @@ function StatCard({
 
 	return (
 		<AnimatedCard delay={delay}>
-			<Card className="border border-gray-200 bg-white transition-all duration-200 hover:shadow-sm">
+			<Card className="border border-adam-border bg-white transition-all duration-200 hover:shadow-sm">
 				<CardContent className="p-4">
 					<div className="flex items-center justify-between">
 						<div>
-							<p className="text-gray-500 text-sm">{title}</p>
-							<p className="mt-1 font-semibold text-2xl text-gray-900">
+							<p className="text-adam-grey text-sm">{title}</p>
+							<p className="mt-1 font-semibold text-2xl text-adam-tinted-black">
 								{value}
 							</p>
 						</div>
@@ -111,7 +111,7 @@ function QuickActionCard({
 	return (
 		<AnimatedCard delay={delay}>
 			<a
-				className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-sm"
+				className="flex items-center gap-3 rounded-lg border border-adam-border bg-white p-4 transition-all duration-200 hover:border-adam-secondary hover:shadow-sm"
 				href={href}
 			>
 				<div
@@ -120,10 +120,10 @@ function QuickActionCard({
 					<Icon className="h-4 w-4" />
 				</div>
 				<div className="flex-1">
-					<p className="font-medium text-gray-900 text-sm">{title}</p>
-					<p className="mt-0.5 text-gray-500 text-xs">{description}</p>
+					<p className="font-medium text-adam-tinted-black text-sm">{title}</p>
+					<p className="mt-0.5 text-adam-grey text-xs">{description}</p>
 				</div>
-				<ArrowUpRight className="h-4 w-4 text-gray-400" />
+				<ArrowUpRight className="h-4 w-4 text-adam-trailing" />
 			</a>
 		</AnimatedCard>
 	);
@@ -149,7 +149,7 @@ function MetricCard({
 	if (isLoading) {
 		return (
 			<AnimatedCard delay={delay}>
-				<Card className="border border-gray-200 bg-white">
+				<Card className="border border-adam-border bg-white">
 					<CardContent className="p-4">
 						<div className="flex items-center gap-3">
 							<Skeleton className="h-8 w-8 rounded-lg" />
@@ -166,7 +166,7 @@ function MetricCard({
 
 	return (
 		<AnimatedCard delay={delay}>
-			<Card className="border border-gray-200 bg-white transition-all duration-200 hover:shadow-sm">
+			<Card className="border border-adam-border bg-white transition-all duration-200 hover:shadow-sm">
 				<CardContent className="p-4">
 					<div className="flex items-center gap-3">
 						<div
@@ -175,8 +175,10 @@ function MetricCard({
 							<Icon className="h-4 w-4" />
 						</div>
 						<div>
-							<p className="text-gray-500 text-xs">{title}</p>
-							<p className="font-semibold text-gray-900 text-lg">{value}</p>
+							<p className="text-adam-grey text-xs">{title}</p>
+							<p className="font-semibold text-adam-tinted-black text-lg">
+								{value}
+							</p>
 						</div>
 					</div>
 				</CardContent>
@@ -218,9 +220,11 @@ export default function DashboardPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="border-gray-200 border-b pb-4">
-				<h1 className="font-semibold text-gray-900 text-xl">Dashboard</h1>
-				<p className="mt-0.5 text-gray-500 text-sm">
+			<div className="border-adam-border border-b pb-4">
+				<h1 className="font-semibold text-adam-tinted-black text-xl">
+					Dashboard
+				</h1>
+				<p className="mt-0.5 text-adam-grey text-sm">
 					Overview of your platform
 				</p>
 			</div>
@@ -229,7 +233,7 @@ export default function DashboardPage() {
 				<StatCard
 					delay={100}
 					icon={Users}
-					iconColor="bg-gray-100 text-gray-700"
+					iconColor="bg-adam-secondary/10 text-adam-secondary"
 					isLoading={usersLoading}
 					title="Users"
 					value={usersData?.total?.toLocaleString() ?? "0"}
@@ -237,7 +241,7 @@ export default function DashboardPage() {
 				<StatCard
 					delay={200}
 					icon={Package}
-					iconColor="bg-gray-100 text-gray-700"
+					iconColor="bg-amber-100 text-amber-700"
 					isLoading={productsLoading}
 					title="Products"
 					value={productsData?.total?.toLocaleString() ?? "0"}
@@ -245,7 +249,7 @@ export default function DashboardPage() {
 				<StatCard
 					delay={300}
 					icon={DollarSign}
-					iconColor="bg-gray-100 text-gray-700"
+					iconColor="bg-yellow-100 text-yellow-700"
 					isLoading={goldLoading}
 					title="Gold"
 					value={goldPrice ? `₹${goldPrice.toLocaleString()}` : "---"}
@@ -253,7 +257,7 @@ export default function DashboardPage() {
 				<StatCard
 					delay={400}
 					icon={TrendingUp}
-					iconColor="bg-gray-100 text-gray-700"
+					iconColor="bg-slate-100 text-slate-700"
 					isLoading={silverLoading}
 					title="Silver"
 					value={silverPrice ? `₹${silverPrice.toLocaleString()}` : "---"}
@@ -266,8 +270,8 @@ export default function DashboardPage() {
 					description="Manage user accounts"
 					href="/users"
 					icon={Users}
-					iconBg="bg-gray-100"
-					iconColor="text-gray-700"
+					iconBg="bg-adam-secondary/10"
+					iconColor="text-adam-secondary"
 					title="Users"
 				/>
 				<QuickActionCard
@@ -275,8 +279,8 @@ export default function DashboardPage() {
 					description="Product catalog"
 					href="/products"
 					icon={Package}
-					iconBg="bg-gray-100"
-					iconColor="text-gray-700"
+					iconBg="bg-amber-100"
+					iconColor="text-amber-700"
 					title="Products"
 				/>
 				<QuickActionCard
@@ -284,8 +288,8 @@ export default function DashboardPage() {
 					description="Process refunds"
 					href="/payments"
 					icon={CreditCard}
-					iconBg="bg-gray-100"
-					iconColor="text-gray-700"
+					iconBg="bg-slate-100"
+					iconColor="text-slate-700"
 					title="Payments"
 				/>
 			</div>
@@ -294,8 +298,8 @@ export default function DashboardPage() {
 				<MetricCard
 					delay={800}
 					icon={DollarSign}
-					iconBg="bg-gray-100"
-					iconColor="text-gray-700"
+					iconBg="bg-green-100"
+					iconColor="text-green-700"
 					isLoading={isLoading}
 					title="Revenue"
 					value="₹1.24L"
@@ -303,8 +307,8 @@ export default function DashboardPage() {
 				<MetricCard
 					delay={900}
 					icon={Package}
-					iconBg="bg-gray-100"
-					iconColor="text-gray-700"
+					iconBg="bg-amber-100"
+					iconColor="text-amber-700"
 					isLoading={isLoading}
 					title="Orders"
 					value="23"
@@ -312,8 +316,8 @@ export default function DashboardPage() {
 				<MetricCard
 					delay={1000}
 					icon={TrendingUp}
-					iconBg="bg-gray-100"
-					iconColor="text-gray-700"
+					iconBg="bg-adam-secondary/10"
+					iconColor="text-adam-secondary"
 					isLoading={isLoading}
 					title="Referrals"
 					value="156"
@@ -321,8 +325,8 @@ export default function DashboardPage() {
 				<MetricCard
 					delay={1100}
 					icon={Activity}
-					iconBg="bg-gray-100"
-					iconColor="text-gray-700"
+					iconBg="bg-yellow-100"
+					iconColor="text-yellow-700"
 					isLoading={isLoading}
 					title="Gold Sold"
 					value="2.4 kg"

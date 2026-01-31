@@ -23,7 +23,7 @@ import type { MetalPrice, PriceHistoryEntry } from "@/lib/api/types";
 
 function PriceCardSkeleton() {
 	return (
-		<Card className="border border-gray-200 bg-white">
+		<Card className="border border-adam-border bg-white">
 			<CardContent className="p-4">
 				<div className="flex items-center justify-between">
 					<div className="space-y-2">
@@ -39,19 +39,27 @@ function PriceCardSkeleton() {
 
 function PriceCard({ metal, price }: { metal: string; price?: MetalPrice }) {
 	return (
-		<Card className="border border-gray-200 bg-white">
+		<Card className="border border-adam-border bg-white">
 			<CardContent className="p-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<p className="text-gray-500 text-sm">{metal}</p>
-						<p className="mt-1 font-semibold text-2xl text-gray-900">
+						<p className="text-adam-grey text-sm">{metal}</p>
+						<p className="mt-1 font-semibold text-2xl text-adam-tinted-black">
 							{price?.pricePerGram
 								? `₹${price.pricePerGram.toLocaleString()}`
 								: "₹0"}
 						</p>
 					</div>
-					<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
-						<span className="font-semibold text-gray-700 text-lg">
+					<div
+						className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+							metal === "Gold" ? "bg-amber-100" : "bg-slate-100"
+						}`}
+					>
+						<span
+							className={`font-semibold text-lg ${
+								metal === "Gold" ? "text-amber-700" : "text-slate-700"
+							}`}
+						>
 							{metal.charAt(0).toUpperCase()}
 						</span>
 					</div>
@@ -96,7 +104,7 @@ function AddPriceForm() {
 	}
 
 	return (
-		<Card className="border border-gray-200 bg-white">
+		<Card className="border border-adam-border bg-white">
 			<CardHeader className="pb-3">
 				<CardTitle className="font-medium text-base">Update Price</CardTitle>
 			</CardHeader>
@@ -108,7 +116,7 @@ function AddPriceForm() {
 								Metal
 							</Label>
 							<select
-								className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-gray-400 focus:outline-none focus:ring-0"
+								className="w-full rounded-lg border border-adam-border bg-white px-3 py-2 text-sm focus:border-adam-secondary focus:outline-none focus:ring-0"
 								id="metal-type"
 								onChange={(e) =>
 									setMetalType(e.target.value as "gold" | "silver")
@@ -124,6 +132,7 @@ function AddPriceForm() {
 								Buy Price (₹)
 							</Label>
 							<Input
+								className="border-adam-border focus:border-adam-secondary"
 								id="buy-price"
 								onChange={(e) => setBuyPrice(e.target.value)}
 								placeholder="0.00"
@@ -136,6 +145,7 @@ function AddPriceForm() {
 								Sell Price (₹)
 							</Label>
 							<Input
+								className="border-adam-border focus:border-adam-secondary"
 								id="sell-price"
 								onChange={(e) => setSellPrice(e.target.value)}
 								placeholder="0.00"
@@ -145,7 +155,7 @@ function AddPriceForm() {
 						</div>
 					</div>
 					<Button
-						className="w-full sm:w-auto"
+						className="w-full bg-adam-secondary hover:bg-adam-gradient-top sm:w-auto"
 						disabled={createMutation.isPending}
 						type="submit"
 					>
@@ -188,11 +198,11 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 
 	if (isLoading) {
 		return (
-			<Card className="border border-gray-200 bg-white">
+			<Card className="border border-adam-border bg-white">
 				<CardContent className="p-0">
 					<Table>
 						<TableHeader>
-							<TableRow>
+							<TableRow className="bg-adam-muted/30">
 								<TableHead>Date</TableHead>
 								<TableHead>Metal</TableHead>
 								<TableHead>Price per gram</TableHead>
@@ -200,7 +210,10 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 						</TableHeader>
 						<TableBody>
 							{Array.from({ length: 5 }).map((_, i) => (
-								<TableRow key={i}>
+								<TableRow
+									className="hover:bg-adam-muted/20"
+									key={`skeleton-${i}`}
+								>
 									<TableCell>
 										<Skeleton className="h-4 w-24" />
 									</TableCell>
@@ -221,20 +234,20 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 
 	if (!history || history.length === 0) {
 		return (
-			<Card className="border border-gray-200 bg-white">
+			<Card className="border border-adam-border bg-white">
 				<CardContent className="p-8 text-center">
-					<p className="text-gray-500">No price history available</p>
+					<p className="text-adam-grey">No price history available</p>
 				</CardContent>
 			</Card>
 		);
 	}
 
 	return (
-		<Card className="border border-gray-200 bg-white">
+		<Card className="border border-adam-border bg-white">
 			<CardContent className="p-0">
 				<Table>
 					<TableHeader>
-						<TableRow>
+						<TableRow className="bg-adam-muted/30 hover:bg-adam-muted/30">
 							<TableHead>Date</TableHead>
 							<TableHead>Metal</TableHead>
 							<TableHead>Price per gram</TableHead>
@@ -242,12 +255,17 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 					</TableHeader>
 					<TableBody>
 						{history.map((entry) => (
-							<TableRow key={`${entry.date}-${entry.metalType}`}>
-								<TableCell>
+							<TableRow
+								className="transition-colors hover:bg-adam-muted/20"
+								key={`${entry.date}-${entry.metalType}`}
+							>
+								<TableCell className="text-adam-tinted-black">
 									{new Date(entry.date).toLocaleDateString()}
 								</TableCell>
 								<TableCell className="capitalize">{entry.metalType}</TableCell>
-								<TableCell>₹{entry.price?.toLocaleString()}</TableCell>
+								<TableCell className="font-medium">
+									₹{entry.price?.toLocaleString()}
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
@@ -273,10 +291,12 @@ export default function PricingPage() {
 	const isLoading = goldLoading || silverLoading;
 
 	return (
-		<div className="animate-fade-in space-y-6">
-			<div className="border-gray-200 border-b pb-4">
-				<h1 className="font-semibold text-gray-900 text-xl">Pricing</h1>
-				<p className="mt-0.5 text-gray-500 text-sm">Manage metal prices</p>
+		<div className="space-y-6">
+			<div className="border-adam-border border-b pb-4">
+				<h1 className="font-semibold text-adam-tinted-black text-xl">
+					Pricing
+				</h1>
+				<p className="mt-0.5 text-adam-grey text-sm">Manage metal prices</p>
 			</div>
 
 			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -295,7 +315,7 @@ export default function PricingPage() {
 			</div>
 
 			<Tabs className="w-full" defaultValue="gold">
-				<TabsList className="h-9 w-fit gap-1 border border-gray-200 bg-gray-50 p-0.5">
+				<TabsList className="h-9 w-fit gap-1 border border-adam-border bg-adam-muted/30 p-0.5">
 					<TabsTrigger
 						className="px-4 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
 						value="gold"

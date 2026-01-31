@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import type { BaseResponse, RefundStatus } from "../types";
+import type { BaseResponse, RefundHistory, RefundStatus } from "../types";
 
 export const adminPaymentsApi = {
 	initiateRefund: async (
@@ -16,6 +16,13 @@ export const adminPaymentsApi = {
 	getRefundStatus: async (orderId: string) => {
 		const response = await api.get<BaseResponse<RefundStatus>>(
 			`/api/admin/payments/refund/${orderId}/status`
+		);
+		return response.data.data;
+	},
+
+	getRefundHistory: async () => {
+		const response = await api.get<BaseResponse<RefundHistory[]>>(
+			"/api/admin/payments/refunds"
 		);
 		return response.data.data;
 	},

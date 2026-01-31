@@ -25,9 +25,9 @@ function ConfigField({
 }) {
 	return (
 		<div className="space-y-1.5">
-			<Label className="text-gray-600 text-xs">{label}</Label>
+			<Label className="text-adam-grey text-xs">{label}</Label>
 			<Input
-				className="text-sm"
+				className="border-adam-border text-sm focus:border-adam-secondary"
 				disabled={disabled}
 				onChange={(e) => onChange(e.target.value)}
 				type="number"
@@ -68,13 +68,13 @@ function ReferralCard({
 	}
 
 	return (
-		<Card className="border border-gray-200 bg-white">
+		<Card className="border border-adam-border bg-white">
 			<CardContent className="p-4">
 				<div className="mb-4">
-					<h3 className="font-medium text-gray-900 capitalize">
+					<h3 className="font-medium text-adam-tinted-black capitalize">
 						{metalType} Referral
 					</h3>
-					<p className="mt-0.5 text-gray-500 text-xs">
+					<p className="mt-0.5 text-adam-grey text-xs">
 						Configure referral bonuses for {metalType} investments
 					</p>
 				</div>
@@ -97,7 +97,7 @@ function ReferralCard({
 				</div>
 				<div className="mt-4 flex justify-end">
 					<Button
-						className="text-sm"
+						className="bg-adam-secondary text-sm hover:bg-adam-gradient-top"
 						disabled={isLoading}
 						onClick={handleSubmit}
 						size="sm"
@@ -149,17 +149,17 @@ export default function ReferralsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="border-gray-200 border-b pb-4">
-				<h1 className="font-semibold text-gray-900 text-xl">
+			<div className="border-adam-border border-b pb-4">
+				<h1 className="font-semibold text-adam-tinted-black text-xl">
 					Referral Configuration
 				</h1>
-				<p className="mt-0.5 text-gray-500 text-sm">
+				<p className="mt-0.5 text-adam-grey text-sm">
 					Manage referral bonus settings
 				</p>
 			</div>
 
 			<Tabs className="w-full" defaultValue="gold">
-				<TabsList className="h-9 w-fit gap-1 border border-gray-200 bg-gray-50 p-0.5">
+				<TabsList className="h-9 w-fit gap-1 border border-adam-border bg-adam-muted/30 p-0.5">
 					<TabsTrigger
 						className="px-4 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
 						value="gold"
@@ -176,7 +176,7 @@ export default function ReferralsPage() {
 
 				<TabsContent className="mt-4" value="gold">
 					{goldLoading ? (
-						<Card className="border border-gray-200 bg-white">
+						<Card className="border border-adam-border bg-white">
 							<CardContent className="p-4">
 								<div className="grid gap-4 md:grid-cols-3">
 									<Skeleton className="h-10 w-full" />
@@ -197,7 +197,7 @@ export default function ReferralsPage() {
 
 				<TabsContent className="mt-4" value="silver">
 					{silverLoading ? (
-						<Card className="border border-gray-200 bg-white">
+						<Card className="border border-adam-border bg-white">
 							<CardContent className="p-4">
 								<div className="grid gap-4 md:grid-cols-3">
 									<Skeleton className="h-10 w-full" />

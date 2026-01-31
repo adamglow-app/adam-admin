@@ -6,15 +6,16 @@ export interface AdminUserListItem {
 	phoneNumber: string;
 	aadhar: string;
 	referralCode: string;
+	kycStatus: "pending" | "verified" | "rejected";
+	balances: {
+		gold: number;
+		silver: number;
+	};
 	createdAt: string;
 	updatedAt: string;
 }
 
 export interface AdminUserDetail extends AdminUserListItem {
-	balances: {
-		gold: number;
-		silver: number;
-	};
 	totalOrders: number;
 	totalTransactions: number;
 }
@@ -34,9 +35,15 @@ export interface Product {
 	id: string;
 	name: string;
 	description: string;
+	sku: string;
 	price: number;
 	metalType: "gold" | "silver";
 	category: string;
+	subCategory?: string;
+	weight: number;
+	purity: string;
+	stock: number;
+	status: "active" | "inactive" | "out_of_stock";
 	photos: string[];
 	certificate?: string;
 	createdAt: string;
@@ -65,10 +72,33 @@ export interface PriceHistoryEntry {
 	metalType?: string;
 }
 
+export interface Order {
+	id: string;
+	userId: string;
+	userEmail: string;
+	metalType: "gold" | "silver";
+	quantity: number;
+	pricePerGram: number;
+	totalAmount: number;
+	status: "pending" | "completed" | "cancelled" | "refunded";
+	createdAt: string;
+}
+
 export interface RefundRequest {
 	orderId: string;
 	amount: number;
 	reason: string;
+}
+
+export interface RefundHistory {
+	id: string;
+	orderId: string;
+	amount: number;
+	reason: string;
+	status: "pending" | "completed" | "failed";
+	processedBy?: string;
+	createdAt: string;
+	processedAt?: string;
 }
 
 export interface RefundStatus {
