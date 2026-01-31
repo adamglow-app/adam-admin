@@ -2,17 +2,36 @@ import { api } from "@/lib/axios";
 import type { BaseResponse, MetalPrice, PriceHistoryEntry } from "../types";
 
 export const adminPricesApi = {
-	getLatest: async () => {
-		const response = await api.get<BaseResponse<MetalPrice[]>>(
-			"/api/admin/prices/latest"
+	getGoldPrice: async () => {
+		const response = await api.get<BaseResponse<MetalPrice>>(
+			"/api/admin/prices/latest",
+			{ params: { metal_type: "gold" } }
 		);
 		return response.data.data;
 	},
 
-	getHistory: async (params?: { metalType?: string }) => {
+	getSilverPrice: async () => {
+		const response = await api.get<BaseResponse<MetalPrice>>(
+			"/api/admin/prices/latest",
+			{ params: { metal_type: "silver" } }
+		);
+		return response.data.data;
+	},
+
+	getHistory: async (params: {
+		metalType: string;
+		startDate?: string;
+		endDate?: string;
+	}) => {
 		const response = await api.get<BaseResponse<PriceHistoryEntry[]>>(
 			"/api/admin/prices/history",
-			{ params }
+			{
+				params: {
+					metal_type: params.metalType,
+					start_date: params.startDate,
+					end_date: params.endDate,
+				},
+			}
 		);
 		return response.data.data;
 	},
@@ -24,7 +43,13 @@ export const adminPricesApi = {
 	}) => {
 		const response = await api.post<BaseResponse<MetalPrice>>(
 			"/api/admin/prices/",
-			data
+			null,
+			{
+				params: {
+					metal_type: data.metalType,
+					price_per_gram: data.sellPrice,
+				},
+			}
 		);
 		return response.data.data;
 	},

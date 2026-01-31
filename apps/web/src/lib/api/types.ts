@@ -53,9 +53,10 @@ export interface ProductListResponse {
 export interface MetalPrice {
 	id: string;
 	metalType: "gold" | "silver";
-	buyPrice: number;
-	sellPrice: number;
-	timestamp: string;
+	buyPrice?: number;
+	sellPrice?: number;
+	pricePerGram?: number;
+	timestamp?: string;
 }
 
 export interface PriceHistoryEntry {

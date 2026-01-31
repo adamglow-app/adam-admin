@@ -8,9 +8,9 @@ export default function AdminLayout({
 }) {
 	return (
 		<ProtectedRoute>
-			<div className="flex min-h-screen">
+			<div className="flex min-h-screen bg-gray-50">
 				<Sidebar />
-				<main className="flex-1 bg-gray-50">{children}</main>
+				<main className="flex-1 p-8">{children}</main>
 			</div>
 		</ProtectedRoute>
 	);
