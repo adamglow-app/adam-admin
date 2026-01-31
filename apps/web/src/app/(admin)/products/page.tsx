@@ -265,34 +265,74 @@ export default function ProductsPage() {
 
 	function handleImageFileChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const files = Array.from(e.target.files || []);
-		setSelectedImageFiles(files);
+		const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+		const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+		const validFiles: File[] = [];
+		for (const file of files) {
+			if (!ALLOWED_TYPES.includes(file.type)) {
+				toast.error(`Invalid file type: ${file.name}. Use PNG, JPG, or WebP.`);
+				continue;
+			}
+			if (file.size > MAX_FILE_SIZE) {
+				toast.error(`File too large: ${file.name}. Maximum size is 10MB.`);
+				continue;
+			}
+			validFiles.push(file);
+		}
+
+		if (validFiles.length === 0) {
+			return;
+		}
+
+		setSelectedImageFiles(validFiles);
 		// Generate previews for selected images
 		const previews: string[] = [];
 		let loadedCount = 0;
-		for (const file of files) {
+		for (const file of validFiles) {
 			const reader = new FileReader();
 			reader.onloadend = () => {
 				if (typeof reader.result === "string") {
 					previews.push(reader.result);
 					loadedCount += 1;
-					if (loadedCount === files.length) {
+					if (loadedCount === validFiles.length) {
 						setImagePreviews(previews);
 					}
 				}
 			};
 			reader.readAsDataURL(file);
 		}
-		if (files.length > 0) {
-			toast.success(`${files.length} image(s) selected`);
+		if (validFiles.length > 0) {
+			toast.success(`${validFiles.length} image(s) selected`);
 		}
 	}
 
 	function handleCertificateFileChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const file = e.target.files?.[0];
-		if (file) {
-			setSelectedCertificateFile(file);
-			toast.success("Certificate selected");
+		if (!file) {
+			return;
 		}
+
+		const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB for PDF
+		const ALLOWED_TYPES = [
+			"application/pdf",
+			"image/jpeg",
+			"image/png",
+			"image/webp",
+		];
+
+		if (!ALLOWED_TYPES.includes(file.type)) {
+			toast.error("Invalid file type. Use PDF, PNG, JPG, or WebP.");
+			return;
+		}
+
+		if (file.size > MAX_FILE_SIZE) {
+			toast.error("File too large. Maximum size is 50MB.");
+			return;
+		}
+
+		setSelectedCertificateFile(file);
+		toast.success("Certificate selected");
 	}
 
 	function resetForm() {
@@ -332,27 +372,43 @@ export default function ProductsPage() {
 		e.stopPropagation();
 		setImagesDragActive(false);
 		const files = Array.from(e.dataTransfer.files || []);
-		const imageFiles = files.filter((f) => f.type.startsWith("image/"));
-		if (imageFiles.length > 0) {
-			setSelectedImageFiles(imageFiles);
+
+		const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+		const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+		const validFiles: File[] = [];
+		for (const file of files) {
+			if (!ALLOWED_TYPES.includes(file.type)) {
+				toast.error(`Invalid file type: ${file.name}. Use PNG, JPG, or WebP.`);
+				continue;
+			}
+			if (file.size > MAX_FILE_SIZE) {
+				toast.error(`File too large: ${file.name}. Maximum size is 10MB.`);
+				continue;
+			}
+			validFiles.push(file);
+		}
+
+		if (validFiles.length > 0) {
+			setSelectedImageFiles(validFiles);
 			const previews: string[] = [];
 			let loadedCount = 0;
-			for (const file of imageFiles) {
+			for (const file of validFiles) {
 				const reader = new FileReader();
 				reader.onloadend = () => {
 					if (typeof reader.result === "string") {
 						previews.push(reader.result);
 						loadedCount += 1;
-						if (loadedCount === imageFiles.length) {
+						if (loadedCount === validFiles.length) {
 							setImagePreviews(previews);
 						}
 					}
 				};
 				reader.readAsDataURL(file);
 			}
-			toast.success(`${imageFiles.length} image(s) dropped`);
+			toast.success(`${validFiles.length} image(s) dropped`);
 		} else {
-			toast.error("Please drop image files only");
+			toast.error("No valid image files found");
 		}
 	}
 
@@ -371,15 +427,29 @@ export default function ProductsPage() {
 		e.stopPropagation();
 		setCertificateDragActive(false);
 		const files = Array.from(e.dataTransfer.files || []);
-		const certificateFile = files.find(
-			(f) => f.type === "application/pdf" || f.type.startsWith("image/")
-		);
-		if (certificateFile) {
-			setSelectedCertificateFile(certificateFile);
-			toast.success("Certificate dropped");
-		} else {
-			toast.error("Please drop PDF or image file only");
+
+		const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+		const ALLOWED_TYPES = [
+			"application/pdf",
+			"image/jpeg",
+			"image/png",
+			"image/webp",
+		];
+
+		const certificateFile = files.find((f) => ALLOWED_TYPES.includes(f.type));
+
+		if (!certificateFile) {
+			toast.error("No valid PDF or image file found");
+			return;
 		}
+
+		if (certificateFile.size > MAX_FILE_SIZE) {
+			toast.error("File too large. Maximum size is 50MB.");
+			return;
+		}
+
+		setSelectedCertificateFile(certificateFile);
+		toast.success("Certificate dropped");
 	}
 
 	const filteredProducts =
