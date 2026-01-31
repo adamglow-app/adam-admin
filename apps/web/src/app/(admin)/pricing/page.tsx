@@ -23,7 +23,7 @@ import type { MetalPrice, PriceHistoryEntry } from "@/lib/api/types";
 
 function PriceCardSkeleton() {
 	return (
-		<Card className="border border-adam-border bg-gradient-to-br from-white to-adam-muted/20">
+		<Card className="border border-adam-border bg-white">
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
 					<div className="space-y-2">
@@ -34,10 +34,6 @@ function PriceCardSkeleton() {
 				</div>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				<div className="grid grid-cols-2 gap-3">
-					<Skeleton className="h-12 w-full rounded-lg" />
-					<Skeleton className="h-12 w-full rounded-lg" />
-				</div>
 				<Skeleton className="h-6 w-32" />
 			</CardContent>
 		</Card>
@@ -92,7 +88,7 @@ function PriceCard({
 	}
 
 	return (
-		<Card className="border border-adam-border bg-gradient-to-br from-white to-adam-muted/20 shadow-sm transition-all duration-200 hover:shadow-md">
+		<Card className="border border-adam-border bg-white shadow-sm transition-all duration-200 hover:shadow-md">
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
 					<div>
@@ -108,8 +104,8 @@ function PriceCard({
 					<div
 						className={`flex h-10 w-10 items-center justify-center rounded-lg ${
 							isGold
-								? "bg-gradient-to-br from-amber-100 to-amber-200"
-								: "bg-gradient-to-br from-slate-100 to-slate-200"
+								? "border border-amber-200 bg-amber-50"
+								: "border border-slate-200 bg-slate-50"
 						}`}
 					>
 						<span
@@ -122,27 +118,7 @@ function PriceCard({
 					</div>
 				</div>
 			</CardHeader>
-			<CardContent className="space-y-4">
-				<div className="grid grid-cols-2 gap-3">
-					<div className="rounded-lg bg-green-50 p-3 ring-1 ring-green-200">
-						<p className="font-semibold text-green-700 text-xs uppercase tracking-wide">
-							Buy Price
-						</p>
-						<p className="mt-1 font-bold text-green-900 text-lg">
-							{price?.buyPrice ? `₹${price.buyPrice.toLocaleString()}` : "---"}
-						</p>
-					</div>
-					<div className="rounded-lg bg-red-50 p-3 ring-1 ring-red-200">
-						<p className="font-semibold text-red-700 text-xs uppercase tracking-wide">
-							Sell Price
-						</p>
-						<p className="mt-1 font-bold text-lg text-red-900">
-							{price?.sellPrice
-								? `₹${price.sellPrice.toLocaleString()}`
-								: "---"}
-						</p>
-					</div>
-				</div>
+			<CardContent className="space-y-3">
 				{price && previousPrice && (
 					<div
 						className={`flex items-center gap-2 rounded-lg bg-adam-muted/50 px-3 py-2 ${priceChangeClass}`}
@@ -469,28 +445,26 @@ export default function PricingPage() {
 					</p>
 				</div>
 				<Tabs className="w-full" defaultValue="gold">
-					<div className="border-adam-border border-b bg-adam-muted/20 px-4">
-						<TabsList className="h-12 w-fit gap-1 border-0 bg-transparent p-0">
-							<TabsTrigger
-								className="px-4 py-2 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
-								value="gold"
-							>
-								Gold
-							</TabsTrigger>
-							<TabsTrigger
-								className="px-4 py-2 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
-								value="silver"
-							>
-								Silver
-							</TabsTrigger>
-						</TabsList>
-					</div>
+					<TabsList className="h-12 w-fit gap-1 border-0 bg-white p-0 pl-4">
+						<TabsTrigger
+							className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
+							value="gold"
+						>
+							Gold
+						</TabsTrigger>
+						<TabsTrigger
+							className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
+							value="silver"
+						>
+							Silver
+						</TabsTrigger>
+					</TabsList>
 
-					<TabsContent className="m-0" value="gold">
+					<TabsContent className="m-0 p-4" value="gold">
 						<HistoryTable metalType="gold" />
 					</TabsContent>
 
-					<TabsContent className="m-0" value="silver">
+					<TabsContent className="m-0 p-4" value="silver">
 						<HistoryTable metalType="silver" />
 					</TabsContent>
 				</Tabs>

@@ -654,14 +654,14 @@ export default function ProductsPage() {
 				</div>
 			)}
 			<Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
-				<DialogContent className="max-w-2xl">
+				<DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto">
 					<DialogHeader>
 						<DialogTitle>
 							{editingProduct ? "Edit Product" : "Add New Product"}
 						</DialogTitle>
 					</DialogHeader>
 					<form onSubmit={handleSubmit}>
-						<div className="grid gap-4 md:grid-cols-2">
+						<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 							<div className="space-y-2 md:col-span-2">
 								<Label htmlFor="name">Product Name</Label>
 								<Input
@@ -751,7 +751,7 @@ export default function ProductsPage() {
 									value={formData.weight}
 								/>
 							</div>
-							<div className="space-y-2">
+							<div className="space-y-2 md:col-span-2 lg:col-span-1">
 								<Label htmlFor="purity">Purity</Label>
 								<Select
 									onValueChange={(value) =>
@@ -771,7 +771,7 @@ export default function ProductsPage() {
 									</SelectContent>
 								</Select>
 							</div>
-							<div className="space-y-2">
+							<div className="space-y-2 md:col-span-2 lg:col-span-1">
 								<Label htmlFor="metalType">Metal Type</Label>
 								<Select
 									onValueChange={(value) =>
@@ -791,7 +791,7 @@ export default function ProductsPage() {
 									</SelectContent>
 								</Select>
 							</div>
-							<div className="space-y-2">
+							<div className="space-y-2 md:col-span-2 lg:col-span-1">
 								<Label htmlFor="status">Status</Label>
 								<Select
 									onValueChange={(value) =>

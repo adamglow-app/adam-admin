@@ -213,10 +213,10 @@ export default function UsersPage() {
 				<EmptyTable />
 			) : (
 				<>
-					<div className="rounded-md border border-adam-border">
+					<div className="overflow-hidden rounded-lg border border-adam-border bg-white">
 						<Table>
 							<TableHeader>
-								<TableRow className="bg-adam-muted/30 hover:bg-adam-muted/30">
+								<TableRow className="bg-adam-muted/50 hover:bg-adam-muted/50">
 									<TableHead className="font-medium">
 										<Button
 											className="p-0 hover:bg-transparent"
@@ -251,14 +251,24 @@ export default function UsersPage() {
 							<TableBody>
 								{paginatedUsers.map((user) => (
 									<TableRow
-										className="transition-colors hover:bg-adam-muted/20"
+										className="border-adam-border/50 transition-colors hover:bg-adam-muted/20"
 										key={user.id}
 									>
 										<TableCell>
-											<div className="font-medium text-adam-tinted-black">
-												{user.firstName} {user.lastName}
+											<div className="flex items-center gap-3">
+												<div className="flex h-9 w-9 items-center justify-center rounded-full bg-adam-muted font-medium text-sm">
+													{user.firstName?.charAt(0)}
+													{user.lastName?.charAt(0)}
+												</div>
+												<div>
+													<div className="font-medium text-adam-tinted-black">
+														{user.firstName} {user.lastName}
+													</div>
+													<div className="text-adam-grey text-xs">
+														{user.email}
+													</div>
+												</div>
 											</div>
-											<div className="text-adam-grey text-sm">{user.email}</div>
 										</TableCell>
 										<TableCell className="text-sm">
 											{user.phoneNumber || "-"}
