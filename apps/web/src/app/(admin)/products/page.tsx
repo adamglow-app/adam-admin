@@ -115,6 +115,8 @@ export default function ProductsPage() {
 	const [selectedCertificateFile, setSelectedCertificateFile] =
 		useState<File | null>(null);
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+	const [imagesDragActive, setImagesDragActive] = useState(false);
+	const [certificateDragActive, setCertificateDragActive] = useState(false);
 	const [formData, setFormData] = useState<{
 		name: string;
 		description: string;
@@ -313,6 +315,71 @@ export default function ProductsPage() {
 		setSelectedImageFiles([]);
 		setSelectedCertificateFile(null);
 		setImagePreviews([]);
+	}
+
+	function handleImagesDrag(e: React.DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.type === "dragenter" || e.type === "dragover") {
+			setImagesDragActive(true);
+		} else if (e.type === "dragleave") {
+			setImagesDragActive(false);
+		}
+	}
+
+	function handleImagesDrop(e: React.DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		setImagesDragActive(false);
+		const files = Array.from(e.dataTransfer.files || []);
+		const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+		if (imageFiles.length > 0) {
+			setSelectedImageFiles(imageFiles);
+			const previews: string[] = [];
+			let loadedCount = 0;
+			for (const file of imageFiles) {
+				const reader = new FileReader();
+				reader.onloadend = () => {
+					if (typeof reader.result === "string") {
+						previews.push(reader.result);
+						loadedCount += 1;
+						if (loadedCount === imageFiles.length) {
+							setImagePreviews(previews);
+						}
+					}
+				};
+				reader.readAsDataURL(file);
+			}
+			toast.success(`${imageFiles.length} image(s) dropped`);
+		} else {
+			toast.error("Please drop image files only");
+		}
+	}
+
+	function handleCertificateDrag(e: React.DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.type === "dragenter" || e.type === "dragover") {
+			setCertificateDragActive(true);
+		} else if (e.type === "dragleave") {
+			setCertificateDragActive(false);
+		}
+	}
+
+	function handleCertificateDrop(e: React.DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		setCertificateDragActive(false);
+		const files = Array.from(e.dataTransfer.files || []);
+		const certificateFile = files.find(
+			(f) => f.type === "application/pdf" || f.type.startsWith("image/")
+		);
+		if (certificateFile) {
+			setSelectedCertificateFile(certificateFile);
+			toast.success("Certificate dropped");
+		} else {
+			toast.error("Please drop PDF or image file only");
+		}
 	}
 
 	const filteredProducts =
@@ -677,11 +744,22 @@ export default function ProductsPage() {
 							</div>
 							<div className="space-y-2 md:col-span-2">
 								<Label>Product Images</Label>
-								<label
-									className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6 transition-colors hover:border-adam-secondary"
-									htmlFor="product-images"
+								<button
+									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
+										imagesDragActive
+											? "border-adam-secondary bg-adam-secondary/5"
+											: "border-adam-border hover:border-adam-secondary"
+									}`}
+									onDragEnter={handleImagesDrag}
+									onDragLeave={handleImagesDrag}
+									onDragOver={handleImagesDrag}
+									onDrop={handleImagesDrop}
+									type="button"
 								>
-									<div className="text-center">
+									<label
+										className="flex cursor-pointer flex-col items-center justify-center text-center"
+										htmlFor="product-images"
+									>
 										<Upload className="mx-auto h-8 w-8 text-adam-grey" />
 										<p className="mt-2 text-adam-grey text-sm">
 											{selectedImageFiles.length > 0
@@ -691,7 +769,7 @@ export default function ProductsPage() {
 										<p className="text-adam-muted text-xs">
 											PNG, JPG up to 10MB
 										</p>
-									</div>
+									</label>
 									<input
 										accept="image/*"
 										className="hidden"
@@ -700,22 +778,33 @@ export default function ProductsPage() {
 										onChange={handleImageFileChange}
 										type="file"
 									/>
-								</label>
+								</button>
 							</div>
 							<div className="space-y-2 md:col-span-2">
 								<Label>Certificate (Optional)</Label>
-								<label
-									className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6 transition-colors hover:border-adam-secondary"
-									htmlFor="product-certificate"
+								<button
+									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
+										certificateDragActive
+											? "border-adam-secondary bg-adam-secondary/5"
+											: "border-adam-border hover:border-adam-secondary"
+									}`}
+									onDragEnter={handleCertificateDrag}
+									onDragLeave={handleCertificateDrag}
+									onDragOver={handleCertificateDrag}
+									onDrop={handleCertificateDrop}
+									type="button"
 								>
-									<div className="text-center">
+									<label
+										className="flex cursor-pointer flex-col items-center justify-center text-center"
+										htmlFor="product-certificate"
+									>
 										<ImagePlaceholderIcon className="mx-auto h-8 w-8 text-adam-grey" />
 										<p className="mt-2 text-adam-grey text-sm">
 											{selectedCertificateFile
 												? selectedCertificateFile.name
 												: "Upload certificate PDF or image"}
 										</p>
-									</div>
+									</label>
 									<input
 										accept=".pdf,image/*"
 										className="hidden"
@@ -723,7 +812,7 @@ export default function ProductsPage() {
 										onChange={handleCertificateFileChange}
 										type="file"
 									/>
-								</label>
+								</button>
 							</div>
 						</div>
 						{imagePreviews.length > 0 && (
@@ -766,7 +855,6 @@ export default function ProductsPage() {
 					</form>
 				</DialogContent>
 			</Dialog>
-			;
 		</div>
 	);
 }
