@@ -25,7 +25,7 @@ function AnimatedCard({
 }) {
 	return (
 		<div
-			className="animate-fade-in-up"
+			className=""
 			style={{ animationDelay: `${delay}ms`, animationFillMode: "both" }}
 		>
 			{children}
@@ -70,7 +70,7 @@ function StatCard({
 
 	return (
 		<AnimatedCard delay={delay}>
-			<Card className="border border-adam-border bg-white transition-all duration-200 hover:shadow-sm">
+			<Card className="border border-adam-border bg-white hover:shadow-sm">
 				<CardContent className="p-4">
 					<div className="flex items-center justify-between">
 						<div>
@@ -111,7 +111,7 @@ function QuickActionCard({
 	return (
 		<AnimatedCard delay={delay}>
 			<a
-				className="flex items-center gap-3 rounded-lg border border-adam-border bg-white p-4 transition-all duration-200 hover:border-adam-secondary hover:shadow-sm"
+				className="flex items-center gap-3 rounded-lg border border-adam-border bg-white p-4 hover:border-adam-secondary hover:shadow-sm"
 				href={href}
 			>
 				<div
@@ -166,7 +166,7 @@ function MetricCard({
 
 	return (
 		<AnimatedCard delay={delay}>
-			<Card className="border border-adam-border bg-white transition-all duration-200 hover:shadow-sm">
+			<Card className="border border-adam-border bg-white hover:shadow-sm">
 				<CardContent className="p-4">
 					<div className="flex items-center gap-3">
 						<div

@@ -42,26 +42,26 @@ import type { Product } from "@/lib/api/types";
 
 function ProductsTableSkeleton() {
 	return (
-		<div className="overflow-hidden rounded-lg border border-adam-border">
+		<div className="overflow-hidden rounded-lg border border-adam-border shadow-sm">
 			<Table>
 				<TableHeader>
-					<TableRow className="bg-adam-muted/50">
-						<TableHead className="font-medium">Product</TableHead>
-						<TableHead className="font-medium">SKU</TableHead>
-						<TableHead className="font-medium">Category</TableHead>
-						<TableHead className="font-medium">Metal</TableHead>
-						<TableHead className="text-right font-medium">Weight</TableHead>
-						<TableHead className="text-right font-medium">Stock</TableHead>
-						<TableHead className="text-right font-medium">Price</TableHead>
-						<TableHead className="font-medium">Status</TableHead>
-						<TableHead className="text-right font-medium">Actions</TableHead>
+					<TableRow className="border-adam-border/30 border-b bg-white">
+						<TableHead className="font-semibold">Product</TableHead>
+						<TableHead className="font-semibold">SKU</TableHead>
+						<TableHead className="font-semibold">Category</TableHead>
+						<TableHead className="font-semibold">Metal</TableHead>
+						<TableHead className="text-right font-semibold">Weight</TableHead>
+						<TableHead className="text-right font-semibold">Stock</TableHead>
+						<TableHead className="text-right font-semibold">Price</TableHead>
+						<TableHead className="font-semibold">Status</TableHead>
+						<TableHead className="text-right font-semibold">Actions</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{["pskel-1", "pskel-2", "pskel-3", "pskel-4", "pskel-5"].map(
 						(key) => (
 							<TableRow
-								className="transition-colors hover:bg-adam-muted/30"
+								className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
 								key={key}
 							>
 								<TableCell>
@@ -566,19 +566,25 @@ export default function ProductsPage() {
 				</div>
 			)}
 			{!(isLoading || isEmpty) && (
-				<div className="overflow-hidden rounded-lg border border-adam-border">
+				<div className="overflow-hidden rounded-lg border border-adam-border shadow-sm">
 					<Table>
 						<TableHeader>
-							<TableRow className="bg-adam-muted/50">
-								<TableHead className="font-medium">Product</TableHead>
-								<TableHead className="font-medium">SKU</TableHead>
-								<TableHead className="font-medium">Category</TableHead>
-								<TableHead className="font-medium">Metal</TableHead>
-								<TableHead className="text-right font-medium">Weight</TableHead>
-								<TableHead className="text-right font-medium">Stock</TableHead>
-								<TableHead className="text-right font-medium">Price</TableHead>
-								<TableHead className="font-medium">Status</TableHead>
-								<TableHead className="text-right font-medium">
+							<TableRow className="border-adam-border/30 border-b bg-white">
+								<TableHead className="font-semibold">Product</TableHead>
+								<TableHead className="font-semibold">SKU</TableHead>
+								<TableHead className="font-semibold">Category</TableHead>
+								<TableHead className="font-semibold">Metal</TableHead>
+								<TableHead className="text-right font-semibold">
+									Weight
+								</TableHead>
+								<TableHead className="text-right font-semibold">
+									Stock
+								</TableHead>
+								<TableHead className="text-right font-semibold">
+									Price
+								</TableHead>
+								<TableHead className="font-semibold">Status</TableHead>
+								<TableHead className="text-right font-semibold">
 									Actions
 								</TableHead>
 							</TableRow>
@@ -586,7 +592,7 @@ export default function ProductsPage() {
 						<TableBody>
 							{filteredProducts.map((product: Product) => (
 								<TableRow
-									className="transition-colors hover:bg-adam-muted/30"
+									className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
 									key={product.id}
 								>
 									<TableCell>
@@ -815,7 +821,7 @@ export default function ProductsPage() {
 							<div className="space-y-2 md:col-span-3">
 								<Label>Product Images</Label>
 								<button
-									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
+									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 ${
 										imagesDragActive
 											? "border-adam-secondary bg-adam-secondary/5"
 											: "border-adam-border hover:border-adam-secondary"
@@ -853,7 +859,7 @@ export default function ProductsPage() {
 							<div className="space-y-2 md:col-span-3">
 								<Label>Certificate (Optional)</Label>
 								<button
-									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
+									className={`flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-6 ${
 										certificateDragActive
 											? "border-adam-secondary bg-adam-secondary/5"
 											: "border-adam-border hover:border-adam-secondary"

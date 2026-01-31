@@ -88,7 +88,7 @@ function PriceCard({
 	}
 
 	return (
-		<Card className="border border-adam-border bg-white shadow-sm transition-all duration-200 hover:shadow-md">
+		<Card className="border border-adam-border bg-white shadow-sm hover:shadow-md">
 			<CardHeader className="pb-3">
 				<div className="flex items-center justify-between">
 					<div>
@@ -192,7 +192,7 @@ function AddPriceForm() {
 								Metal
 							</Label>
 							<select
-								className="w-full rounded-lg border border-adam-border bg-white px-3 py-2 font-medium text-sm transition-all focus:border-adam-secondary focus:outline-none focus:ring-2 focus:ring-adam-secondary/30"
+								className="w-full rounded-lg border border-adam-border bg-white px-3 py-2 font-medium text-sm focus:border-adam-secondary focus:outline-none focus:ring-2 focus:ring-adam-secondary/30"
 								id="metal-type"
 								onChange={(e) =>
 									setMetalType(e.target.value as "gold" | "silver")
@@ -237,7 +237,7 @@ function AddPriceForm() {
 						</div>
 					</div>
 					<Button
-						className="w-full bg-adam-secondary font-semibold text-white shadow-sm transition-all hover:bg-adam-secondary/90 sm:w-auto"
+						className="w-full bg-adam-secondary font-semibold text-white shadow-sm hover:bg-adam-secondary/90 sm:w-auto"
 						disabled={createMutation.isPending}
 						type="submit"
 					>
@@ -284,7 +284,7 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 				<CardContent className="p-0">
 					<Table>
 						<TableHeader>
-							<TableRow className="border-adam-border border-b bg-adam-muted/50">
+							<TableRow className="border-adam-border border-b bg-white">
 								<TableHead className="font-semibold">Date</TableHead>
 								<TableHead className="font-semibold">Metal</TableHead>
 								<TableHead className="font-semibold">Price / Gram</TableHead>
@@ -293,7 +293,7 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 						<TableBody>
 							{["skel-1", "skel-2", "skel-3", "skel-4", "skel-5"].map((key) => (
 								<TableRow
-									className="border-adam-border/50 border-b hover:bg-adam-muted/20"
+									className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
 									key={key}
 								>
 									<TableCell>
@@ -335,7 +335,7 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 			<CardContent className="p-0">
 				<Table>
 					<TableHeader>
-						<TableRow className="border-adam-border border-b bg-adam-muted/50">
+						<TableRow className="border-adam-border border-b bg-white">
 							<TableHead className="font-semibold">Date</TableHead>
 							<TableHead className="font-semibold">Metal</TableHead>
 							<TableHead className="text-right font-semibold">
@@ -346,7 +346,7 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 					<TableBody>
 						{history.map((entry) => (
 							<TableRow
-								className="border-adam-border/50 border-b transition-colors hover:bg-adam-muted/30"
+								className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
 								key={`${entry.date}-${entry.metalType}`}
 							>
 								<TableCell className="text-adam-tinted-black">

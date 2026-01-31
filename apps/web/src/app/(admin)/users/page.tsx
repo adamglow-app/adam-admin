@@ -22,7 +22,7 @@ function UsersTableSkeleton() {
 		<div className="rounded-lg border border-adam-border bg-white shadow-sm">
 			<Table>
 				<TableHeader>
-					<TableRow className="border-adam-border/50 border-b bg-white">
+					<TableRow className="border-adam-border/30 border-b bg-white">
 						{[
 							"User",
 							"Phone",
@@ -43,7 +43,10 @@ function UsersTableSkeleton() {
 				</TableHeader>
 				<TableBody>
 					{Array.from({ length: 5 }).map((_, i) => (
-						<TableRow className="hover:bg-adam-muted/20" key={`skeleton-${i}`}>
+						<TableRow
+							className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
+							key={`skeleton-${i}`}
+						>
 							<TableCell>
 								<div className="space-y-1">
 									<Skeleton className="h-4 w-40" />
@@ -219,7 +222,7 @@ export default function UsersPage() {
 					<div className="overflow-hidden rounded-lg border border-adam-border bg-white shadow-sm">
 						<Table>
 							<TableHeader>
-								<TableRow className="border-adam-border/50 border-b bg-white hover:bg-white">
+								<TableRow className="border-adam-border/30 border-b bg-white">
 									<TableHead className="font-semibold text-adam-grey text-sm">
 										<Button
 											className="p-0 text-adam-grey hover:bg-transparent"
@@ -233,7 +236,9 @@ export default function UsersPage() {
 									<TableHead className="font-semibold text-adam-grey text-sm">
 										Phone
 									</TableHead>
-									<TableHead className="font-medium">KYC Status</TableHead>
+									<TableHead className="font-semibold text-adam-grey text-sm">
+										KYC Status
+									</TableHead>
 									<TableHead className="text-right font-semibold text-adam-grey text-sm">
 										Gold Balance
 									</TableHead>
@@ -258,7 +263,7 @@ export default function UsersPage() {
 							<TableBody>
 								{paginatedUsers.map((user) => (
 									<TableRow
-										className="border-adam-border/30 border-b transition-colors hover:bg-adam-secondary/5"
+										className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
 										key={user.id}
 									>
 										<TableCell>

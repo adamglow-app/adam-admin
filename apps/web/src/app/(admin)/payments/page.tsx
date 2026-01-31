@@ -22,13 +22,13 @@ import type { RefundHistory } from "@/lib/api/types";
 
 function RefundHistorySkeleton() {
 	return (
-		<div className="rounded-md border border-adam-border">
+		<div className="rounded-md border border-adam-border shadow-sm">
 			<Table>
 				<TableHeader>
-					<TableRow className="bg-adam-muted/30">
+					<TableRow className="border-adam-border/30 border-b bg-white">
 						{["Order ID", "Amount", "Reason", "Status", "Processed At"].map(
 							(header) => (
-								<TableHead className="font-medium" key={header}>
+								<TableHead className="font-semibold" key={header}>
 									{header}
 								</TableHead>
 							)
@@ -37,7 +37,10 @@ function RefundHistorySkeleton() {
 				</TableHeader>
 				<TableBody>
 					{Array.from({ length: 5 }).map((_, i) => (
-						<TableRow className="hover:bg-adam-muted/20" key={`skeleton-${i}`}>
+						<TableRow
+							className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
+							key={`skeleton-${i}`}
+						>
 							<TableCell>
 								<Skeleton className="h-4 w-32" />
 							</TableCell>
@@ -244,23 +247,25 @@ export default function PaymentsPage() {
 					) : refunds.length === 0 ? (
 						<EmptyRefunds />
 					) : (
-						<div className="rounded-md border border-adam-border">
+						<div className="rounded-md border border-adam-border shadow-sm">
 							<Table>
 								<TableHeader>
-									<TableRow className="bg-adam-muted/30 hover:bg-adam-muted/30">
-										<TableHead className="font-medium">Order ID</TableHead>
-										<TableHead className="text-right font-medium">
+									<TableRow className="border-adam-border/30 border-b bg-white">
+										<TableHead className="font-semibold">Order ID</TableHead>
+										<TableHead className="text-right font-semibold">
 											Amount
 										</TableHead>
-										<TableHead className="font-medium">Reason</TableHead>
-										<TableHead className="font-medium">Status</TableHead>
-										<TableHead className="font-medium">Processed At</TableHead>
+										<TableHead className="font-semibold">Reason</TableHead>
+										<TableHead className="font-semibold">Status</TableHead>
+										<TableHead className="font-semibold">
+											Processed At
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
 									{refunds.map((refund: RefundHistory) => (
 										<TableRow
-											className="transition-colors hover:bg-adam-muted/20"
+											className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
 											key={refund.id}
 										>
 											<TableCell className="font-mono text-sm">
