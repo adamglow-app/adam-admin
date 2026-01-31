@@ -37,6 +37,19 @@
 	--sidebar-accent-foreground: oklch(0.205 0 0);
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: oklch(0.708 0 0);
+
+	--adam-background: #ffffff;
+	--adam-scaffold-background: #fffcf8;
+	--adam-secondary: #006763;
+	--adam-gradient-top: #06393e;
+	--adam-gradient-bottom: #0c5f48;
+	--adam-secondary-text: #53b175;
+	--adam-muted: #7c7c7c;
+	--adam-border: #edf1f3;
+	--adam-grey: #6c7278;
+	--adam-trailing: #acb5bb;
+	--adam-input-color: #1a1c1e;
+	--adam-tinted-black: #333333;
 }
 
 .dark {
@@ -113,6 +126,19 @@
 	--radius-2xl: calc(var(--radius) + 8px);
 	--radius-3xl: calc(var(--radius) + 12px);
 	--radius-4xl: calc(var(--radius) + 16px);
+
+	--color-adam-background: var(--adam-background);
+	--color-adam-scaffold-background: var(--adam-scaffold-background);
+	--color-adam-secondary: var(--adam-secondary);
+	--color-adam-gradient-top: var(--adam-gradient-top);
+	--color-adam-gradient-bottom: var(--adam-gradient-bottom);
+	--color-adam-secondary-text: var(--adam-secondary-text);
+	--color-adam-muted: var(--adam-muted);
+	--color-adam-border: var(--adam-border);
+	--color-adam-grey: var(--adam-grey);
+	--color-adam-trailing: var(--adam-trailing);
+	--color-adam-input-color: var(--adam-input-color);
+	--color-adam-tinted-black: var(--adam-tinted-black);
 }
 
 @layer base {

@@ -9,8 +9,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { adminPricesApi } from "@/lib/api/admin/prices";
-import type { MetalPrice } from "@/lib/api/types";
+import type { MetalPrice, PriceHistoryEntry } from "@/lib/api/types";
 
 function PriceCardSkeleton() {
 	return (
@@ -40,11 +49,6 @@ function PriceCard({ metal, price }: { metal: string; price?: MetalPrice }) {
 								? `₹${price.pricePerGram.toLocaleString()}`
 								: "₹0"}
 						</p>
-						{price && (
-							<p className="mt-0.5 text-gray-400 text-xs">
-								ID: {price.id.slice(0, 8)}...
-							</p>
-						)}
 					</div>
 					<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
 						<span className="font-semibold text-gray-700 text-lg">
@@ -72,13 +76,13 @@ function AddPriceForm() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["admin-price-gold"] });
 			queryClient.invalidateQueries({ queryKey: ["admin-price-silver"] });
+			queryClient.invalidateQueries({ queryKey: ["admin-price-history"] });
 			toast.success("Price updated successfully");
 			setBuyPrice("");
 			setSellPrice("");
 		},
-		onError: (error: unknown) => {
+		onError: () => {
 			toast.error("Failed to update price");
-			console.error("Price update error:", error);
 		},
 	});
 
@@ -154,6 +158,105 @@ function AddPriceForm() {
 	);
 }
 
+function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
+	const { data: historyData, isLoading } = useQuery({
+		queryKey: ["admin-price-history", metalType],
+		queryFn: () =>
+			adminPricesApi.getHistory({
+				metalType,
+				startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+					.toISOString()
+					.split("T")[0],
+			}),
+		retry: false,
+		enabled: true,
+	});
+
+	let history: PriceHistoryEntry[] = [];
+	if (Array.isArray(historyData)) {
+		history = historyData;
+	} else if (
+		historyData &&
+		typeof historyData === "object" &&
+		"history" in historyData
+	) {
+		const hist = (historyData as { history: PriceHistoryEntry[] }).history;
+		if (Array.isArray(hist)) {
+			history = hist;
+		}
+	}
+
+	if (isLoading) {
+		return (
+			<Card className="border border-gray-200 bg-white">
+				<CardContent className="p-0">
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Date</TableHead>
+								<TableHead>Metal</TableHead>
+								<TableHead>Price per gram</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{Array.from({ length: 5 }).map((_, i) => (
+								<TableRow key={i}>
+									<TableCell>
+										<Skeleton className="h-4 w-24" />
+									</TableCell>
+									<TableCell>
+										<Skeleton className="h-4 w-16" />
+									</TableCell>
+									<TableCell>
+										<Skeleton className="h-4 w-20" />
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	if (!history || history.length === 0) {
+		return (
+			<Card className="border border-gray-200 bg-white">
+				<CardContent className="p-8 text-center">
+					<p className="text-gray-500">No price history available</p>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	return (
+		<Card className="border border-gray-200 bg-white">
+			<CardContent className="p-0">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Date</TableHead>
+							<TableHead>Metal</TableHead>
+							<TableHead>Price per gram</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{history.map((entry) => (
+							<TableRow key={`${entry.date}-${entry.metalType}`}>
+								<TableCell>
+									{new Date(entry.date).toLocaleDateString()}
+								</TableCell>
+								<TableCell className="capitalize">{entry.metalType}</TableCell>
+								<TableCell>₹{entry.price?.toLocaleString()}</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</CardContent>
+		</Card>
+	);
+}
+
 export default function PricingPage() {
 	const { data: goldPrice, isLoading: goldLoading } = useQuery({
 		queryKey: ["admin-price-gold"],
@@ -170,7 +273,7 @@ export default function PricingPage() {
 	const isLoading = goldLoading || silverLoading;
 
 	return (
-		<div className="space-y-6">
+		<div className="animate-fade-in space-y-6">
 			<div className="border-gray-200 border-b pb-4">
 				<h1 className="font-semibold text-gray-900 text-xl">Pricing</h1>
 				<p className="mt-0.5 text-gray-500 text-sm">Manage metal prices</p>
@@ -191,16 +294,30 @@ export default function PricingPage() {
 				<AddPriceForm />
 			</div>
 
-			<Card className="border border-gray-200 bg-white">
-				<CardHeader className="pb-3">
-					<CardTitle className="font-medium text-base">Price History</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<p className="text-gray-500 text-sm">
-						Price history chart will be displayed here.
-					</p>
-				</CardContent>
-			</Card>
+			<Tabs className="w-full" defaultValue="gold">
+				<TabsList className="h-9 w-fit gap-1 border border-gray-200 bg-gray-50 p-0.5">
+					<TabsTrigger
+						className="px-4 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
+						value="gold"
+					>
+						Gold History
+					</TabsTrigger>
+					<TabsTrigger
+						className="px-4 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
+						value="silver"
+					>
+						Silver History
+					</TabsTrigger>
+				</TabsList>
+
+				<TabsContent className="mt-4" value="gold">
+					<HistoryTable metalType="gold" />
+				</TabsContent>
+
+				<TabsContent className="mt-4" value="silver">
+					<HistoryTable metalType="silver" />
+				</TabsContent>
+			</Tabs>
 		</div>
 	);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,31 +25,23 @@ function UsersTableSkeleton() {
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead>Email</TableHead>
-							<TableHead>Name</TableHead>
-							<TableHead>Phone</TableHead>
-							<TableHead>Referral Code</TableHead>
-							<TableHead>Created</TableHead>
+							{["Email", "Name", "Phone", "Referral Code", "Created"].map(
+								(header) => (
+									<TableHead key={header}>
+										<Skeleton className="h-4 w-20" />
+									</TableHead>
+								)
+							)}
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{Array.from({ length: 5 }).map((_, i) => (
 							<TableRow key={i}>
-								<TableCell>
-									<Skeleton className="h-4 w-40" />
-								</TableCell>
-								<TableCell>
-									<Skeleton className="h-4 w-32" />
-								</TableCell>
-								<TableCell>
-									<Skeleton className="h-4 w-28" />
-								</TableCell>
-								<TableCell>
-									<Skeleton className="h-4 w-24" />
-								</TableCell>
-								<TableCell>
-									<Skeleton className="h-4 w-32" />
-								</TableCell>
+								{Array.from({ length: 5 }).map((_, j) => (
+									<TableCell key={j}>
+										<Skeleton className="h-4 w-full" />
+									</TableCell>
+								))}
 							</TableRow>
 						))}
 					</TableBody>
@@ -70,6 +63,8 @@ function EmptyTable() {
 
 export default function UsersPage() {
 	const [search, setSearch] = useState("");
+	const [sortBy, setSortBy] = useState<"email" | "createdAt" | null>(null);
+	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 	const [page, setPage] = useState(0);
 	const pageSize = 10;
 
@@ -89,34 +84,40 @@ export default function UsersPage() {
 		);
 	}, [data?.users, search]);
 
-	const paginatedUsers = filteredUsers.slice(
+	const sortedUsers = useMemo(() => {
+		if (!sortBy) return filteredUsers;
+		return [...filteredUsers].sort((a, b) => {
+			if (sortBy === "email") {
+				return sortOrder === "asc"
+					? a.email.localeCompare(b.email)
+					: b.email.localeCompare(a.email);
+			}
+			if (sortBy === "createdAt") {
+				return sortOrder === "asc"
+					? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+					: new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+			}
+			return 0;
+		});
+	}, [filteredUsers, sortBy, sortOrder]);
+
+	const paginatedUsers = sortedUsers.slice(
 		page * pageSize,
 		(page + 1) * pageSize
 	);
-	const totalPages = Math.ceil(filteredUsers.length / pageSize);
-	const showPagination = totalPages > 1;
-	const isEmpty = paginatedUsers.length === 0;
+	const totalPages = Math.ceil(sortedUsers.length / pageSize);
 
-	if (error) {
-		return (
-			<div className="space-y-6">
-				<div className="border-gray-200 border-b pb-4">
-					<h1 className="font-semibold text-gray-900 text-xl">Users</h1>
-					<p className="mt-0.5 text-gray-500 text-sm">Manage user accounts</p>
-				</div>
-				<Card className="border-red-200 bg-red-50">
-					<CardContent className="p-4">
-						<p className="text-red-600 text-sm">
-							Error loading users. Please try again.
-						</p>
-					</CardContent>
-				</Card>
-			</div>
-		);
+	function handleSort(field: "email" | "createdAt") {
+		if (sortBy === field) {
+			setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+		} else {
+			setSortBy(field);
+			setSortOrder("asc");
+		}
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="animate-fade-in space-y-6">
 			<div className="border-gray-200 border-b pb-4">
 				<h1 className="font-semibold text-gray-900 text-xl">Users</h1>
 				<p className="mt-0.5 text-gray-500 text-sm">Manage user accounts</p>
@@ -137,7 +138,7 @@ export default function UsersPage() {
 
 			{isLoading ? (
 				<UsersTableSkeleton />
-			) : isEmpty ? (
+			) : filteredUsers.length === 0 ? (
 				<EmptyTable />
 			) : (
 				<Card className="border border-gray-200 bg-white">
@@ -145,11 +146,29 @@ export default function UsersPage() {
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead>Email</TableHead>
+									<TableHead>
+										<Button
+											className="p-0 hover:bg-transparent"
+											onClick={() => handleSort("email")}
+											variant="ghost"
+										>
+											Email
+											<ArrowUpDown className="ml-2 h-4 w-4" />
+										</Button>
+									</TableHead>
 									<TableHead>Name</TableHead>
 									<TableHead>Phone</TableHead>
 									<TableHead>Referral Code</TableHead>
-									<TableHead>Created</TableHead>
+									<TableHead>
+										<Button
+											className="p-0 hover:bg-transparent"
+											onClick={() => handleSort("createdAt")}
+											variant="ghost"
+										>
+											Created
+											<ArrowUpDown className="ml-2 h-4 w-4" />
+										</Button>
+									</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -179,12 +198,12 @@ export default function UsersPage() {
 				</Card>
 			)}
 
-			{showPagination && (
+			{totalPages > 1 && (
 				<div className="flex items-center justify-between">
 					<p className="text-gray-500 text-sm">
 						Showing {page * pageSize + 1} to{" "}
-						{Math.min((page + 1) * pageSize, filteredUsers.length)} of{" "}
-						{filteredUsers.length} results
+						{Math.min((page + 1) * pageSize, sortedUsers.length)} of{" "}
+						{sortedUsers.length} results
 					</p>
 					<div className="flex gap-2">
 						<Button

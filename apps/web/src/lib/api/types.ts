@@ -60,9 +60,9 @@ export interface MetalPrice {
 }
 
 export interface PriceHistoryEntry {
-	timestamp: string;
-	goldPrice: number;
-	silverPrice: number;
+	date: string;
+	price: number;
+	metalType?: string;
 }
 
 export interface RefundRequest {

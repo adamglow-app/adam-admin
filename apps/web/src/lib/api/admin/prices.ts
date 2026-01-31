@@ -18,6 +18,14 @@ export const adminPricesApi = {
 		return response.data.data;
 	},
 
+	getLatest: async () => {
+		const [gold, silver] = await Promise.all([
+			adminPricesApi.getGoldPrice(),
+			adminPricesApi.getSilverPrice(),
+		]);
+		return [gold, silver].filter(Boolean);
+	},
+
 	getHistory: async (params: {
 		metalType: string;
 		startDate?: string;
