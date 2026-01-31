@@ -111,6 +111,9 @@ export default function ProductsPage() {
 	const [search, setSearch] = useState("");
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+	const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
+	const [selectedCertificateFile, setSelectedCertificateFile] =
+		useState<File | null>(null);
 	const [formData, setFormData] = useState<{
 		name: string;
 		description: string;
@@ -170,25 +173,6 @@ export default function ProductsPage() {
 		},
 	});
 
-	function resetForm() {
-		setFormData({
-			name: "",
-			description: "",
-			sku: "",
-			price: 0,
-			metalType: "gold",
-			category: "",
-			subCategory: "",
-			weight: 0,
-			purity: "999",
-			stock: 0,
-			status: "active",
-			photos: [],
-			certificate: "",
-		});
-		setEditingProduct(null);
-	}
-
 	function handleOpenCreate() {
 		resetForm();
 		setIsDialogOpen(true);
@@ -217,6 +201,44 @@ export default function ProductsPage() {
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		createMutation.mutate(formData);
+	}
+
+	function handleImageFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const files = Array.from(e.target.files || []);
+		setSelectedImageFiles(files);
+		// Convert files to data URLs for preview or send directly to API
+		if (files.length > 0) {
+			toast.success(`${files.length} image(s) selected`);
+		}
+	}
+
+	function handleCertificateFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const file = e.target.files?.[0];
+		if (file) {
+			setSelectedCertificateFile(file);
+			toast.success("Certificate selected");
+		}
+	}
+
+	function resetForm() {
+		setFormData({
+			name: "",
+			description: "",
+			sku: "",
+			price: 0,
+			metalType: "gold",
+			category: "",
+			subCategory: "",
+			weight: 0,
+			purity: "999",
+			stock: 0,
+			status: "active",
+			photos: [],
+			certificate: "",
+		});
+		setEditingProduct(null);
+		setSelectedImageFiles([]);
+		setSelectedCertificateFile(null);
 	}
 
 	const filteredProducts =
@@ -579,28 +601,53 @@ export default function ProductsPage() {
 							</div>
 							<div className="space-y-2 md:col-span-2">
 								<Label>Product Images</Label>
-								<div className="flex items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6">
+								<label
+									className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6 transition-colors hover:border-adam-secondary"
+									htmlFor="product-images"
+								>
 									<div className="text-center">
 										<Upload className="mx-auto h-8 w-8 text-adam-grey" />
 										<p className="mt-2 text-adam-grey text-sm">
-											Click to upload or drag and drop
+											{selectedImageFiles.length > 0
+												? `${selectedImageFiles.length} image(s) selected`
+												: "Click to upload or drag and drop"}
 										</p>
 										<p className="text-adam-muted text-xs">
 											PNG, JPG up to 10MB
 										</p>
 									</div>
-								</div>
+									<input
+										accept="image/*"
+										className="hidden"
+										id="product-images"
+										multiple
+										onChange={handleImageFileChange}
+										type="file"
+									/>
+								</label>
 							</div>
 							<div className="space-y-2 md:col-span-2">
 								<Label>Certificate (Optional)</Label>
-								<div className="flex items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6">
+								<label
+									className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6 transition-colors hover:border-adam-secondary"
+									htmlFor="product-certificate"
+								>
 									<div className="text-center">
 										<ImagePlaceholderIcon className="mx-auto h-8 w-8 text-adam-grey" />
 										<p className="mt-2 text-adam-grey text-sm">
-											Upload certificate PDF or image
+											{selectedCertificateFile
+												? selectedCertificateFile.name
+												: "Upload certificate PDF or image"}
 										</p>
 									</div>
-								</div>
+									<input
+										accept=".pdf,image/*"
+										className="hidden"
+										id="product-certificate"
+										onChange={handleCertificateFileChange}
+										type="file"
+									/>
+								</label>
 							</div>
 						</div>
 						<DialogFooter className="mt-6">
