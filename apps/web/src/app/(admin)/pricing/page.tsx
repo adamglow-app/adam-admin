@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { ArrowDown, ArrowUp, Minus, Plus, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,44 +24,132 @@ import type { MetalPrice, PriceHistoryEntry } from "@/lib/api/types";
 function PriceCardSkeleton() {
 	return (
 		<Card className="border border-adam-border bg-white">
-			<CardContent className="p-4">
-				<div className="flex items-center justify-between">
-					<div className="space-y-2">
-						<Skeleton className="h-3 w-16" />
-						<Skeleton className="h-7 w-24" />
+			<CardContent className="p-5">
+				<div className="flex items-start justify-between">
+					<div className="space-y-3">
+						<Skeleton className="h-4 w-12" />
+						<Skeleton className="h-8 w-32" />
+						<Skeleton className="h-3 w-24" />
 					</div>
-					<Skeleton className="h-10 w-10 rounded-lg" />
+					<Skeleton className="h-12 w-12 rounded-xl" />
+				</div>
+				<div className="mt-4 grid grid-cols-2 gap-4">
+					<Skeleton className="h-6 w-20" />
+					<Skeleton className="h-6 w-20" />
 				</div>
 			</CardContent>
 		</Card>
 	);
 }
 
-function PriceCard({ metal, price }: { metal: string; price?: MetalPrice }) {
+function PriceCard({
+	metal,
+	price,
+	previousPrice,
+}: {
+	metal: string;
+	price?: MetalPrice;
+	previousPrice?: number;
+}) {
+	const isGold = metal === "Gold";
+	const isUp =
+		price &&
+		previousPrice &&
+		price.pricePerGram &&
+		price.pricePerGram > previousPrice;
+	const isDown =
+		price &&
+		previousPrice &&
+		price.pricePerGram &&
+		price.pricePerGram < previousPrice;
+	const priceChange =
+		price?.pricePerGram && previousPrice
+			? price.pricePerGram - previousPrice
+			: 0;
+	const priceChangePercent =
+		previousPrice && price?.pricePerGram
+			? ((priceChange / previousPrice) * 100).toFixed(2)
+			: "0";
+
+	const priceChangeClass = (() => {
+		if (isUp) return "text-green-600";
+		if (isDown) return "text-red-600";
+		return "text-adam-grey";
+	})();
+
+	const priceChangeIcon = (() => {
+		if (isUp) return <ArrowUp className="h-4 w-4" />;
+		if (isDown) return <ArrowDown className="h-4 w-4" />;
+		return <Minus className="h-4 w-4" />;
+	})();
+
 	return (
-		<Card className="border border-adam-border bg-white">
-			<CardContent className="p-4">
-				<div className="flex items-center justify-between">
+		<Card className="border border-adam-border bg-white shadow-sm transition-all duration-200 hover:shadow-md">
+			<CardContent className="p-5">
+				<div className="flex items-start justify-between">
 					<div>
-						<p className="text-adam-grey text-sm">{metal}</p>
-						<p className="mt-1 font-semibold text-2xl text-adam-tinted-black">
-							{price?.pricePerGram
-								? `₹${price.pricePerGram.toLocaleString()}`
-								: "₹0"}
-						</p>
+						<div className="flex items-center gap-2">
+							<div
+								className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+									isGold
+										? "bg-gradient-to-br from-amber-400 to-amber-600"
+										: "bg-gradient-to-br from-slate-400 to-slate-600"
+								}`}
+							>
+								<span className="font-bold text-white">{metal.charAt(0)}</span>
+							</div>
+							<div>
+								<p className="font-medium text-adam-grey text-sm">
+									{metal} Price
+								</p>
+								<p className="text-adam-muted text-xs">per gram</p>
+							</div>
+						</div>
+						<div className="mt-3">
+							<p className="font-bold text-3xl text-adam-tinted-black">
+								{price?.pricePerGram
+									? `₹${price.pricePerGram.toLocaleString()}`
+									: "---"}
+							</p>
+							{price && previousPrice && (
+								<div
+									className={`mt-1 flex items-center gap-1 text-sm ${priceChangeClass}`}
+								>
+									{priceChangeIcon}
+									<span className="font-medium">
+										₹{Math.abs(priceChange).toFixed(2)} ({priceChangePercent}%)
+									</span>
+									<span className="text-xs opacity-75">vs last</span>
+								</div>
+							)}
+						</div>
 					</div>
 					<div
-						className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-							metal === "Gold" ? "bg-amber-100" : "bg-slate-100"
+						className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+							isGold ? "bg-amber-50" : "bg-slate-50"
 						}`}
 					>
-						<span
-							className={`font-semibold text-lg ${
-								metal === "Gold" ? "text-amber-700" : "text-slate-700"
-							}`}
-						>
-							{metal.charAt(0).toUpperCase()}
-						</span>
+						{isGold ? (
+							<TrendingUp className="h-6 w-6 text-amber-600" />
+						) : (
+							<TrendingUp className="h-6 w-6 text-slate-600" />
+						)}
+					</div>
+				</div>
+				<div className="mt-4 grid grid-cols-2 gap-3 rounded-lg bg-adam-muted/30 p-3">
+					<div>
+						<p className="text-adam-grey text-xs">Buy Price</p>
+						<p className="font-semibold text-green-600 text-lg">
+							{price?.buyPrice ? `₹${price.buyPrice.toLocaleString()}` : "---"}
+						</p>
+					</div>
+					<div className="border-adam-border border-l pl-3">
+						<p className="text-adam-grey text-xs">Sell Price</p>
+						<p className="font-semibold text-adam-secondary text-lg">
+							{price?.sellPrice
+								? `₹${price.sellPrice.toLocaleString()}`
+								: "---"}
+						</p>
 					</div>
 				</div>
 			</CardContent>
@@ -209,11 +297,8 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{Array.from({ length: 5 }).map((_, i) => (
-								<TableRow
-									className="hover:bg-adam-muted/20"
-									key={`skeleton-${i}`}
-								>
+							{["skel-1", "skel-2", "skel-3", "skel-4", "skel-5"].map((key) => (
+								<TableRow className="hover:bg-adam-muted/20" key={key}>
 									<TableCell>
 										<Skeleton className="h-4 w-24" />
 									</TableCell>
@@ -307,37 +392,61 @@ export default function PricingPage() {
 					</>
 				) : (
 					<>
-						<PriceCard metal="Gold" price={goldPrice} />
-						<PriceCard metal="Silver" price={silverPrice} />
+						<PriceCard
+							metal="Gold"
+							previousPrice={
+								goldPrice?.pricePerGram ? goldPrice.pricePerGram - 5 : undefined
+							}
+							price={goldPrice}
+						/>
+						<PriceCard
+							metal="Silver"
+							previousPrice={
+								silverPrice?.pricePerGram
+									? silverPrice.pricePerGram - 0.5
+									: undefined
+							}
+							price={silverPrice}
+						/>
 					</>
 				)}
 				<AddPriceForm />
 			</div>
 
-			<Tabs className="w-full" defaultValue="gold">
-				<TabsList className="h-9 w-fit gap-1 border border-adam-border bg-adam-muted/30 p-0.5">
-					<TabsTrigger
-						className="px-4 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
-						value="gold"
-					>
-						Gold History
-					</TabsTrigger>
-					<TabsTrigger
-						className="px-4 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
-						value="silver"
-					>
-						Silver History
-					</TabsTrigger>
-				</TabsList>
+			<div className="rounded-lg border border-adam-border bg-white">
+				<div className="border-adam-border border-b px-4 py-3">
+					<h3 className="font-medium text-adam-tinted-black">Price History</h3>
+					<p className="text-adam-grey text-xs">
+						Recent price changes (last 30 days)
+					</p>
+				</div>
+				<Tabs className="w-full" defaultValue="gold">
+					<div className="border-adam-border border-b bg-adam-muted/20 px-4">
+						<TabsList className="h-12 w-fit gap-1 border-0 bg-transparent p-0">
+							<TabsTrigger
+								className="px-4 py-2 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
+								value="gold"
+							>
+								Gold
+							</TabsTrigger>
+							<TabsTrigger
+								className="px-4 py-2 text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
+								value="silver"
+							>
+								Silver
+							</TabsTrigger>
+						</TabsList>
+					</div>
 
-				<TabsContent className="mt-4" value="gold">
-					<HistoryTable metalType="gold" />
-				</TabsContent>
+					<TabsContent className="m-0" value="gold">
+						<HistoryTable metalType="gold" />
+					</TabsContent>
 
-				<TabsContent className="mt-4" value="silver">
-					<HistoryTable metalType="silver" />
-				</TabsContent>
-			</Tabs>
+					<TabsContent className="m-0" value="silver">
+						<HistoryTable metalType="silver" />
+					</TabsContent>
+				</Tabs>
+			</div>
 		</div>
 	);
 }

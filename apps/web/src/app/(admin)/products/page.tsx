@@ -1,7 +1,13 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import {
+	Image as ImagePlaceholderIcon,
+	Plus,
+	Search,
+	Upload,
+} from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -36,16 +42,15 @@ import type { Product } from "@/lib/api/types";
 
 function ProductsTableSkeleton() {
 	return (
-		<div className="rounded-md border border-adam-border">
+		<div className="overflow-hidden rounded-lg border border-adam-border">
 			<Table>
 				<TableHeader>
-					<TableRow className="bg-adam-muted/30">
+					<TableRow className="bg-adam-muted/50">
 						<TableHead className="font-medium">Product</TableHead>
 						<TableHead className="font-medium">SKU</TableHead>
 						<TableHead className="font-medium">Category</TableHead>
 						<TableHead className="font-medium">Metal</TableHead>
 						<TableHead className="text-right font-medium">Weight</TableHead>
-						<TableHead className="text-right font-medium">Purity</TableHead>
 						<TableHead className="text-right font-medium">Stock</TableHead>
 						<TableHead className="text-right font-medium">Price</TableHead>
 						<TableHead className="font-medium">Status</TableHead>
@@ -53,40 +58,48 @@ function ProductsTableSkeleton() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{Array.from({ length: 5 }).map((_, i) => (
-						<TableRow className="hover:bg-adam-muted/20" key={`skeleton-${i}`}>
-							<TableCell>
-								<Skeleton className="h-4 w-40" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-24" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-16" />
-							</TableCell>
-							<TableCell className="text-right">
-								<Skeleton className="ml-auto h-4 w-12" />
-							</TableCell>
-							<TableCell className="text-right">
-								<Skeleton className="ml-auto h-4 w-16" />
-							</TableCell>
-							<TableCell className="text-right">
-								<Skeleton className="ml-auto h-4 w-12" />
-							</TableCell>
-							<TableCell className="text-right">
-								<Skeleton className="ml-auto h-4 w-16" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-6 w-16" />
-							</TableCell>
-							<TableCell className="text-right">
-								<Skeleton className="ml-auto h-8 w-20" />
-							</TableCell>
-						</TableRow>
-					))}
+					{["pskel-1", "pskel-2", "pskel-3", "pskel-4", "pskel-5"].map(
+						(key) => (
+							<TableRow
+								className="transition-colors hover:bg-adam-muted/30"
+								key={key}
+							>
+								<TableCell>
+									<div className="flex items-center gap-3">
+										<Skeleton className="h-10 w-10 rounded-lg" />
+										<div className="space-y-1">
+											<Skeleton className="h-4 w-32" />
+											<Skeleton className="h-3 w-24" />
+										</div>
+									</div>
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-4 w-24" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-6 w-16" />
+								</TableCell>
+								<TableCell className="text-right">
+									<Skeleton className="ml-auto h-4 w-16" />
+								</TableCell>
+								<TableCell className="text-right">
+									<Skeleton className="ml-auto h-4 w-12" />
+								</TableCell>
+								<TableCell className="text-right">
+									<Skeleton className="ml-auto h-5 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-6 w-16" />
+								</TableCell>
+								<TableCell className="text-right">
+									<Skeleton className="ml-auto h-8 w-24" />
+								</TableCell>
+							</TableRow>
+						)
+					)}
 				</TableBody>
 			</Table>
 		</div>
@@ -110,6 +123,8 @@ export default function ProductsPage() {
 		purity: string;
 		stock: number;
 		status: "active" | "inactive" | "out_of_stock";
+		photos: string[];
+		certificate?: string;
 	}>({
 		name: "",
 		description: "",
@@ -122,6 +137,8 @@ export default function ProductsPage() {
 		purity: "999",
 		stock: 0,
 		status: "active",
+		photos: [],
+		certificate: "",
 	});
 
 	const { data, isLoading, error } = useQuery({
@@ -166,6 +183,8 @@ export default function ProductsPage() {
 			purity: "999",
 			stock: 0,
 			status: "active",
+			photos: [],
+			certificate: "",
 		});
 		setEditingProduct(null);
 	}
@@ -189,6 +208,8 @@ export default function ProductsPage() {
 			purity: product.purity || "999",
 			stock: product.stock,
 			status: product.status,
+			photos: product.photos || [],
+			certificate: product.certificate || "",
 		});
 		setIsDialogOpen(true);
 	}
@@ -208,6 +229,13 @@ export default function ProductsPage() {
 
 	const isEmpty = filteredProducts.length === 0;
 	const isSubmitting = createMutation.isPending;
+
+	const getButtonText = () => {
+		if (isSubmitting) return "Saving...";
+		if (editingProduct) return "Update";
+		return "Create";
+	};
+	const buttonText = getButtonText();
 
 	function getStatusBadge(status: string) {
 		const variants: Record<
@@ -240,6 +268,16 @@ export default function ProductsPage() {
 		);
 	}
 
+	function getStockBadge(stock: number) {
+		if (stock < 10) {
+			return <span className="font-medium text-red-600">{stock}</span>;
+		}
+		if (stock < 50) {
+			return <span className="font-medium text-amber-600">{stock}</span>;
+		}
+		return <span className="text-green-600">{stock}</span>;
+	}
+
 	if (error) {
 		return (
 			<div className="space-y-6">
@@ -268,7 +306,6 @@ export default function ProductsPage() {
 					Manage your product catalog
 				</p>
 			</div>
-
 			<div className="flex items-center justify-between gap-4">
 				<div className="relative max-w-md flex-1">
 					<Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-adam-grey" />
@@ -283,126 +320,104 @@ export default function ProductsPage() {
 					className="bg-adam-secondary hover:bg-adam-gradient-top"
 					onClick={handleOpenCreate}
 				>
+					<Plus className="mr-2 h-4 w-4" />
 					Add Product
 				</Button>
 			</div>
-
-			{(() => {
-				if (isLoading) {
-					return <ProductsTableSkeleton />;
-				}
-				if (isEmpty) {
-					return (
-						<div className="rounded-lg border border-adam-border bg-white p-8 text-center">
-							<p className="text-adam-grey">No products found</p>
-						</div>
-					);
-				}
-				return (
-					<div className="rounded-md border border-adam-border">
-						<Table>
-							<TableHeader>
-								<TableRow className="bg-adam-muted/30 hover:bg-adam-muted/30">
-									<TableHead className="font-medium">Product</TableHead>
-									<TableHead className="font-medium">SKU</TableHead>
-									<TableHead className="font-medium">Category</TableHead>
-									<TableHead className="font-medium">Metal</TableHead>
-									<TableHead className="text-right font-medium">
-										Weight (g)
-									</TableHead>
-									<TableHead className="text-right font-medium">
-										Purity
-									</TableHead>
-									<TableHead className="text-right font-medium">
-										Stock
-									</TableHead>
-									<TableHead className="text-right font-medium">
-										Price (₹)
-									</TableHead>
-									<TableHead className="font-medium">Status</TableHead>
-									<TableHead className="text-right font-medium">
-										Actions
-									</TableHead>
+			{isLoading && <ProductsTableSkeleton />}
+			{!isLoading && isEmpty && (
+				<div className="rounded-lg border border-adam-border bg-white p-8 text-center">
+					<p className="text-adam-grey">No products found</p>
+				</div>
+			)}
+			{!(isLoading || isEmpty) && (
+				<div className="overflow-hidden rounded-lg border border-adam-border">
+					<Table>
+						<TableHeader>
+							<TableRow className="bg-adam-muted/50">
+								<TableHead className="font-medium">Product</TableHead>
+								<TableHead className="font-medium">SKU</TableHead>
+								<TableHead className="font-medium">Category</TableHead>
+								<TableHead className="font-medium">Metal</TableHead>
+								<TableHead className="text-right font-medium">Weight</TableHead>
+								<TableHead className="text-right font-medium">Stock</TableHead>
+								<TableHead className="text-right font-medium">Price</TableHead>
+								<TableHead className="font-medium">Status</TableHead>
+								<TableHead className="text-right font-medium">
+									Actions
+								</TableHead>
+							</TableRow>
+						</TableHeader>
+						<TableBody>
+							{filteredProducts.map((product: Product) => (
+								<TableRow
+									className="transition-colors hover:bg-adam-muted/30"
+									key={product.id}
+								>
+									<TableCell>
+										<div className="flex items-center gap-3">
+											{product.photos && product.photos.length > 0 ? (
+												<Image
+													alt={product.name}
+													className="h-10 w-10 rounded-lg object-cover"
+													height={40}
+													src={product.photos[0]}
+													width={40}
+												/>
+											) : (
+												<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-adam-muted">
+													<ImagePlaceholderIcon className="h-5 w-5 text-adam-grey" />
+												</div>
+											)}
+											<div>
+												<div className="font-medium text-adam-tinted-black">
+													{product.name}
+												</div>
+												<div className="mt-0.5 max-w-[180px] truncate text-adam-grey text-xs">
+													{product.description}
+												</div>
+											</div>
+										</div>
+									</TableCell>
+									<TableCell className="font-mono text-sm">
+										{product.sku}
+									</TableCell>
+									<TableCell>{product.category}</TableCell>
+									<TableCell>{getMetalBadge(product.metalType)}</TableCell>
+									<TableCell className="text-right">
+										{product.weight.toFixed(2)}g
+									</TableCell>
+									<TableCell className="text-right">
+										{getStockBadge(product.stock)}
+									</TableCell>
+									<TableCell className="text-right font-medium">
+										₹{product.price.toLocaleString()}
+									</TableCell>
+									<TableCell>{getStatusBadge(product.status)}</TableCell>
+									<TableCell className="text-right">
+										<div className="flex justify-end gap-2">
+											<Button
+												className="h-8 px-3 text-xs"
+												onClick={() => handleEdit(product)}
+												variant="outline"
+											>
+												Edit
+											</Button>
+											<Button
+												className="h-8 px-3 text-red-600 text-xs hover:bg-red-50"
+												onClick={() => deleteMutation.mutate(product.id)}
+												variant="ghost"
+											>
+												Delete
+											</Button>
+										</div>
+									</TableCell>
 								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{filteredProducts.map((product: Product) => (
-									<TableRow
-										className="transition-colors hover:bg-adam-muted/20"
-										key={product.id}
-									>
-										<TableCell>
-											<div className="font-medium text-adam-tinted-black">
-												{product.name}
-											</div>
-											<div className="max-w-[200px] truncate text-adam-grey text-xs">
-												{product.description}
-											</div>
-										</TableCell>
-										<TableCell className="font-mono text-sm">
-											{product.sku}
-										</TableCell>
-										<TableCell>{product.category}</TableCell>
-										<TableCell>{getMetalBadge(product.metalType)}</TableCell>
-										<TableCell className="text-right">
-											{product.weight.toFixed(2)}
-										</TableCell>
-										<TableCell className="text-right">
-											{product.purity}
-										</TableCell>
-										<TableCell className="text-right">
-											{(() => {
-												if (product.stock < 10) {
-													return (
-														<span className="text-red-600">
-															{product.stock}
-														</span>
-													);
-												}
-												if (product.stock < 50) {
-													return (
-														<span className="text-amber-600">
-															{product.stock}
-														</span>
-													);
-												}
-												return (
-													<span className="text-green-600">
-														{product.stock}
-													</span>
-												);
-											})()}
-										</TableCell>
-										<TableCell className="text-right font-medium">
-											₹{product.price.toLocaleString()}
-										</TableCell>
-										<TableCell>{getStatusBadge(product.status)}</TableCell>
-										<TableCell className="text-right">
-											<div className="flex justify-end gap-2">
-												<Button
-													className="h-8 px-3 text-xs"
-													onClick={() => handleEdit(product)}
-													variant="outline"
-												>
-													Edit
-												</Button>
-												<Button
-													className="h-8 px-3 text-red-600 text-xs hover:bg-red-50"
-													onClick={() => deleteMutation.mutate(product.id)}
-													variant="ghost"
-												>
-													Delete
-												</Button>
-											</div>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</div>
-				);
-			})()}
-
+							))}
+						</TableBody>
+					</Table>
+				</div>
+			)}
 			<Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
 				<DialogContent className="max-w-2xl">
 					<DialogHeader>
@@ -562,6 +577,31 @@ export default function ProductsPage() {
 									</SelectContent>
 								</Select>
 							</div>
+							<div className="space-y-2 md:col-span-2">
+								<Label>Product Images</Label>
+								<div className="flex items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6">
+									<div className="text-center">
+										<Upload className="mx-auto h-8 w-8 text-adam-grey" />
+										<p className="mt-2 text-adam-grey text-sm">
+											Click to upload or drag and drop
+										</p>
+										<p className="text-adam-muted text-xs">
+											PNG, JPG up to 10MB
+										</p>
+									</div>
+								</div>
+							</div>
+							<div className="space-y-2 md:col-span-2">
+								<Label>Certificate (Optional)</Label>
+								<div className="flex items-center justify-center rounded-lg border-2 border-adam-border border-dashed p-6">
+									<div className="text-center">
+										<ImagePlaceholderIcon className="mx-auto h-8 w-8 text-adam-grey" />
+										<p className="mt-2 text-adam-grey text-sm">
+											Upload certificate PDF or image
+										</p>
+									</div>
+								</div>
+							</div>
 						</div>
 						<DialogFooter className="mt-6">
 							<Button
@@ -576,19 +616,13 @@ export default function ProductsPage() {
 								disabled={isSubmitting}
 								type="submit"
 							>
-								{isSubmitting
-									? "Saving..."
-									: (() => {
-											if (editingProduct) {
-												return "Update";
-											}
-											return "Create";
-										})()}
+								{buttonText}
 							</Button>
 						</DialogFooter>
 					</form>
 				</DialogContent>
 			</Dialog>
+			;
 		</div>
 	);
 }
