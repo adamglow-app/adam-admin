@@ -1,30 +1,57 @@
 "use client";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
-
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { checkSession } from "@/lib/auth";
+import { initSuperTokens } from "@/lib/supertokens";
 
 export default function Home() {
-  return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-      <div className="grid gap-6">
-        <section className="rounded-lg border p-4">
-          <h2 className="mb-2 font-medium">API Status</h2>
-        </section>
-      </div>
-    </div>
-  );
+	const router = useRouter();
+
+	useEffect(() => {
+		initSuperTokens();
+	}, []);
+
+	const { data: hasSession, isLoading } = useQuery({
+		queryKey: ["session-check"],
+		queryFn: async () => {
+			const result = await checkSession();
+			return result;
+		},
+		retry: false,
+		refetchOnWindowFocus: false,
+	});
+
+	useEffect(() => {
+		if (!isLoading && hasSession !== undefined) {
+			if (hasSession === true) {
+				router.replace("/dashboard");
+			} else if (hasSession === false) {
+				router.replace("/login");
+			}
+		}
+	}, [hasSession, isLoading, router]);
+
+	if (isLoading) {
+		return (
+			<div className="flex min-h-screen items-center justify-center bg-gray-50">
+				<div className="flex flex-col items-center gap-4">
+					<div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+					<div className="text-gray-500 text-sm">
+						Checking authentication...
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex min-h-screen items-center justify-center bg-gray-50">
+			<div className="flex flex-col items-center gap-4">
+				<div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+				<div className="text-gray-500 text-sm">Checking authentication...</div>
+			</div>
+		</div>
+	);
 }
