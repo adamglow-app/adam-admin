@@ -1,5 +1,7 @@
+"use client";
+
+import { SessionAuth } from "supertokens-auth-react/recipe/session";
 import { Sidebar } from "@/components/admin/sidebar";
-import { ProtectedRoute } from "@/components/auth/protected-route";
 
 export default function AdminLayout({
 	children,
@@ -7,11 +9,11 @@ export default function AdminLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<ProtectedRoute>
+		<SessionAuth>
 			<div className="flex min-h-screen bg-white">
 				<Sidebar />
 				<main className="flex-1 p-8">{children}</main>
 			</div>
-		</ProtectedRoute>
+		</SessionAuth>
 	);
 }

@@ -1,52 +1,36 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { checkSession } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import Session from "supertokens-auth-react/recipe/session";
 
 export default function Home() {
-	const router = useRouter();
-
-	const { data: hasSession, isLoading } = useQuery({
-		queryKey: ["session-check"],
-		queryFn: async () => {
-			const result = await checkSession();
-			return result;
-		},
-		retry: false,
-		refetchOnWindowFocus: false,
-	});
+	const [checking, setChecking] = useState(true);
 
 	useEffect(() => {
-		if (!isLoading && hasSession !== undefined) {
-			if (hasSession === true) {
-				router.replace("/dashboard");
-			} else if (hasSession === false) {
-				router.replace("/login");
+		async function checkAuth() {
+			try {
+				const sessionExists = await Session.doesSessionExist();
+				if (sessionExists) {
+					window.location.href = "/dashboard";
+				} else {
+					window.location.href = "/auth";
+				}
+			} catch {
+				window.location.href = "/auth";
+			} finally {
+				setChecking(false);
 			}
 		}
-	}, [hasSession, isLoading, router]);
+		checkAuth();
+	}, []);
 
-	if (isLoading) {
+	if (checking) {
 		return (
 			<div className="flex min-h-screen items-center justify-center bg-white">
-				<div className="flex flex-col items-center gap-4">
-					<div className="h-8 w-48 rounded bg-white" />
-					<div className="text-gray-500 text-sm">
-						Checking authentication...
-					</div>
-				</div>
+				<div className="text-gray-500 text-sm">Loading...</div>
 			</div>
 		);
 	}
 
-	return (
-		<div className="flex min-h-screen items-center justify-center bg-white">
-			<div className="flex flex-col items-center gap-4">
-				<div className="h-8 w-48 rounded bg-white" />
-				<div className="text-gray-500 text-sm">Checking authentication...</div>
-			</div>
-		</div>
-	);
+	return null;
 }

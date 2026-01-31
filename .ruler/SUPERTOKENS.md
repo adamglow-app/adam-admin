@@ -1574,3 +1574,5 @@ Future<void> signOut() async {
 Congratulations! You've successfully integrated your frontend app with SuperTokens.
 
 The [next section](./backend-setup) guides you through setting up your backend and then you should be able to complete a login flow.
+
+:::

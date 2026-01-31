@@ -1,8 +1,5 @@
-import { signIn } from "supertokens-web-js/recipe/emailpassword";
-import {
-	doesSessionExist,
-	signOut as supertokensSignOut,
-} from "supertokens-web-js/recipe/session";
+import { signIn } from "supertokens-auth-react/recipe/emailpassword";
+import Session from "supertokens-auth-react/recipe/session";
 
 export interface AuthError {
 	fieldErrors?: Record<string, string>;
@@ -20,7 +17,7 @@ export async function login(email: string, password: string) {
 	if (response.status === "FIELD_ERROR") {
 		const fieldErrors: Record<string, string> = {};
 		for (const field of response.formFields) {
-			fieldErrors[field.id] = field.error ?? "";
+			fieldErrors[field.id] = field.error;
 		}
 		throw new Error(JSON.stringify({ fieldErrors }));
 	}
@@ -37,12 +34,12 @@ export async function login(email: string, password: string) {
 }
 
 export async function logout() {
-	await supertokensSignOut();
+	await Session.signOut();
 	if (typeof window !== "undefined") {
-		window.location.href = "/login";
+		window.location.href = "/auth";
 	}
 }
 
 export async function checkSession() {
-	return await doesSessionExist();
+	return await Session.doesSessionExist();
 }

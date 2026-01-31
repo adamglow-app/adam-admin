@@ -626,7 +626,7 @@ export default function ProductsPage() {
 									<TableCell>{product.category}</TableCell>
 									<TableCell>{getMetalBadge(product.metalType)}</TableCell>
 									<TableCell className="text-right">
-										{product.weight.toFixed(2)}g
+										{product.weight ? product.weight.toFixed(2) : "0.00"}g
 									</TableCell>
 									<TableCell className="text-right">
 										{getStockBadge(product.stock)}
@@ -812,7 +812,9 @@ export default function ProductsPage() {
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="active">Active</SelectItem>
+										{formData.stock > 0 && (
+											<SelectItem value="active">Active</SelectItem>
+										)}
 										<SelectItem value="inactive">Inactive</SelectItem>
 										<SelectItem value="out_of_stock">Out of Stock</SelectItem>
 									</SelectContent>
