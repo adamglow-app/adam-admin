@@ -679,7 +679,9 @@ export default function ProductsPage() {
 									</TableCell>
 									<TableCell className="text-right text-sm">
 										<span className="font-medium text-adam-tinted-black">
-											{product.weight ? product.weight.toFixed(2) : "0.00"}
+											{typeof product.weight === "string"
+												? Number.parseFloat(product.weight).toFixed(2)
+												: (product.weight?.toFixed(2) ?? "0.00")}
 										</span>
 										<span className="text-adam-grey"> g</span>
 									</TableCell>
