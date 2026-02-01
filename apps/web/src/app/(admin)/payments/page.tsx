@@ -29,7 +29,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { adminPaymentsApi } from "@/lib/api/admin/payments";
-import type { RefundHistory } from "@/lib/api/types";
+import type { RefundListItem } from "@/lib/api/types";
 
 function RefundHistorySkeleton() {
 	return (
@@ -171,7 +171,7 @@ export default function PaymentsPage() {
 		error: refundsError,
 	} = useQuery({
 		queryKey: ["admin-refunds"],
-		queryFn: () => adminPaymentsApi.getRefundHistory(),
+		queryFn: () => adminPaymentsApi.getRefundList({ limit: 100 }),
 		retry: false,
 	});
 
@@ -203,24 +203,20 @@ export default function PaymentsPage() {
 		});
 	}
 
-	const refunds = refundsData || [];
+	const refunds = refundsData?.refunds || [];
 	const filteredRefunds = refunds.filter(
-		(refund: RefundHistory) =>
-			refund.orderId.toLowerCase().includes(search.toLowerCase()) ||
-			refund.reason.toLowerCase().includes(search.toLowerCase())
+		(refund: RefundListItem) =>
+			refund.order_id.toLowerCase().includes(search.toLowerCase()) ||
+			refund.refund_status.toLowerCase().includes(search.toLowerCase())
 	);
 
 	// Calculate stats
-	const totalRefunded = refunds.reduce(
-		(sum: number, r: RefundHistory) =>
-			r.status === "completed" ? sum + r.amount : sum,
-		0
-	);
+	const totalRefunded = refundsData?.total_refund_amount ?? 0;
 	const pendingCount = refunds.filter(
-		(r: RefundHistory) => r.status === "pending"
+		(refund: RefundListItem) => refund.refund_status === "pending"
 	).length;
 	const completedCount = refunds.filter(
-		(r: RefundHistory) => r.status === "completed"
+		(refund: RefundListItem) => refund.refund_status === "completed"
 	).length;
 
 	return (
@@ -414,31 +410,31 @@ export default function PaymentsPage() {
 							<TableHeader>
 								<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
 									<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
-										Order ID
+										Order Number
 									</TableHead>
 									<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
 										Amount
 									</TableHead>
 									<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
-										Reason
+										Razorpay Refund ID
 									</TableHead>
 									<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
 										Status
 									</TableHead>
 									<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
-										Processed At
+										Refunded At
 									</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{filteredRefunds.map((refund: RefundHistory) => {
-									const statusConfig = getStatusConfig(refund.status);
+								{filteredRefunds.map((refund: RefundListItem) => {
+									const statusConfig = getStatusConfig(refund.refund_status);
 									const StatusIcon = statusConfig.icon;
 
 									return (
 										<TableRow
 											className="border-adam-border/30 transition-colors hover:bg-adam-scaffold-background/50"
-											key={refund.id}
+											key={refund.refund_id}
 										>
 											<TableCell className="py-4">
 												<div className="flex items-center gap-3">
@@ -446,18 +442,18 @@ export default function PaymentsPage() {
 														<FileText className="h-4 w-4 text-adam-trailing" />
 													</div>
 													<code className="rounded bg-adam-scaffold-background px-2 py-1 font-mono text-adam-tinted-black text-sm">
-														{refund.orderId}
+														{refund.order_number}
 													</code>
 												</div>
 											</TableCell>
 											<TableCell className="text-right">
 												<span className="font-semibold text-adam-tinted-black">
-													₹{refund.amount.toLocaleString("en-IN")}
+													₹{refund.refund_amount.toLocaleString("en-IN")}
 												</span>
 											</TableCell>
 											<TableCell>
 												<p className="max-w-[200px] truncate text-adam-grey text-sm">
-													{refund.reason}
+													{refund.razorpay_refund_id || "-"}
 												</p>
 											</TableCell>
 											<TableCell>
@@ -470,8 +466,8 @@ export default function PaymentsPage() {
 												</Badge>
 											</TableCell>
 											<TableCell className="text-adam-grey text-sm">
-												{refund.processedAt
-													? new Date(refund.processedAt).toLocaleDateString(
+												{refund.refunded_at
+													? new Date(refund.refunded_at).toLocaleDateString(
 															"en-IN",
 															{
 																day: "numeric",

@@ -46,13 +46,7 @@ function PriceCardSkeleton() {
 	);
 }
 
-function PriceCard({
-	metal,
-	price,
-}: {
-	metal: string;
-	price?: MetalPrice;
-}) {
+function PriceCard({ metal, price }: { metal: string; price?: MetalPrice }) {
 	const isGold = metal === "Gold";
 
 	return (
@@ -122,22 +116,17 @@ function PriceCard({
 function UpdatePriceCard() {
 	const queryClient = useQueryClient();
 	const [metalType, setMetalType] = useState<"gold" | "silver">("gold");
-	const [buyPrice, setBuyPrice] = useState("");
-	const [sellPrice, setSellPrice] = useState("");
+	const [price, setPrice] = useState("");
 
 	const createMutation = useMutation({
-		mutationFn: (data: {
-			metalType: "gold" | "silver";
-			buyPrice: number;
-			sellPrice: number;
-		}) => adminPricesApi.update(data),
+		mutationFn: (data: { metalType: "gold" | "silver"; price: number }) =>
+			adminPricesApi.update(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["admin-price-gold"] });
 			queryClient.invalidateQueries({ queryKey: ["admin-price-silver"] });
 			queryClient.invalidateQueries({ queryKey: ["admin-price-history"] });
 			toast.success("Price updated successfully");
-			setBuyPrice("");
-			setSellPrice("");
+			setPrice("");
 		},
 		onError: () => {
 			toast.error("Failed to update price");
@@ -148,8 +137,7 @@ function UpdatePriceCard() {
 		e.preventDefault();
 		createMutation.mutate({
 			metalType,
-			buyPrice: Number.parseFloat(buyPrice) || 0,
-			sellPrice: Number.parseFloat(sellPrice) || 0,
+			price: Number.parseFloat(price) || 0,
 		});
 	}
 
@@ -162,7 +150,7 @@ function UpdatePriceCard() {
 					</div>
 					<div>
 						<h3 className="font-semibold text-white">Update Price</h3>
-						<p className="text-white/70 text-xs">Set current market rates</p>
+						<p className="text-white/70 text-xs">Set current market rate</p>
 					</div>
 				</div>
 
@@ -197,31 +185,18 @@ function UpdatePriceCard() {
 						</div>
 					</div>
 
-					<div className="grid gap-3 sm:grid-cols-2">
-						<div className="space-y-2">
-							<Label className="font-medium text-white/90 text-xs">
-								Buy Price (₹)
-							</Label>
-							<Input
-								className="border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-white/40 focus:ring-white/20"
-								onChange={(e) => setBuyPrice(e.target.value)}
-								placeholder="0.00"
-								type="number"
-								value={buyPrice}
-							/>
-						</div>
-						<div className="space-y-2">
-							<Label className="font-medium text-white/90 text-xs">
-								Sell Price (₹)
-							</Label>
-							<Input
-								className="border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-white/40 focus:ring-white/20"
-								onChange={(e) => setSellPrice(e.target.value)}
-								placeholder="0.00"
-								type="number"
-								value={sellPrice}
-							/>
-						</div>
+					<div className="space-y-2">
+						<Label className="font-medium text-white/90 text-xs">
+							Price per Gram (₹)
+						</Label>
+						<Input
+							className="border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-white/40 focus:ring-white/20"
+							onChange={(e) => setPrice(e.target.value)}
+							placeholder="0.00"
+							required
+							type="number"
+							value={price}
+						/>
 					</div>
 
 					<Button

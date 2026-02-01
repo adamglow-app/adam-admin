@@ -179,7 +179,6 @@ export default function ProductsPage() {
 		name: string;
 		description: string;
 		sku: string;
-		price: number;
 		metalType: "gold" | "silver";
 		category: string;
 		subCategory: string;
@@ -189,11 +188,18 @@ export default function ProductsPage() {
 		status: "active" | "inactive" | "out_of_stock";
 		photos: string[];
 		certificate?: string;
+		grossWeight: number;
+		netWeight: number;
+		stoneWeight: number;
+		makingCharge: number;
+		wastagePercentage: number;
+		gst: number;
+		discountPercentage: number;
+		discountType: string;
 	}>({
 		name: "",
 		description: "",
 		sku: "",
-		price: 0,
 		metalType: "gold",
 		category: "",
 		subCategory: "",
@@ -203,6 +209,14 @@ export default function ProductsPage() {
 		status: "active",
 		photos: [],
 		certificate: "",
+		grossWeight: 0,
+		netWeight: 0,
+		stoneWeight: 0,
+		makingCharge: 0,
+		wastagePercentage: 0,
+		gst: 0,
+		discountPercentage: 0,
+		discountType: "overall",
 	});
 
 	const { data, isLoading, error } = useQuery({
@@ -239,30 +253,42 @@ export default function ProductsPage() {
 		setIsDialogOpen(true);
 	}
 
+	function parseNumber(
+		value: string | number | undefined,
+		defaultVal = 0
+	): number {
+		if (value === undefined || value === null) {
+			return defaultVal;
+		}
+		if (typeof value === "number") {
+			return value;
+		}
+		return Number.parseFloat(value) || defaultVal;
+	}
+
 	function handleEdit(product: Product) {
 		setEditingProduct(product);
-		const price =
-			typeof product.price === "string"
-				? Number.parseFloat(product.price)
-				: product.price;
-		const weight =
-			typeof product.weight === "string"
-				? Number.parseFloat(product.weight)
-				: product.weight;
 		setFormData({
 			name: product.name,
 			description: product.description ?? "",
 			sku: product.sku ?? "",
-			price: price ?? 0,
 			metalType: product.metalType ?? "gold",
 			category: product.category,
 			subCategory: product.subCategory ?? "",
-			weight: weight ?? 0,
+			weight: parseNumber(product.weight, 0),
 			purity: product.purity ?? "999",
 			stock: product.stock ?? 0,
 			status: product.status ?? "active",
 			photos: product.photos ?? [],
 			certificate: product.certificate ?? "",
+			grossWeight: parseNumber(product.grossWeight, 0),
+			netWeight: parseNumber(product.netWeight, 0),
+			stoneWeight: parseNumber(product.stoneWeight, 0),
+			makingCharge: parseNumber(product.makingCharge, 0),
+			wastagePercentage: parseNumber(product.wastagePercentage, 0),
+			gst: parseNumber(product.gst, 0),
+			discountPercentage: parseNumber(product.discountPercentage, 0),
+			discountType: product.discountType ?? "overall",
 		});
 		setIsDialogOpen(true);
 	}
@@ -270,13 +296,35 @@ export default function ProductsPage() {
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
+		// Cast formData to Partial<Product> to match API expectations
+		const productData: Partial<Product> = {
+			name: formData.name,
+			description: formData.description,
+			sku: formData.sku,
+			metalType: formData.metalType,
+			category: formData.category,
+			subCategory: formData.subCategory,
+			weight: formData.weight,
+			purity: formData.purity,
+			stock: formData.stock,
+			status: formData.status,
+			grossWeight: String(formData.grossWeight),
+			netWeight: String(formData.netWeight),
+			stoneWeight: String(formData.stoneWeight),
+			makingCharge: String(formData.makingCharge),
+			wastagePercentage: String(formData.wastagePercentage),
+			gst: String(formData.gst),
+			discountPercentage: String(formData.discountPercentage),
+			discountType: formData.discountType,
+		};
+
 		// Create API call with FormData - pass files to API
 		const submitMutation = new Promise<Product>((resolve, reject) => {
 			if (editingProduct) {
 				adminProductsApi
 					.update(
 						editingProduct.id,
-						formData,
+						productData,
 						selectedImageFiles.length > 0 ? selectedImageFiles : undefined,
 						selectedCertificateFile ?? undefined
 					)
@@ -391,7 +439,6 @@ export default function ProductsPage() {
 			name: "",
 			description: "",
 			sku: "",
-			price: 0,
 			metalType: "gold",
 			category: "",
 			subCategory: "",
@@ -401,6 +448,14 @@ export default function ProductsPage() {
 			status: "active",
 			photos: [],
 			certificate: "",
+			grossWeight: 0,
+			netWeight: 0,
+			stoneWeight: 0,
+			makingCharge: 0,
+			wastagePercentage: 0,
+			gst: 0,
+			discountPercentage: 0,
+			discountType: "overall",
 		});
 		setEditingProduct(null);
 		setSelectedImageFiles([]);
@@ -693,10 +748,11 @@ export default function ProductsPage() {
 									<TableCell className="text-right">
 										<span className="font-semibold text-adam-tinted-black">
 											₹
-											{(typeof product.price === "string"
-												? Number.parseFloat(product.price)
-												: product.price
-											).toLocaleString()}
+											{product.finalPrice
+												? Number.parseFloat(
+														String(product.finalPrice)
+													).toLocaleString()
+												: "0"}
 										</span>
 									</TableCell>
 									<TableCell>
@@ -796,21 +852,6 @@ export default function ProductsPage() {
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label htmlFor="price">Price (₹)</Label>
-								<Input
-									id="price"
-									onChange={(e) =>
-										setFormData({
-											...formData,
-											price: Number.parseFloat(e.target.value) || 0,
-										})
-									}
-									required
-									type="number"
-									value={formData.price}
-								/>
-							</div>
-							<div className="space-y-2">
 								<Label htmlFor="stock">Stock Quantity</Label>
 								<Input
 									id="stock"
@@ -901,6 +942,132 @@ export default function ProductsPage() {
 										)}
 										<SelectItem value="inactive">Inactive</SelectItem>
 										<SelectItem value="out_of_stock">Out of Stock</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="grossWeight">Gross Weight (g)</Label>
+								<Input
+									id="grossWeight"
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											grossWeight: Number.parseFloat(e.target.value) || 0,
+										})
+									}
+									step="0.01"
+									type="number"
+									value={formData.grossWeight}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="netWeight">Net Weight (g)</Label>
+								<Input
+									id="netWeight"
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											netWeight: Number.parseFloat(e.target.value) || 0,
+										})
+									}
+									step="0.01"
+									type="number"
+									value={formData.netWeight}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="stoneWeight">Stone Weight (g)</Label>
+								<Input
+									id="stoneWeight"
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											stoneWeight: Number.parseFloat(e.target.value) || 0,
+										})
+									}
+									step="0.01"
+									type="number"
+									value={formData.stoneWeight}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="makingCharge">Making Charge (₹)</Label>
+								<Input
+									id="makingCharge"
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											makingCharge: Number.parseFloat(e.target.value) || 0,
+										})
+									}
+									type="number"
+									value={formData.makingCharge}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="wastagePercentage">Wastage (%)</Label>
+								<Input
+									id="wastagePercentage"
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											wastagePercentage: Number.parseFloat(e.target.value) || 0,
+										})
+									}
+									step="0.1"
+									type="number"
+									value={formData.wastagePercentage}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="gst">GST (%)</Label>
+								<Input
+									id="gst"
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											gst: Number.parseFloat(e.target.value) || 0,
+										})
+									}
+									step="0.1"
+									type="number"
+									value={formData.gst}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="discountPercentage">Discount (%)</Label>
+								<Input
+									id="discountPercentage"
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											discountPercentage:
+												Number.parseFloat(e.target.value) || 0,
+										})
+									}
+									step="0.1"
+									type="number"
+									value={formData.discountPercentage}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="discountType">Discount Type</Label>
+								<Select
+									onValueChange={(value) =>
+										setFormData({
+											...formData,
+											discountType: value || "overall",
+										})
+									}
+									value={formData.discountType}
+								>
+									<SelectTrigger id="discountType">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="overall">Overall</SelectItem>
+										<SelectItem value="metal">Metal Only</SelectItem>
+										<SelectItem value="making">Making Only</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>

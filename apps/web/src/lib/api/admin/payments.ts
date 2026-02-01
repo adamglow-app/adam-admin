@@ -1,5 +1,10 @@
 import { api } from "@/lib/axios";
-import type { BaseResponse, RefundHistory, RefundStatus } from "../types";
+import type {
+	BaseResponse,
+	RefundHistory,
+	RefundListResponse,
+	RefundStatus,
+} from "../types";
 
 export const adminPaymentsApi = {
 	initiateRefund: async (
@@ -23,6 +28,15 @@ export const adminPaymentsApi = {
 	getRefundHistory: async () => {
 		const response = await api.get<BaseResponse<RefundHistory[]>>(
 			"/api/admin/payments/refunds"
+		);
+		return response.data.data;
+	},
+
+	// New API integration for refund list
+	getRefundList: async (params?: { skip?: number; limit?: number }) => {
+		const response = await api.get<BaseResponse<RefundListResponse>>(
+			"/api/admin/analytics/refunds",
+			{ params }
 		);
 		return response.data.data;
 	},

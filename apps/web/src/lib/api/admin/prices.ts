@@ -13,7 +13,8 @@ function normalizeMetalPrice(data: MetalPrice): MetalPrice {
 		pricePerGram: data.pricePerGram ?? data.price_per_gram,
 		metalType: data.metalType ?? data.metal_type,
 		// Use updated_at if available, otherwise fall back to created_at, then date
-		timestamp: data.updated_at ?? data.created_at ?? data.timestamp ?? data.date,
+		timestamp:
+			data.updated_at ?? data.created_at ?? data.timestamp ?? data.date,
 	};
 }
 
@@ -66,18 +67,14 @@ export const adminPricesApi = {
 		}));
 	},
 
-	update: async (data: {
-		metalType: string;
-		buyPrice: number;
-		sellPrice: number;
-	}) => {
+	update: async (data: { metalType: string; price: number }) => {
 		const response = await api.post<BaseResponse<MetalPrice>>(
 			"/api/admin/prices/",
 			null,
 			{
 				params: {
 					metal_type: data.metalType,
-					price_per_gram: data.sellPrice,
+					price_per_gram: data.price,
 				},
 			}
 		);

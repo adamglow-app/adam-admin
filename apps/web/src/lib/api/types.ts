@@ -56,13 +56,20 @@ export interface Product {
 	quantity?: number;
 	photoUrls?: string[];
 	certificateUrl?: string;
-	grossWeight?: string;
-	netWeight?: string;
-	stoneWeight?: string;
-	makingCharge?: string;
-	gst?: string;
-	discountPercentage?: string;
+	grossWeight?: number | string;
+	netWeight?: number | string;
+	stoneWeight?: number | string;
+	makingCharge?: number | string;
+	gst?: number | string;
+	discountPercentage?: number | string;
 	discountType?: string;
+	// Calculated fields (new)
+	basePrice?: string;
+	metalPrice?: string;
+	totalPrice?: string;
+	discountAmount?: string;
+	finalPrice?: string;
+	wastagePercentage?: number | string;
 }
 
 export interface ProductListResponse {
@@ -133,6 +140,84 @@ export interface RefundStatus {
 	status: "pending" | "completed" | "failed";
 	amount: number;
 	createdAt: string;
+}
+
+export interface RefundListItem {
+	refund_id: string;
+	order_id: string;
+	order_number: string;
+	razorpay_payment_id: string;
+	razorpay_refund_id: string;
+	refund_amount: number;
+	refund_status: string;
+	refunded_at: string;
+	order_amount: number;
+	order_status: string;
+	user_id: string;
+}
+
+export interface RefundListResponse {
+	refunds: RefundListItem[];
+	total: number;
+	total_refund_amount: number;
+	skip: number;
+	limit: number;
+}
+
+export interface AnalyticsSummary {
+	total_ornament_orders: number;
+	total_gold_sold_grams: number;
+	total_silver_sold_grams: number;
+	total_revenue: number;
+}
+
+export interface AnalyticsDashboardResponse {
+	analytics: AnalyticsSummary;
+	refunds: RefundListResponse;
+}
+
+export interface Order {
+	id: string;
+	userId: string;
+	userEmail: string;
+	metalType: "gold" | "silver";
+	quantity: number;
+	pricePerGram: number;
+	totalAmount: number;
+	status: "pending" | "completed" | "cancelled" | "refunded";
+	createdAt: string;
+}
+
+export interface OrderItem {
+	id: string;
+	userId: string;
+	productId: string;
+	orderType: string;
+	orderNumber: string;
+	walletPaymentAmount: string;
+	razorpayPaymentAmount: string;
+	amount: string;
+	currency: string;
+	taxAmount: string;
+	discountAmount: string;
+	productQuantity: number;
+	productPrice: string;
+	metalType: string;
+	metalGrams: string;
+	metalPricePerGram: string;
+	status: string;
+	notes: string;
+	orderMetadata: Record<string, string>;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface OrderListResponse {
+	orders: OrderItem[];
+	total: number;
+	skip: number;
+	limit: number;
+	metalType?: string;
 }
 
 export interface ReferralConfig {

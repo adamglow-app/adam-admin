@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { adminAnalyticsApi } from "@/lib/api/admin/analytics";
 import { adminPricesApi } from "@/lib/api/admin/prices";
 import { adminProductsApi } from "@/lib/api/admin/products";
 import { adminUsersApi } from "@/lib/api/admin/users";
@@ -194,11 +195,15 @@ export default function DashboardPage() {
 		retry: false,
 	});
 
-	const isLoading =
-		usersLoading || productsLoading || goldLoading || silverLoading;
+	const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+		queryKey: ["admin-analytics"],
+		queryFn: () => adminAnalyticsApi.getDashboard({ refund_limit: 50 }),
+		retry: false,
+	});
 
 	const goldPrice = goldPriceData?.pricePerGram;
 	const silverPrice = silverPriceData?.pricePerGram;
+	const analytics = analyticsData?.analytics;
 
 	return (
 		<div className="space-y-8">
@@ -292,33 +297,45 @@ export default function DashboardPage() {
 						icon={Wallet}
 						iconBg="bg-emerald-50"
 						iconColor="text-emerald-600"
-						isLoading={isLoading}
+						isLoading={analyticsLoading}
 						title="Revenue"
-						value="₹1.24L"
+						value={
+							analytics?.total_revenue
+								? `₹${Number(analytics.total_revenue).toLocaleString()}`
+								: "₹0"
+						}
 					/>
 					<MetricCard
 						icon={Package}
 						iconBg="bg-orange-50"
 						iconColor="text-orange-600"
-						isLoading={isLoading}
+						isLoading={analyticsLoading}
 						title="Orders"
-						value="23"
-					/>
-					<MetricCard
-						icon={Users}
-						iconBg="bg-teal-50"
-						iconColor="text-teal-600"
-						isLoading={isLoading}
-						title="Referrals"
-						value="156"
+						value={analytics?.total_ornament_orders?.toLocaleString() ?? "0"}
 					/>
 					<MetricCard
 						icon={BarChart3}
 						iconBg="bg-yellow-50"
 						iconColor="text-yellow-600"
-						isLoading={isLoading}
+						isLoading={analyticsLoading}
 						title="Gold Sold"
-						value="2.4 kg"
+						value={
+							analytics?.total_gold_sold_grams
+								? `${Number(analytics.total_gold_sold_grams).toFixed(2)} g`
+								: "0 g"
+						}
+					/>
+					<MetricCard
+						icon={TrendingUp}
+						iconBg="bg-slate-100"
+						iconColor="text-slate-600"
+						isLoading={analyticsLoading}
+						title="Silver Sold"
+						value={
+							analytics?.total_silver_sold_grams
+								? `${Number(analytics.total_silver_sold_grams).toFixed(2)} g`
+								: "0 g"
+						}
 					/>
 				</div>
 			</div>

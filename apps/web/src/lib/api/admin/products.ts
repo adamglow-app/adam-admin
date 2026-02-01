@@ -32,25 +32,28 @@ function createProductFormData(
 ): FormData {
 	const formData = new FormData();
 
-	// All fields must be present for the API (even if empty)
 	// Required fields
 	formData.append("name", data.name ?? "");
-	formData.append("price", String(data.price ?? 0));
 	formData.append("grams", String(data.weight ?? 0));
 	formData.append("category", data.category ?? "");
 	formData.append("product_code", data.sku ?? "");
 	formData.append("metal_purity", data.purity ?? "999");
 	formData.append("metal_type", data.metalType ?? "gold");
+
+	// Weight and quantity fields
+	formData.append("gross_weight", String(data.grossWeight ?? data.weight ?? 0));
+	formData.append("net_weight", String(data.netWeight ?? data.weight ?? 0));
+	formData.append("stone_weight", String(data.stoneWeight ?? 0));
 	formData.append("quantity", String(data.stock ?? 0));
 
-	// Optional fields with defaults
-	formData.append("discount_percentage", "0");
-	formData.append("discount_type", "overall");
-	formData.append("gross_weight", String(data.weight ?? 0));
-	formData.append("net_weight", String(data.weight ?? 0));
-	formData.append("stone_weight", "0");
-	formData.append("making_charge", "0");
-	formData.append("gst", "0");
+	// Price-related fields
+	formData.append("wastage_percentage", String(data.wastagePercentage ?? 0));
+	formData.append("making_charge", String(data.makingCharge ?? 0));
+	formData.append("gst", String(data.gst ?? 0));
+
+	// Discount fields
+	formData.append("discount_percentage", String(data.discountPercentage ?? 0));
+	formData.append("discount_type", data.discountType ?? "overall");
 
 	// Handle photo files - required by API
 	if (photoFiles && photoFiles.length > 0) {

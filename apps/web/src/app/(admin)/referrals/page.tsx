@@ -54,7 +54,7 @@ function ReferralCard({
 			const percentage =
 				typeof config.rewardPercentage === "string"
 					? config.rewardPercentage
-					: config.rewardPercentage?.toString() ?? "";
+					: (config.rewardPercentage?.toString() ?? "");
 			setRewardPercentage(percentage);
 		}
 	}, [config]);

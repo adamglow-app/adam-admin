@@ -7,6 +7,7 @@ import {
 	LayoutDashboard,
 	LogOut,
 	Package,
+	ShoppingCart,
 	TrendingUp,
 	Users,
 } from "lucide-react";
@@ -38,6 +39,12 @@ const navigation: Array<{
 		href: "/products",
 		icon: Package,
 		description: "Product catalog",
+	},
+	{
+		name: "Orders",
+		href: "/orders",
+		icon: ShoppingCart,
+		description: "Order management",
 	},
 	{
 		name: "Pricing",
