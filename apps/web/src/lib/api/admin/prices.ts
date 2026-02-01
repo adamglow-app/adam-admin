@@ -1,5 +1,20 @@
 import { api } from "@/lib/axios";
-import type { BaseResponse, MetalPrice, PriceHistoryEntry } from "../types";
+import type {
+	BaseResponse,
+	MetalPrice,
+	PriceHistoryEntry,
+	PriceHistoryResponse,
+} from "../types";
+
+// Helper to normalize API response to camelCase
+function normalizeMetalPrice(data: MetalPrice): MetalPrice {
+	return {
+		...data,
+		pricePerGram: data.pricePerGram ?? data.price_per_gram,
+		metalType: data.metalType ?? data.metal_type,
+		timestamp: data.timestamp ?? data.date,
+	};
+}
 
 export const adminPricesApi = {
 	getGoldPrice: async () => {
@@ -7,7 +22,7 @@ export const adminPricesApi = {
 			"/api/admin/prices/latest",
 			{ params: { metal_type: "gold" } }
 		);
-		return response.data.data;
+		return normalizeMetalPrice(response.data.data);
 	},
 
 	getSilverPrice: async () => {
@@ -15,7 +30,7 @@ export const adminPricesApi = {
 			"/api/admin/prices/latest",
 			{ params: { metal_type: "silver" } }
 		);
-		return response.data.data;
+		return normalizeMetalPrice(response.data.data);
 	},
 
 	getLatest: async () => {
@@ -31,7 +46,7 @@ export const adminPricesApi = {
 		startDate?: string;
 		endDate?: string;
 	}) => {
-		const response = await api.get<BaseResponse<PriceHistoryEntry[]>>(
+		const response = await api.get<BaseResponse<PriceHistoryResponse>>(
 			"/api/admin/prices/history",
 			{
 				params: {
@@ -41,7 +56,13 @@ export const adminPricesApi = {
 				},
 			}
 		);
-		return response.data.data;
+		// API returns { metal_type: string, data: [...] }, we need to extract and add metalType to each entry
+		const historyData = response.data.data;
+		const metalType = historyData.metal_type;
+		return historyData.data.map((entry: PriceHistoryEntry) => ({
+			...entry,
+			metalType,
+		}));
 	},
 
 	update: async (data: {

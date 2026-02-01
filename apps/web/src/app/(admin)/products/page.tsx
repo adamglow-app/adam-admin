@@ -261,43 +261,28 @@ export default function ProductsPage() {
 
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		// Create FormData for file uploads
-		const submitData = new FormData();
 
-		// Add product fields
-		submitData.append("name", formData.name);
-		submitData.append("description", formData.description);
-		submitData.append("sku", formData.sku);
-		submitData.append("price", String(formData.price));
-		submitData.append("metalType", formData.metalType);
-		submitData.append("category", formData.category);
-		submitData.append("subCategory", formData.subCategory);
-		submitData.append("weight", String(formData.weight));
-		submitData.append("purity", formData.purity);
-		submitData.append("stock", String(formData.stock));
-		submitData.append("status", formData.status);
-
-		// Add image files
-		for (const file of selectedImageFiles) {
-			submitData.append("photos", file);
-		}
-
-		// Add certificate file if selected
-		if (selectedCertificateFile) {
-			submitData.append("certificate", selectedCertificateFile);
-		}
-
-		// Create API call with FormData
+		// Create API call with FormData - pass files to API
 		const submitMutation = new Promise<Product>((resolve, reject) => {
 			if (editingProduct) {
 				adminProductsApi
-					.update(editingProduct.id, formData)
+					.update(
+						editingProduct.id,
+						formData,
+						selectedImageFiles.length > 0 ? selectedImageFiles : undefined,
+						selectedCertificateFile ?? undefined
+					)
 					.then(resolve)
 					.catch(reject);
 			} else {
-				// For create, we need to send FormData directly
-				// For now, send regular formData - file handling should be done server-side
-				adminProductsApi.create(formData).then(resolve).catch(reject);
+				adminProductsApi
+					.create(
+						formData,
+						selectedImageFiles.length > 0 ? selectedImageFiles : undefined,
+						selectedCertificateFile ?? undefined
+					)
+					.then(resolve)
+					.catch(reject);
 			}
 		});
 

@@ -59,17 +59,25 @@ export interface ProductListResponse {
 
 export interface MetalPrice {
 	id: string;
-	metalType: "gold" | "silver";
+	metalType?: "gold" | "silver";
+	metal_type?: "gold" | "silver";
 	buyPrice?: number;
 	sellPrice?: number;
 	pricePerGram?: number;
+	price_per_gram?: number;
 	timestamp?: string;
+	date?: string;
 }
 
 export interface PriceHistoryEntry {
 	date: string;
 	price: number;
 	metalType?: string;
+}
+
+export interface PriceHistoryResponse {
+	metal_type: string;
+	data: PriceHistoryEntry[];
 }
 
 export interface Order {
