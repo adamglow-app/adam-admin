@@ -113,7 +113,9 @@ function PriceCard({
 				<div className="flex items-start justify-between">
 					<div className="space-y-2">
 						<div className="flex items-center gap-2">
-							<p className="font-medium text-adam-grey text-sm">{metal} Price</p>
+							<p className="font-medium text-adam-grey text-sm">
+								{metal} Price
+							</p>
 							<Badge
 								className="border-0 bg-adam-scaffold-background px-2 py-0.5 font-normal text-[10px] text-adam-trailing"
 								variant="outline"
@@ -159,7 +161,7 @@ function PriceCard({
 
 				{/* Last updated */}
 				{price?.updatedAt && (
-					<div className="mt-4 flex items-center gap-1.5 border-t border-adam-border/50 pt-4 text-xs text-adam-trailing">
+					<div className="mt-4 flex items-center gap-1.5 border-adam-border/50 border-t pt-4 text-adam-trailing text-xs">
 						<RefreshCw className="h-3 w-3" />
 						<span>
 							Updated{" "}
@@ -311,19 +313,21 @@ function HistoryTableSkeleton() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{["hskel-1", "hskel-2", "hskel-3", "hskel-4", "hskel-5"].map((key) => (
-						<TableRow className="border-adam-border/30" key={key}>
-							<TableCell>
-								<Skeleton className="h-4 w-28" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-6 w-16 rounded-full" />
-							</TableCell>
-							<TableCell className="text-right">
-								<Skeleton className="ml-auto h-4 w-24" />
-							</TableCell>
-						</TableRow>
-					))}
+					{["hskel-1", "hskel-2", "hskel-3", "hskel-4", "hskel-5"].map(
+						(key) => (
+							<TableRow className="border-adam-border/30" key={key}>
+								<TableCell>
+									<Skeleton className="h-4 w-28" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-6 w-16 rounded-full" />
+								</TableCell>
+								<TableCell className="text-right">
+									<Skeleton className="ml-auto h-4 w-24" />
+								</TableCell>
+							</TableRow>
+						)
+					)}
 				</TableBody>
 			</Table>
 		</Card>

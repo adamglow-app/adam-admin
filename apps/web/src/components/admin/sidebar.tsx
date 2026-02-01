@@ -63,9 +63,9 @@ export function Sidebar() {
 	const pathname = usePathname();
 
 	return (
-		<aside className="flex h-screen w-[280px] flex-col border-r border-adam-border/50 bg-white">
+		<aside className="flex h-screen w-[280px] flex-col border-adam-border/50 border-r bg-white">
 			{/* Logo Section */}
-			<div className="flex h-16 items-center gap-3 border-b border-adam-border/50 px-6">
+			<div className="flex h-16 items-center gap-3 border-adam-border/50 border-b px-6">
 				<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-adam-secondary to-adam-gradient-bottom shadow-sm">
 					<span className="font-bold text-sm text-white">A</span>
 				</div>
@@ -80,9 +80,9 @@ export function Sidebar() {
 			</div>
 
 			{/* Navigation */}
-			<nav className="flex-1 overflow-y-auto px-3 py-4 scrollbar-thin">
+			<nav className="scrollbar-thin flex-1 overflow-y-auto px-3 py-4">
 				<div className="mb-2 px-3">
-					<span className="text-[10px] font-semibold uppercase tracking-wider text-adam-trailing">
+					<span className="font-semibold text-[10px] text-adam-trailing uppercase tracking-wider">
 						Main Menu
 					</span>
 				</div>
@@ -152,12 +152,12 @@ export function Sidebar() {
 			</nav>
 
 			{/* Bottom Section */}
-			<div className="border-t border-adam-border/50 p-3">
+			<div className="border-adam-border/50 border-t p-3">
 				{/* User Profile & Logout */}
 				<div className="flex items-center justify-between rounded-xl bg-adam-scaffold-background p-3">
 					<div className="flex items-center gap-3">
 						<div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-adam-secondary to-adam-gradient-bottom">
-							<span className="font-semibold text-xs text-white">AD</span>
+							<span className="font-semibold text-white text-xs">AD</span>
 						</div>
 						<div className="flex flex-col">
 							<span className="font-medium text-adam-tinted-black text-sm">

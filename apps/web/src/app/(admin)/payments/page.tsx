@@ -88,9 +88,7 @@ function EmptyRefunds() {
 				<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-adam-scaffold-background">
 					<CreditCard className="h-8 w-8 text-adam-trailing" />
 				</div>
-				<h3 className="font-semibold text-adam-tinted-black">
-					No refunds yet
-				</h3>
+				<h3 className="font-semibold text-adam-tinted-black">No refunds yet</h3>
 				<p className="mt-1 text-center text-adam-grey text-sm">
 					Refund transactions will appear here once processed
 				</p>

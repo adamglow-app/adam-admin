@@ -1,15 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	Coins,
-	Gift,
-	Info,
-	Save,
-	Sparkles,
-	Users,
-	Wallet,
-} from "lucide-react";
+import { Coins, Gift, Info, Save, Sparkles, Users, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";

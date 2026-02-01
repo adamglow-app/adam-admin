@@ -150,7 +150,7 @@ function QuickActionCard({
 					<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
 				</div>
 			</div>
-			<div className="absolute right-0 top-0 h-32 w-32 -translate-y-8 translate-x-8 rounded-full bg-white/10" />
+			<div className="absolute top-0 right-0 h-32 w-32 translate-x-8 -translate-y-8 rounded-full bg-white/10" />
 			<div className="absolute bottom-0 left-0 h-24 w-24 -translate-x-6 translate-y-6 rounded-full bg-white/10" />
 		</Link>
 	);

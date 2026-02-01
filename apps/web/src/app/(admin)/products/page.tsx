@@ -530,7 +530,6 @@ export default function ProductsPage() {
 		buttonText = "Create";
 	}
 
-
 	if (error) {
 		return (
 			<div className="space-y-6">
@@ -538,9 +537,7 @@ export default function ProductsPage() {
 					<h1 className="font-bold text-2xl text-adam-tinted-black tracking-tight">
 						Products
 					</h1>
-					<p className="text-adam-grey text-sm">
-						Manage your product catalog
-					</p>
+					<p className="text-adam-grey text-sm">Manage your product catalog</p>
 				</div>
 				<Card className="border-0 border-l-4 border-l-red-500 bg-red-50 shadow-sm">
 					<CardContent className="py-4">
@@ -569,7 +566,7 @@ export default function ProductsPage() {
 			{/* Stats & Search Bar */}
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div className="relative max-w-md flex-1">
-					<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-adam-trailing" />
+					<Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-adam-trailing" />
 					<Input
 						className="h-11 border-adam-border bg-white pl-10 shadow-sm focus:border-adam-secondary focus:ring-adam-secondary/20"
 						onChange={(e) => setSearch(e.target.value)}

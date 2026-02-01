@@ -9,8 +9,7 @@ export function initSuperTokens() {
 		SuperTokens.init({
 			appInfo: {
 				appName: "adam-admin",
-				apiDomain:
-					process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+				apiDomain: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
 				websiteDomain:
 					process.env.NEXT_PUBLIC_WEBSITE_URL ?? "http://localhost:3001",
 				apiBasePath: "/auth",
@@ -26,7 +25,10 @@ export function initSuperTokens() {
 				}),
 				Session.init({
 					onHandleEvent: (context) => {
-						if (context.action === "SIGN_OUT" && typeof window !== "undefined") {
+						if (
+							context.action === "SIGN_OUT" &&
+							typeof window !== "undefined"
+						) {
 							window.location.href = "/auth";
 						}
 					},
