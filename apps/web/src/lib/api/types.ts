@@ -34,20 +34,35 @@ export interface BaseResponse<T> {
 export interface Product {
 	id: string;
 	name: string;
-	description: string;
-	sku: string;
-	price: number;
-	metalType: "gold" | "silver";
+	description?: string;
+	// Frontend fields (normalized)
+	sku?: string;
+	price: number | string;
+	metalType?: "gold" | "silver";
 	category: string;
 	subCategory?: string;
-	weight: number;
-	purity: string;
-	stock: number;
-	status: "active" | "inactive" | "out_of_stock";
-	photos: string[];
+	weight?: number | string;
+	purity?: string;
+	stock?: number;
+	status?: "active" | "inactive" | "out_of_stock";
+	photos?: string[];
 	certificate?: string;
-	createdAt: string;
-	updatedAt: string;
+	createdAt?: string;
+	updatedAt?: string;
+	// API fields (snake_case)
+	productCode?: string;
+	metalPurity?: string;
+	grams?: string;
+	quantity?: number;
+	photoUrls?: string[];
+	certificateUrl?: string;
+	grossWeight?: string;
+	netWeight?: string;
+	stoneWeight?: string;
+	makingCharge?: string;
+	gst?: string;
+	discountPercentage?: string;
+	discountType?: string;
 }
 
 export interface ProductListResponse {

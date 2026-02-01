@@ -241,20 +241,28 @@ export default function ProductsPage() {
 
 	function handleEdit(product: Product) {
 		setEditingProduct(product);
+		const price =
+			typeof product.price === "string"
+				? Number.parseFloat(product.price)
+				: product.price;
+		const weight =
+			typeof product.weight === "string"
+				? Number.parseFloat(product.weight)
+				: product.weight;
 		setFormData({
 			name: product.name,
-			description: product.description,
-			sku: product.sku,
-			price: product.price,
-			metalType: product.metalType,
+			description: product.description ?? "",
+			sku: product.sku ?? "",
+			price: price ?? 0,
+			metalType: product.metalType ?? "gold",
 			category: product.category,
-			subCategory: product.subCategory || "",
-			weight: product.weight,
-			purity: product.purity || "999",
-			stock: product.stock,
-			status: product.status,
-			photos: product.photos || [],
-			certificate: product.certificate || "",
+			subCategory: product.subCategory ?? "",
+			weight: weight ?? 0,
+			purity: product.purity ?? "999",
+			stock: product.stock ?? 0,
+			status: product.status ?? "active",
+			photos: product.photos ?? [],
+			certificate: product.certificate ?? "",
 		});
 		setIsDialogOpen(true);
 	}
@@ -499,7 +507,7 @@ export default function ProductsPage() {
 		data?.products.filter(
 			(product) =>
 				product.name.toLowerCase().includes(search.toLowerCase()) ||
-				product.sku.toLowerCase().includes(search.toLowerCase()) ||
+				(product.sku ?? "").toLowerCase().includes(search.toLowerCase()) ||
 				product.category.toLowerCase().includes(search.toLowerCase())
 		) ?? [];
 
@@ -660,11 +668,13 @@ export default function ProductsPage() {
 									</TableCell>
 									<TableCell>
 										<Badge
-											className={`border font-medium text-xs ${getMetalStyles(product.metalType)}`}
+											className={`border font-medium text-xs ${getMetalStyles(product.metalType ?? "gold")}`}
 											variant="outline"
 										>
-											{product.metalType.charAt(0).toUpperCase() +
-												product.metalType.slice(1)}
+											{product.metalType
+												? product.metalType.charAt(0).toUpperCase() +
+													product.metalType.slice(1)
+												: "Gold"}
 										</Badge>
 									</TableCell>
 									<TableCell className="text-right text-sm">
@@ -674,24 +684,28 @@ export default function ProductsPage() {
 										<span className="text-adam-grey"> g</span>
 									</TableCell>
 									<TableCell className="text-right text-sm">
-										<span className={getStockColor(product.stock)}>
-											{product.stock}
+										<span className={getStockColor(product.stock ?? 0)}>
+											{product.stock ?? 0}
 										</span>
 									</TableCell>
 									<TableCell className="text-right">
 										<span className="font-semibold text-adam-tinted-black">
-											₹{product.price.toLocaleString()}
+											₹
+											{(typeof product.price === "string"
+												? Number.parseFloat(product.price)
+												: product.price
+											).toLocaleString()}
 										</span>
 									</TableCell>
 									<TableCell>
 										<Badge
-											className={`border font-medium text-xs ${getStatusStyles(product.status)}`}
+											className={`border font-medium text-xs ${getStatusStyles(product.status ?? "active")}`}
 											variant="outline"
 										>
 											{product.status === "out_of_stock"
 												? "Out of Stock"
-												: product.status.charAt(0).toUpperCase() +
-													product.status.slice(1)}
+												: (product.status ?? "active").charAt(0).toUpperCase() +
+													(product.status ?? "active").slice(1)}
 										</Badge>
 									</TableCell>
 									<TableCell>

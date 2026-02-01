@@ -1,6 +1,29 @@
 import { api } from "@/lib/axios";
 import type { BaseResponse, Product, ProductListResponse } from "../types";
 
+// Helper to normalize API response to frontend format
+function normalizeProduct(data: Product): Product {
+	return {
+		...data,
+		// Normalize price to number
+		price:
+			typeof data.price === "string"
+				? Number.parseFloat(data.price)
+				: data.price,
+		// Map API fields to frontend fields
+		sku: data.sku ?? data.productCode,
+		purity: data.purity ?? data.metalPurity,
+		weight:
+			data.weight ?? (data.grams ? Number.parseFloat(data.grams) : undefined),
+		stock: data.stock ?? data.quantity,
+		photos: data.photos ?? data.photoUrls ?? [],
+		certificate: data.certificate ?? data.certificateUrl,
+		// Default status to "active" if not provided by API
+		status: data.status ?? "active",
+		metalType: data.metalType as "gold" | "silver",
+	};
+}
+
 // Helper to create FormData from product data
 function createProductFormData(
 	data: Partial<Product>,
@@ -68,14 +91,18 @@ export const adminProductsApi = {
 			"/api/admin/products/",
 			{ params }
 		);
-		return response.data.data;
+		const data = response.data.data;
+		return {
+			...data,
+			products: data.products.map(normalizeProduct),
+		};
 	},
 
 	getById: async (productId: string) => {
 		const response = await api.get<BaseResponse<Product>>(
 			`/api/admin/products/${productId}`
 		);
-		return response.data.data;
+		return normalizeProduct(response.data.data);
 	},
 
 	create: async (
@@ -93,7 +120,7 @@ export const adminProductsApi = {
 				},
 			}
 		);
-		return response.data.data;
+		return normalizeProduct(response.data.data);
 	},
 
 	update: async (
@@ -112,7 +139,7 @@ export const adminProductsApi = {
 				},
 			}
 		);
-		return response.data.data;
+		return normalizeProduct(response.data.data);
 	},
 
 	delete: async (productId: string) => {
