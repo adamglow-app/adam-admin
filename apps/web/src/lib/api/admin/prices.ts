@@ -12,7 +12,8 @@ function normalizeMetalPrice(data: MetalPrice): MetalPrice {
 		...data,
 		pricePerGram: data.pricePerGram ?? data.price_per_gram,
 		metalType: data.metalType ?? data.metal_type,
-		timestamp: data.timestamp ?? data.date,
+		// Use updated_at if available, otherwise fall back to created_at, then date
+		timestamp: data.updated_at ?? data.created_at ?? data.timestamp ?? data.date,
 	};
 }
 

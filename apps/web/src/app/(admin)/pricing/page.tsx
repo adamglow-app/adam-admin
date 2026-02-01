@@ -2,12 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-	ArrowDown,
-	ArrowUp,
 	BarChart3,
 	Coins,
 	History,
-	Minus,
 	RefreshCw,
 	Sparkles,
 	TrendingUp,
@@ -52,51 +49,11 @@ function PriceCardSkeleton() {
 function PriceCard({
 	metal,
 	price,
-	previousPrice,
 }: {
 	metal: string;
 	price?: MetalPrice;
-	previousPrice?: number;
 }) {
 	const isGold = metal === "Gold";
-	const isUp =
-		price &&
-		previousPrice &&
-		price.pricePerGram &&
-		price.pricePerGram > previousPrice;
-	const isDown =
-		price &&
-		previousPrice &&
-		price.pricePerGram &&
-		price.pricePerGram < previousPrice;
-	const priceChange =
-		price?.pricePerGram && previousPrice
-			? price.pricePerGram - previousPrice
-			: 0;
-	const priceChangePercent =
-		previousPrice && price?.pricePerGram
-			? ((priceChange / previousPrice) * 100).toFixed(2)
-			: "0";
-
-	function getTrendStyles() {
-		if (isUp) {
-			return "border-emerald-200 bg-emerald-50 text-emerald-600";
-		}
-		if (isDown) {
-			return "border-red-200 bg-red-50 text-red-600";
-		}
-		return "border-gray-200 bg-gray-50 text-gray-600";
-	}
-
-	function getTrendIcon() {
-		if (isUp) {
-			return <ArrowUp className="h-3.5 w-3.5" />;
-		}
-		if (isDown) {
-			return <ArrowDown className="h-3.5 w-3.5" />;
-		}
-		return <Minus className="h-3.5 w-3.5" />;
-	}
 
 	return (
 		<Card className="group relative overflow-hidden border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg">
@@ -128,21 +85,6 @@ function PriceCard({
 								? `₹${price.pricePerGram.toLocaleString("en-IN")}`
 								: "---"}
 						</p>
-						{price && previousPrice && (
-							<div
-								className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 ${getTrendStyles()}`}
-							>
-								{getTrendIcon()}
-								<span className="font-semibold text-xs">
-									₹{Math.abs(priceChange).toFixed(2)}
-								</span>
-								<span className="text-[10px] opacity-80">
-									({isUp && "+"}
-									{isDown && "-"}
-									{priceChangePercent}%)
-								</span>
-							</div>
-						)}
 					</div>
 					<div
 						className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${
@@ -415,13 +357,25 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 									<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-adam-scaffold-background">
 										<History className="h-4 w-4 text-adam-trailing" />
 									</div>
-									<span className="font-medium text-adam-tinted-black text-sm">
-										{new Date(entry.date).toLocaleDateString("en-IN", {
-											day: "numeric",
-											month: "short",
-											year: "numeric",
-										})}
-									</span>
+									<div className="flex flex-col">
+										<span className="font-medium text-adam-tinted-black text-sm">
+											{new Date(
+												entry.updated_at ?? entry.created_at ?? entry.date
+											).toLocaleDateString("en-IN", {
+												day: "numeric",
+												month: "short",
+												year: "numeric",
+											})}
+										</span>
+										<span className="text-adam-trailing text-xs">
+											{new Date(
+												entry.updated_at ?? entry.created_at ?? entry.date
+											).toLocaleTimeString("en-IN", {
+												hour: "2-digit",
+												minute: "2-digit",
+											})}
+										</span>
+									</div>
 								</div>
 							</TableCell>
 							<TableCell>
@@ -490,22 +444,8 @@ export default function PricingPage() {
 					</>
 				) : (
 					<>
-						<PriceCard
-							metal="Gold"
-							previousPrice={
-								goldPrice?.pricePerGram ? goldPrice.pricePerGram - 5 : undefined
-							}
-							price={goldPrice}
-						/>
-						<PriceCard
-							metal="Silver"
-							previousPrice={
-								silverPrice?.pricePerGram
-									? silverPrice.pricePerGram - 0.5
-									: undefined
-							}
-							price={silverPrice}
-						/>
+						<PriceCard metal="Gold" price={goldPrice} />
+						<PriceCard metal="Silver" price={silverPrice} />
 					</>
 				)}
 				<UpdatePriceCard />

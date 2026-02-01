@@ -67,12 +67,16 @@ export interface MetalPrice {
 	price_per_gram?: number;
 	timestamp?: string;
 	date?: string;
+	created_at?: string;
+	updated_at?: string;
 }
 
 export interface PriceHistoryEntry {
 	date: string;
 	price: number;
 	metalType?: string;
+	created_at?: string;
+	updated_at?: string;
 }
 
 export interface PriceHistoryResponse {

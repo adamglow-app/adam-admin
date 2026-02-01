@@ -2,9 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
-	ArrowDownRight,
 	ArrowRight,
-	ArrowUpRight,
 	BarChart3,
 	Coins,
 	CreditCard,
@@ -19,26 +17,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { adminPricesApi } from "@/lib/api/admin/prices";
 import { adminProductsApi } from "@/lib/api/admin/products";
 import { adminUsersApi } from "@/lib/api/admin/users";
-
-function getTrendStyles(trend: "up" | "down" | "neutral") {
-	if (trend === "up") {
-		return "bg-emerald-50 text-emerald-600";
-	}
-	if (trend === "down") {
-		return "bg-red-50 text-red-600";
-	}
-	return "bg-gray-50 text-gray-600";
-}
-
-function getTrendIcon(trend: "up" | "down" | "neutral") {
-	if (trend === "up") {
-		return <ArrowUpRight className="h-3 w-3" />;
-	}
-	if (trend === "down") {
-		return <ArrowDownRight className="h-3 w-3" />;
-	}
-	return null;
-}
 
 function StatCardSkeleton() {
 	return (
@@ -64,8 +42,6 @@ function StatCard({
 	icon: Icon,
 	iconBg,
 	iconColor,
-	trend,
-	trendValue,
 	isLoading,
 }: {
 	title: string;
@@ -74,8 +50,6 @@ function StatCard({
 	icon: React.ComponentType<{ className?: string }>;
 	iconBg: string;
 	iconColor: string;
-	trend?: "up" | "down" | "neutral";
-	trendValue?: string;
 	isLoading: boolean;
 }) {
 	if (isLoading) {
@@ -91,19 +65,9 @@ function StatCard({
 						<p className="font-bold text-3xl text-adam-tinted-black tracking-tight">
 							{value}
 						</p>
-						{(subtitle || trendValue) && (
-							<div className="flex items-center gap-2 pt-1">
-								{trend && trendValue && (
-									<span
-										className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 font-medium text-xs ${getTrendStyles(trend)}`}
-									>
-										{getTrendIcon(trend)}
-										{trendValue}
-									</span>
-								)}
-								{subtitle && (
-									<span className="text-adam-trailing text-xs">{subtitle}</span>
-								)}
+						{subtitle && (
+							<div className="pt-1">
+								<span className="text-adam-trailing text-xs">{subtitle}</span>
 							</div>
 						)}
 					</div>
@@ -257,8 +221,6 @@ export default function DashboardPage() {
 					isLoading={usersLoading}
 					subtitle="Total registered"
 					title="Total Users"
-					trend="up"
-					trendValue="+12%"
 					value={usersData?.total?.toLocaleString() ?? "0"}
 				/>
 				<StatCard
@@ -268,8 +230,6 @@ export default function DashboardPage() {
 					isLoading={productsLoading}
 					subtitle="Active listings"
 					title="Products"
-					trend="neutral"
-					trendValue="0%"
 					value={productsData?.total?.toLocaleString() ?? "0"}
 				/>
 				<StatCard
@@ -279,8 +239,6 @@ export default function DashboardPage() {
 					isLoading={goldLoading}
 					subtitle="per gram (24K)"
 					title="Gold Price"
-					trend="up"
-					trendValue="+0.8%"
 					value={goldPrice ? `₹${goldPrice.toLocaleString()}` : "---"}
 				/>
 				<StatCard
@@ -290,8 +248,6 @@ export default function DashboardPage() {
 					isLoading={silverLoading}
 					subtitle="per gram"
 					title="Silver Price"
-					trend="down"
-					trendValue="-0.3%"
 					value={silverPrice ? `₹${silverPrice.toLocaleString()}` : "---"}
 				/>
 			</div>
