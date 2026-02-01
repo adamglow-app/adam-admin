@@ -160,12 +160,12 @@ function PriceCard({
 				</div>
 
 				{/* Last updated */}
-				{price?.updatedAt && (
+				{price?.timestamp && (
 					<div className="mt-4 flex items-center gap-1.5 border-adam-border/50 border-t pt-4 text-adam-trailing text-xs">
 						<RefreshCw className="h-3 w-3" />
 						<span>
 							Updated{" "}
-							{new Date(price.updatedAt).toLocaleTimeString("en-IN", {
+							{new Date(price.timestamp).toLocaleTimeString("en-IN", {
 								hour: "2-digit",
 								minute: "2-digit",
 							})}

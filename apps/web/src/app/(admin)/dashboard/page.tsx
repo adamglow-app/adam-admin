@@ -134,6 +134,7 @@ function QuickActionCard({
 	return (
 		<Link
 			className="group relative overflow-hidden rounded-2xl p-6 text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+			// @ts-expect-error Next.js 16 href type is complex
 			href={href}
 			style={{
 				background: gradient,
