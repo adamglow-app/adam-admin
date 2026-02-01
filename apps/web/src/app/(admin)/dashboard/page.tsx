@@ -2,47 +2,55 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
-	Activity,
+	ArrowDownRight,
+	ArrowRight,
 	ArrowUpRight,
+	BarChart3,
+	Coins,
 	CreditCard,
-	DollarSign,
 	Package,
 	TrendingUp,
 	Users,
+	Wallet,
 } from "lucide-react";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminPricesApi } from "@/lib/api/admin/prices";
 import { adminProductsApi } from "@/lib/api/admin/products";
 import { adminUsersApi } from "@/lib/api/admin/users";
 
-function AnimatedCard({
-	children,
-	delay,
-}: {
-	children: React.ReactNode;
-	delay: number;
-}) {
-	return (
-		<div
-			className=""
-			style={{ animationDelay: `${delay}ms`, animationFillMode: "both" }}
-		>
-			{children}
-		</div>
-	);
+function getTrendStyles(trend: "up" | "down" | "neutral") {
+	if (trend === "up") {
+		return "bg-emerald-50 text-emerald-600";
+	}
+	if (trend === "down") {
+		return "bg-red-50 text-red-600";
+	}
+	return "bg-gray-50 text-gray-600";
+}
+
+function getTrendIcon(trend: "up" | "down" | "neutral") {
+	if (trend === "up") {
+		return <ArrowUpRight className="h-3 w-3" />;
+	}
+	if (trend === "down") {
+		return <ArrowDownRight className="h-3 w-3" />;
+	}
+	return null;
 }
 
 function StatCardSkeleton() {
 	return (
-		<Card className="border border-adam-border bg-white">
-			<CardContent className="p-4">
-				<div className="flex items-center justify-between">
-					<div className="space-y-2">
-						<Skeleton className="h-3 w-20" />
-						<Skeleton className="h-7 w-16" />
+		<Card className="overflow-hidden border-0 bg-white shadow-sm">
+			<CardContent className="p-6">
+				<div className="flex items-start justify-between">
+					<div className="space-y-3">
+						<Skeleton className="h-4 w-24" />
+						<Skeleton className="h-8 w-20" />
+						<Skeleton className="h-3 w-32" />
 					</div>
-					<Skeleton className="h-10 w-10 rounded-lg" />
+					<Skeleton className="h-12 w-12 rounded-xl" />
 				</div>
 			</CardContent>
 		</Card>
@@ -52,16 +60,22 @@ function StatCardSkeleton() {
 function StatCard({
 	title,
 	value,
+	subtitle,
 	icon: Icon,
+	iconBg,
 	iconColor,
-	delay,
+	trend,
+	trendValue,
 	isLoading,
 }: {
 	title: string;
 	value: string | number;
+	subtitle?: string;
 	icon: React.ComponentType<{ className?: string }>;
+	iconBg: string;
 	iconColor: string;
-	delay: number;
+	trend?: "up" | "down" | "neutral";
+	trendValue?: string;
 	isLoading: boolean;
 }) {
 	if (isLoading) {
@@ -69,25 +83,38 @@ function StatCard({
 	}
 
 	return (
-		<AnimatedCard delay={delay}>
-			<Card className="border border-adam-border bg-white hover:shadow-sm">
-				<CardContent className="p-4">
-					<div className="flex items-center justify-between">
-						<div>
-							<p className="text-adam-grey text-sm">{title}</p>
-							<p className="mt-1 font-semibold text-2xl text-adam-tinted-black">
-								{value}
-							</p>
-						</div>
-						<div
-							className={`flex h-10 w-10 items-center justify-center rounded-lg ${iconColor}`}
-						>
-							<Icon className="h-5 w-5" />
-						</div>
+		<Card className="group overflow-hidden border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+			<CardContent className="p-6">
+				<div className="flex items-start justify-between">
+					<div className="space-y-1">
+						<p className="font-medium text-adam-grey text-sm">{title}</p>
+						<p className="font-bold text-3xl text-adam-tinted-black tracking-tight">
+							{value}
+						</p>
+						{(subtitle || trendValue) && (
+							<div className="flex items-center gap-2 pt-1">
+								{trend && trendValue && (
+									<span
+										className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 font-medium text-xs ${getTrendStyles(trend)}`}
+									>
+										{getTrendIcon(trend)}
+										{trendValue}
+									</span>
+								)}
+								{subtitle && (
+									<span className="text-adam-trailing text-xs">{subtitle}</span>
+								)}
+							</div>
+						)}
 					</div>
-				</CardContent>
-			</Card>
-		</AnimatedCard>
+					<div
+						className={`flex h-12 w-12 items-center justify-center rounded-xl ${iconBg} transition-transform duration-300 group-hover:scale-110`}
+					>
+						<Icon className={`h-6 w-6 ${iconColor}`} />
+					</div>
+				</div>
+			</CardContent>
+		</Card>
 	);
 }
 
@@ -95,37 +122,37 @@ function QuickActionCard({
 	title,
 	description,
 	icon: Icon,
-	iconBg,
-	iconColor,
-	delay,
 	href,
+	gradient,
 }: {
 	title: string;
 	description: string;
 	icon: React.ComponentType<{ className?: string }>;
-	iconBg: string;
-	iconColor: string;
-	delay: number;
 	href: string;
+	gradient: string;
 }) {
 	return (
-		<AnimatedCard delay={delay}>
-			<a
-				className="flex items-center gap-3 rounded-lg border border-adam-border bg-white p-4 hover:border-adam-secondary hover:shadow-sm"
-				href={href}
-			>
-				<div
-					className={`flex h-9 w-9 items-center justify-center rounded-lg ${iconBg} ${iconColor}`}
-				>
-					<Icon className="h-4 w-4" />
+		<Link
+			className="group relative overflow-hidden rounded-2xl p-6 text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+			href={href}
+			style={{
+				background: gradient,
+			}}
+		>
+			<div className="relative z-10">
+				<div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+					<Icon className="h-6 w-6 text-white" />
 				</div>
-				<div className="flex-1">
-					<p className="font-medium text-adam-tinted-black text-sm">{title}</p>
-					<p className="mt-0.5 text-adam-grey text-xs">{description}</p>
+				<h3 className="font-semibold text-lg">{title}</h3>
+				<p className="mt-1 text-sm text-white/80">{description}</p>
+				<div className="mt-4 flex items-center gap-2 font-medium text-sm">
+					<span>View details</span>
+					<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
 				</div>
-				<ArrowUpRight className="h-4 w-4 text-adam-trailing" />
-			</a>
-		</AnimatedCard>
+			</div>
+			<div className="absolute right-0 top-0 h-32 w-32 -translate-y-8 translate-x-8 rounded-full bg-white/10" />
+			<div className="absolute bottom-0 left-0 h-24 w-24 -translate-x-6 translate-y-6 rounded-full bg-white/10" />
+		</Link>
 	);
 }
 
@@ -135,7 +162,6 @@ function MetricCard({
 	icon: Icon,
 	iconBg,
 	iconColor,
-	delay,
 	isLoading,
 }: {
 	title: string;
@@ -143,47 +169,38 @@ function MetricCard({
 	icon: React.ComponentType<{ className?: string }>;
 	iconBg: string;
 	iconColor: string;
-	delay: number;
 	isLoading: boolean;
 }) {
 	if (isLoading) {
 		return (
-			<AnimatedCard delay={delay}>
-				<Card className="border border-adam-border bg-white">
-					<CardContent className="p-4">
-						<div className="flex items-center gap-3">
-							<Skeleton className="h-8 w-8 rounded-lg" />
-							<div className="space-y-1">
-								<Skeleton className="h-3 w-16" />
-								<Skeleton className="h-5 w-20" />
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-			</AnimatedCard>
+			<Card className="border-0 bg-white shadow-sm">
+				<CardContent className="flex items-center gap-4 p-5">
+					<Skeleton className="h-11 w-11 rounded-xl" />
+					<div className="space-y-2">
+						<Skeleton className="h-3 w-16" />
+						<Skeleton className="h-6 w-20" />
+					</div>
+				</CardContent>
+			</Card>
 		);
 	}
 
 	return (
-		<AnimatedCard delay={delay}>
-			<Card className="border border-adam-border bg-white hover:shadow-sm">
-				<CardContent className="p-4">
-					<div className="flex items-center gap-3">
-						<div
-							className={`flex h-8 w-8 items-center justify-center rounded-lg ${iconBg} ${iconColor}`}
-						>
-							<Icon className="h-4 w-4" />
-						</div>
-						<div>
-							<p className="text-adam-grey text-xs">{title}</p>
-							<p className="font-semibold text-adam-tinted-black text-lg">
-								{value}
-							</p>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-		</AnimatedCard>
+		<Card className="border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+			<CardContent className="flex items-center gap-4 p-5">
+				<div
+					className={`flex h-11 w-11 items-center justify-center rounded-xl ${iconBg}`}
+				>
+					<Icon className={`h-5 w-5 ${iconColor}`} />
+				</div>
+				<div>
+					<p className="font-medium text-adam-grey text-xs uppercase tracking-wide">
+						{title}
+					</p>
+					<p className="font-bold text-adam-tinted-black text-xl">{value}</p>
+				</div>
+			</CardContent>
+		</Card>
 	);
 }
 
@@ -219,118 +236,134 @@ export default function DashboardPage() {
 	const silverPrice = silverPriceData?.pricePerGram;
 
 	return (
-		<div className="space-y-6">
-			<div className="border-adam-border border-b pb-4">
-				<h1 className="font-semibold text-adam-tinted-black text-xl">
+		<div className="space-y-8">
+			{/* Header */}
+			<div className="flex flex-col gap-1">
+				<h1 className="font-bold text-2xl text-adam-tinted-black tracking-tight">
 					Dashboard
 				</h1>
-				<p className="mt-0.5 text-adam-grey text-sm">
-					Overview of your platform
+				<p className="text-adam-grey text-sm">
+					Welcome back! Here&apos;s what&apos;s happening with your business.
 				</p>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+			{/* Main Stats Grid */}
+			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 				<StatCard
-					delay={100}
 					icon={Users}
-					iconColor="bg-adam-secondary/10 text-adam-secondary"
+					iconBg="bg-blue-50"
+					iconColor="text-blue-600"
 					isLoading={usersLoading}
-					title="Users"
+					subtitle="Total registered"
+					title="Total Users"
+					trend="up"
+					trendValue="+12%"
 					value={usersData?.total?.toLocaleString() ?? "0"}
 				/>
 				<StatCard
-					delay={200}
 					icon={Package}
-					iconColor="bg-amber-100 text-amber-700"
+					iconBg="bg-amber-50"
+					iconColor="text-amber-600"
 					isLoading={productsLoading}
+					subtitle="Active listings"
 					title="Products"
+					trend="neutral"
+					trendValue="0%"
 					value={productsData?.total?.toLocaleString() ?? "0"}
 				/>
 				<StatCard
-					delay={300}
-					icon={DollarSign}
-					iconColor="bg-yellow-100 text-yellow-700"
+					icon={Coins}
+					iconBg="bg-yellow-50"
+					iconColor="text-yellow-600"
 					isLoading={goldLoading}
-					title="Gold"
+					subtitle="per gram (24K)"
+					title="Gold Price"
+					trend="up"
+					trendValue="+0.8%"
 					value={goldPrice ? `₹${goldPrice.toLocaleString()}` : "---"}
 				/>
 				<StatCard
-					delay={400}
 					icon={TrendingUp}
-					iconColor="bg-slate-100 text-slate-700"
+					iconBg="bg-slate-100"
+					iconColor="text-slate-600"
 					isLoading={silverLoading}
-					title="Silver"
+					subtitle="per gram"
+					title="Silver Price"
+					trend="down"
+					trendValue="-0.3%"
 					value={silverPrice ? `₹${silverPrice.toLocaleString()}` : "---"}
 				/>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-				<QuickActionCard
-					delay={500}
-					description="Manage user accounts"
-					href="/users"
-					icon={Users}
-					iconBg="bg-adam-secondary/10"
-					iconColor="text-adam-secondary"
-					title="Users"
-				/>
-				<QuickActionCard
-					delay={600}
-					description="Product catalog"
-					href="/products"
-					icon={Package}
-					iconBg="bg-amber-100"
-					iconColor="text-amber-700"
-					title="Products"
-				/>
-				<QuickActionCard
-					delay={700}
-					description="Process refunds"
-					href="/payments"
-					icon={CreditCard}
-					iconBg="bg-slate-100"
-					iconColor="text-slate-700"
-					title="Payments"
-				/>
+			{/* Quick Actions */}
+			<div>
+				<h2 className="mb-4 font-semibold text-adam-tinted-black text-lg">
+					Quick Actions
+				</h2>
+				<div className="grid gap-6 md:grid-cols-3">
+					<QuickActionCard
+						description="View and manage customer accounts, KYC status, and balances"
+						gradient="linear-gradient(135deg, #0f766e 0%, #0d9488 100%)"
+						href="/users"
+						icon={Users}
+						title="Manage Users"
+					/>
+					<QuickActionCard
+						description="Add, edit, or remove products from your catalog"
+						gradient="linear-gradient(135deg, #d97706 0%, #f59e0b 100%)"
+						href="/products"
+						icon={Package}
+						title="Product Catalog"
+					/>
+					<QuickActionCard
+						description="Process refunds and view transaction history"
+						gradient="linear-gradient(135deg, #475569 0%, #64748b 100%)"
+						href="/payments"
+						icon={CreditCard}
+						title="Payments"
+					/>
+				</div>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-				<MetricCard
-					delay={800}
-					icon={DollarSign}
-					iconBg="bg-green-100"
-					iconColor="text-green-700"
-					isLoading={isLoading}
-					title="Revenue"
-					value="₹1.24L"
-				/>
-				<MetricCard
-					delay={900}
-					icon={Package}
-					iconBg="bg-amber-100"
-					iconColor="text-amber-700"
-					isLoading={isLoading}
-					title="Orders"
-					value="23"
-				/>
-				<MetricCard
-					delay={1000}
-					icon={TrendingUp}
-					iconBg="bg-adam-secondary/10"
-					iconColor="text-adam-secondary"
-					isLoading={isLoading}
-					title="Referrals"
-					value="156"
-				/>
-				<MetricCard
-					delay={1100}
-					icon={Activity}
-					iconBg="bg-yellow-100"
-					iconColor="text-yellow-700"
-					isLoading={isLoading}
-					title="Gold Sold"
-					value="2.4 kg"
-				/>
+			{/* Bottom Metrics */}
+			<div>
+				<h2 className="mb-4 font-semibold text-adam-tinted-black text-lg">
+					Key Metrics
+				</h2>
+				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+					<MetricCard
+						icon={Wallet}
+						iconBg="bg-emerald-50"
+						iconColor="text-emerald-600"
+						isLoading={isLoading}
+						title="Revenue"
+						value="₹1.24L"
+					/>
+					<MetricCard
+						icon={Package}
+						iconBg="bg-orange-50"
+						iconColor="text-orange-600"
+						isLoading={isLoading}
+						title="Orders"
+						value="23"
+					/>
+					<MetricCard
+						icon={Users}
+						iconBg="bg-teal-50"
+						iconColor="text-teal-600"
+						isLoading={isLoading}
+						title="Referrals"
+						value="156"
+					/>
+					<MetricCard
+						icon={BarChart3}
+						iconBg="bg-yellow-50"
+						iconColor="text-yellow-600"
+						isLoading={isLoading}
+						title="Gold Sold"
+						value="2.4 kg"
+					/>
+				</div>
 			</div>
 		</div>
 	);

@@ -1,12 +1,13 @@
 "use client";
 
 import {
+	ChevronRight,
 	CreditCard,
-	DollarSign,
 	Gift,
 	LayoutDashboard,
 	LogOut,
 	Package,
+	TrendingUp,
 	Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -18,27 +19,73 @@ const navigation: Array<{
 	name: string;
 	href: string;
 	icon: React.ComponentType<{ className?: string }>;
+	description?: string;
 }> = [
-	{ name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-	{ name: "Users", href: "/users", icon: Users },
-	{ name: "Products", href: "/products", icon: Package },
-	{ name: "Pricing", href: "/pricing", icon: DollarSign },
-	{ name: "Payments", href: "/payments", icon: CreditCard },
-	{ name: "Referrals", href: "/referrals", icon: Gift },
+	{
+		name: "Dashboard",
+		href: "/dashboard",
+		icon: LayoutDashboard,
+		description: "Overview & analytics",
+	},
+	{
+		name: "Users",
+		href: "/users",
+		icon: Users,
+		description: "Manage customers",
+	},
+	{
+		name: "Products",
+		href: "/products",
+		icon: Package,
+		description: "Product catalog",
+	},
+	{
+		name: "Pricing",
+		href: "/pricing",
+		icon: TrendingUp,
+		description: "Metal prices",
+	},
+	{
+		name: "Payments",
+		href: "/payments",
+		icon: CreditCard,
+		description: "Transactions",
+	},
+	{
+		name: "Referrals",
+		href: "/referrals",
+		icon: Gift,
+		description: "Bonus settings",
+	},
 ];
 
 export function Sidebar() {
 	const pathname = usePathname();
 
 	return (
-		<aside className="flex min-h-screen w-64 flex-col border-gray-200 border-r bg-white">
-			<div className="p-6">
-				<h1 className="font-semibold text-gray-900 text-xl tracking-tight">
-					Adam Admin
-				</h1>
+		<aside className="flex h-screen w-[280px] flex-col border-r border-adam-border/50 bg-white">
+			{/* Logo Section */}
+			<div className="flex h-16 items-center gap-3 border-b border-adam-border/50 px-6">
+				<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-adam-secondary to-adam-gradient-bottom shadow-sm">
+					<span className="font-bold text-sm text-white">A</span>
+				</div>
+				<div className="flex flex-col">
+					<span className="font-semibold text-adam-tinted-black text-sm tracking-tight">
+						Adam Admin
+					</span>
+					<span className="text-[10px] text-adam-trailing">
+						Enterprise Dashboard
+					</span>
+				</div>
 			</div>
 
-			<nav className="flex-1 px-3 py-4">
+			{/* Navigation */}
+			<nav className="flex-1 overflow-y-auto px-3 py-4 scrollbar-thin">
+				<div className="mb-2 px-3">
+					<span className="text-[10px] font-semibold uppercase tracking-wider text-adam-trailing">
+						Main Menu
+					</span>
+				</div>
 				<ul className="space-y-1">
 					{navigation.map((item) => {
 						const isActive =
@@ -49,21 +96,54 @@ export function Sidebar() {
 							<li key={item.name}>
 								<Link
 									className={cn(
-										"flex items-center gap-3 rounded-lg px-4 py-2.5 font-medium text-sm",
+										"group relative flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200",
 										isActive
-											? "bg-white text-gray-900"
-											: "text-gray-600 hover:bg-white hover:text-gray-900"
+											? "bg-adam-secondary text-white shadow-sm"
+											: "text-adam-grey hover:bg-adam-scaffold-background hover:text-adam-tinted-black"
 									)}
 									// @ts-expect-error Next.js 16 href type is complex
 									href={item.href}
 								>
-									<item.icon
+									<div
 										className={cn(
-											"h-5 w-5",
-											isActive ? "text-gray-900" : "text-gray-400"
+											"flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+											isActive
+												? "bg-white/20"
+												: "bg-adam-scaffold-background group-hover:bg-adam-secondary/10"
 										)}
-									/>
-									{item.name}
+									>
+										<item.icon
+											className={cn(
+												"h-[18px] w-[18px]",
+												isActive
+													? "text-white"
+													: "text-adam-muted group-hover:text-adam-secondary"
+											)}
+										/>
+									</div>
+									<div className="flex flex-1 flex-col">
+										<span
+											className={cn(
+												"font-medium text-sm",
+												isActive ? "text-white" : ""
+											)}
+										>
+											{item.name}
+										</span>
+										{item.description && (
+											<span
+												className={cn(
+													"text-[10px]",
+													isActive ? "text-white/70" : "text-adam-trailing"
+												)}
+											>
+												{item.description}
+											</span>
+										)}
+									</div>
+									{isActive && (
+										<ChevronRight className="h-4 w-4 text-white/70" />
+									)}
 								</Link>
 							</li>
 						);
@@ -71,15 +151,32 @@ export function Sidebar() {
 				</ul>
 			</nav>
 
-			<div className="border-gray-100 border-t p-4">
-				<button
-					className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 font-medium text-gray-600 text-sm hover:bg-white hover:text-gray-900"
-					onClick={() => logout()}
-					type="button"
-				>
-					<LogOut className="h-5 w-5 text-gray-400" />
-					Sign Out
-				</button>
+			{/* Bottom Section */}
+			<div className="border-t border-adam-border/50 p-3">
+				{/* User Profile & Logout */}
+				<div className="flex items-center justify-between rounded-xl bg-adam-scaffold-background p-3">
+					<div className="flex items-center gap-3">
+						<div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-adam-secondary to-adam-gradient-bottom">
+							<span className="font-semibold text-xs text-white">AD</span>
+						</div>
+						<div className="flex flex-col">
+							<span className="font-medium text-adam-tinted-black text-sm">
+								Admin
+							</span>
+							<span className="text-[10px] text-adam-trailing">
+								Super Admin
+							</span>
+						</div>
+					</div>
+					<button
+						className="flex h-8 w-8 items-center justify-center rounded-lg text-adam-muted transition-colors hover:bg-white hover:text-adam-danger"
+						onClick={() => logout()}
+						title="Sign out"
+						type="button"
+					>
+						<LogOut className="h-4 w-4" />
+					</button>
+				</div>
 			</div>
 		</aside>
 	);

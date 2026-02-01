@@ -3,8 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	Image as ImagePlaceholderIcon,
+	Package,
+	Pencil,
 	Plus,
 	Search,
+	Trash2,
 	Upload,
 } from "lucide-react";
 import Image from "next/image";
@@ -12,6 +15,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -42,32 +46,38 @@ import type { Product } from "@/lib/api/types";
 
 function ProductsTableSkeleton() {
 	return (
-		<div className="overflow-hidden rounded-lg border border-adam-border shadow-sm">
+		<Card className="overflow-hidden border-0 shadow-sm">
 			<Table>
 				<TableHeader>
-					<TableRow className="border-adam-border/30 border-b bg-white">
-						<TableHead className="font-semibold">Product</TableHead>
-						<TableHead className="font-semibold">SKU</TableHead>
-						<TableHead className="font-semibold">Category</TableHead>
-						<TableHead className="font-semibold">Metal</TableHead>
-						<TableHead className="text-right font-semibold">Weight</TableHead>
-						<TableHead className="text-right font-semibold">Stock</TableHead>
-						<TableHead className="text-right font-semibold">Price</TableHead>
-						<TableHead className="font-semibold">Status</TableHead>
-						<TableHead className="text-right font-semibold">Actions</TableHead>
+					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
+						{[
+							"Product",
+							"SKU",
+							"Category",
+							"Metal",
+							"Weight",
+							"Stock",
+							"Price",
+							"Status",
+							"Actions",
+						].map((header) => (
+							<TableHead
+								className="font-semibold text-adam-grey text-xs uppercase tracking-wider"
+								key={header}
+							>
+								{header}
+							</TableHead>
+						))}
 					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{["pskel-1", "pskel-2", "pskel-3", "pskel-4", "pskel-5"].map(
 						(key) => (
-							<TableRow
-								className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
-								key={key}
-							>
+							<TableRow className="border-adam-border/30" key={key}>
 								<TableCell>
 									<div className="flex items-center gap-3">
-										<Skeleton className="h-10 w-10 rounded-lg" />
-										<div className="space-y-1">
+										<Skeleton className="h-12 w-12 rounded-xl" />
+										<div className="space-y-1.5">
 											<Skeleton className="h-4 w-32" />
 											<Skeleton className="h-3 w-24" />
 										</div>
@@ -77,33 +87,81 @@ function ProductsTableSkeleton() {
 									<Skeleton className="h-4 w-20" />
 								</TableCell>
 								<TableCell>
-									<Skeleton className="h-4 w-24" />
+									<Skeleton className="h-6 w-24 rounded-full" />
 								</TableCell>
 								<TableCell>
-									<Skeleton className="h-6 w-16" />
-								</TableCell>
-								<TableCell className="text-right">
-									<Skeleton className="ml-auto h-4 w-16" />
-								</TableCell>
-								<TableCell className="text-right">
-									<Skeleton className="ml-auto h-4 w-12" />
-								</TableCell>
-								<TableCell className="text-right">
-									<Skeleton className="ml-auto h-5 w-20" />
+									<Skeleton className="h-6 w-16 rounded-full" />
 								</TableCell>
 								<TableCell>
-									<Skeleton className="h-6 w-16" />
+									<Skeleton className="h-4 w-16" />
 								</TableCell>
-								<TableCell className="text-right">
-									<Skeleton className="ml-auto h-8 w-24" />
+								<TableCell>
+									<Skeleton className="h-4 w-12" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-5 w-20" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-6 w-20 rounded-full" />
+								</TableCell>
+								<TableCell>
+									<Skeleton className="h-8 w-20" />
 								</TableCell>
 							</TableRow>
 						)
 					)}
 				</TableBody>
 			</Table>
-		</div>
+		</Card>
 	);
+}
+
+function EmptyProducts() {
+	return (
+		<Card className="border-0 shadow-sm">
+			<CardContent className="flex flex-col items-center justify-center py-16">
+				<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-adam-scaffold-background">
+					<Package className="h-8 w-8 text-adam-trailing" />
+				</div>
+				<h3 className="font-semibold text-adam-tinted-black">
+					No products found
+				</h3>
+				<p className="mt-1 text-adam-grey text-sm">
+					Try adjusting your search or add a new product
+				</p>
+			</CardContent>
+		</Card>
+	);
+}
+
+function getStatusStyles(status: string) {
+	if (status === "active") {
+		return "bg-emerald-50 text-emerald-700 border-emerald-200";
+	}
+	if (status === "inactive") {
+		return "bg-gray-50 text-gray-700 border-gray-200";
+	}
+	if (status === "out_of_stock") {
+		return "bg-red-50 text-red-700 border-red-200";
+	}
+	return "bg-gray-50 text-gray-700 border-gray-200";
+}
+
+function getMetalStyles(metal: string) {
+	if (metal === "gold") {
+		return "bg-amber-50 text-amber-700 border-amber-200";
+	}
+	return "bg-slate-50 text-slate-700 border-slate-200";
+}
+
+function getStockColor(stock: number) {
+	if (stock === 0) {
+		return "text-red-600 font-semibold";
+	}
+	if (stock < 10) {
+		return "text-amber-600 font-medium";
+	}
+	return "text-adam-tinted-black";
 }
 
 export default function ProductsPage() {
@@ -472,119 +530,104 @@ export default function ProductsPage() {
 		buttonText = "Create";
 	}
 
-	function getStatusBadge(status: string) {
-		const variants: Record<
-			string,
-			"default" | "secondary" | "destructive" | "outline"
-		> = {
-			active: "default",
-			inactive: "secondary",
-			out_of_stock: "destructive",
-		};
-		return (
-			<Badge className="text-xs" variant={variants[status] || "outline"}>
-				{status.replace("_", " ")}
-			</Badge>
-		);
-	}
-
-	function getMetalBadge(metal: string) {
-		return (
-			<Badge
-				className={
-					metal === "gold"
-						? "border-amber-200 bg-amber-50 text-amber-700"
-						: "border-gray-200 bg-white text-gray-700"
-				}
-				variant="outline"
-			>
-				{metal}
-			</Badge>
-		);
-	}
-
-	function getStockBadge(stock: number) {
-		if (stock < 10) {
-			return <span className="font-medium text-red-600">{stock}</span>;
-		}
-		if (stock < 50) {
-			return <span className="font-medium text-amber-600">{stock}</span>;
-		}
-		return <span className="text-green-600">{stock}</span>;
-	}
 
 	if (error) {
 		return (
 			<div className="space-y-6">
-				<div className="border-adam-border border-b pb-4">
-					<h1 className="font-semibold text-adam-tinted-black text-xl">
+				<div className="flex flex-col gap-1">
+					<h1 className="font-bold text-2xl text-adam-tinted-black tracking-tight">
 						Products
 					</h1>
-					<p className="mt-0.5 text-adam-grey text-sm">
+					<p className="text-adam-grey text-sm">
 						Manage your product catalog
 					</p>
 				</div>
-				<div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
-					Error loading products. Please try again.
-				</div>
+				<Card className="border-0 border-l-4 border-l-red-500 bg-red-50 shadow-sm">
+					<CardContent className="py-4">
+						<p className="font-medium text-red-800">Error loading products</p>
+						<p className="mt-1 text-red-600 text-sm">
+							Please try refreshing the page.
+						</p>
+					</CardContent>
+				</Card>
 			</div>
 		);
 	}
 
 	return (
 		<div className="space-y-6">
-			<div className="border-adam-border border-b pb-4">
-				<h1 className="font-semibold text-adam-tinted-black text-xl">
+			{/* Header */}
+			<div className="flex flex-col gap-1">
+				<h1 className="font-bold text-2xl text-adam-tinted-black tracking-tight">
 					Products
 				</h1>
-				<p className="mt-0.5 text-adam-grey text-sm">
-					Manage your product catalog
+				<p className="text-adam-grey text-sm">
+					Manage your product catalog and inventory
 				</p>
 			</div>
-			<div className="flex items-center justify-between gap-4">
+
+			{/* Stats & Search Bar */}
+			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div className="relative max-w-md flex-1">
-					<Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-adam-grey" />
+					<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-adam-trailing" />
 					<Input
-						className="border-adam-border pl-9 focus:border-adam-secondary focus:ring-adam-secondary/20"
+						className="h-11 border-adam-border bg-white pl-10 shadow-sm focus:border-adam-secondary focus:ring-adam-secondary/20"
 						onChange={(e) => setSearch(e.target.value)}
 						placeholder="Search by name, SKU, or category..."
 						value={search}
 					/>
 				</div>
-				<Button
-					className="bg-adam-secondary hover:bg-adam-gradient-top"
-					onClick={handleOpenCreate}
-				>
-					<Plus className="mr-2 h-4 w-4" />
-					Add Product
-				</Button>
-			</div>
-			{isLoading && <ProductsTableSkeleton />}
-			{!isLoading && isEmpty && (
-				<div className="rounded-lg border border-adam-border bg-white p-8 text-center">
-					<p className="text-adam-grey">No products found</p>
+				<div className="flex items-center gap-3">
+					<div className="flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 shadow-sm">
+						<Package className="h-4 w-4 text-adam-secondary" />
+						<span className="font-semibold text-adam-tinted-black text-sm">
+							{data?.total?.toLocaleString() ?? 0}
+						</span>
+						<span className="text-adam-grey text-sm">products</span>
+					</div>
+					<Button
+						className="h-11 bg-adam-secondary px-5 shadow-sm hover:bg-adam-gradient-top"
+						onClick={handleOpenCreate}
+					>
+						<Plus className="mr-2 h-4 w-4" />
+						Add Product
+					</Button>
 				</div>
-			)}
+			</div>
+
+			{/* Table */}
+			{isLoading && <ProductsTableSkeleton />}
+			{!isLoading && isEmpty && <EmptyProducts />}
 			{!(isLoading || isEmpty) && (
-				<div className="overflow-hidden rounded-lg border border-adam-border shadow-sm">
+				<Card className="overflow-hidden border-0 shadow-sm">
 					<Table>
 						<TableHeader>
-							<TableRow className="border-adam-border/30 border-b bg-white">
-								<TableHead className="font-semibold">Product</TableHead>
-								<TableHead className="font-semibold">SKU</TableHead>
-								<TableHead className="font-semibold">Category</TableHead>
-								<TableHead className="font-semibold">Metal</TableHead>
-								<TableHead className="text-right font-semibold">
+							<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
+								<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+									Product
+								</TableHead>
+								<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+									SKU
+								</TableHead>
+								<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+									Category
+								</TableHead>
+								<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+									Metal
+								</TableHead>
+								<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
 									Weight
 								</TableHead>
-								<TableHead className="text-right font-semibold">
+								<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
 									Stock
 								</TableHead>
-								<TableHead className="text-right font-semibold">
+								<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
 									Price
 								</TableHead>
-								<TableHead className="font-semibold">Status</TableHead>
-								<TableHead className="text-right font-semibold">
+								<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+									Status
+								</TableHead>
+								<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
 									Actions
 								</TableHead>
 							</TableRow>
@@ -592,64 +635,98 @@ export default function ProductsPage() {
 						<TableBody>
 							{filteredProducts.map((product: Product) => (
 								<TableRow
-									className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
+									className="border-adam-border/30 transition-colors hover:bg-adam-scaffold-background/50"
 									key={product.id}
 								>
-									<TableCell>
+									<TableCell className="py-4">
 										<div className="flex items-center gap-3">
 											{product.photos && product.photos.length > 0 ? (
 												<Image
 													alt={product.name}
-													className="h-10 w-10 rounded-lg object-cover"
-													height={40}
+													className="h-12 w-12 rounded-xl object-cover shadow-sm"
+													height={48}
 													src={product.photos[0]}
-													width={40}
+													width={48}
 												/>
 											) : (
-												<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white">
-													<ImagePlaceholderIcon className="h-5 w-5 text-adam-grey" />
+												<div className="flex h-12 w-12 items-center justify-center rounded-xl bg-adam-scaffold-background">
+													<ImagePlaceholderIcon className="h-5 w-5 text-adam-trailing" />
 												</div>
 											)}
 											<div>
-												<div className="font-medium text-adam-tinted-black">
+												<p className="font-medium text-adam-tinted-black">
 													{product.name}
-												</div>
-												<div className="mt-0.5 max-w-[180px] truncate text-adam-grey text-xs">
+												</p>
+												<p className="mt-0.5 max-w-[200px] truncate text-adam-grey text-xs">
 													{product.description}
-												</div>
+												</p>
 											</div>
 										</div>
 									</TableCell>
-									<TableCell className="font-mono text-sm">
-										{product.sku}
+									<TableCell>
+										<code className="rounded bg-adam-scaffold-background px-2 py-1 font-mono text-adam-tinted-black text-xs">
+											{product.sku}
+										</code>
 									</TableCell>
-									<TableCell>{product.category}</TableCell>
-									<TableCell>{getMetalBadge(product.metalType)}</TableCell>
+									<TableCell>
+										<Badge
+											className="border bg-white font-medium text-adam-tinted-black text-xs"
+											variant="outline"
+										>
+											{product.category}
+										</Badge>
+									</TableCell>
+									<TableCell>
+										<Badge
+											className={`border font-medium text-xs ${getMetalStyles(product.metalType)}`}
+											variant="outline"
+										>
+											{product.metalType.charAt(0).toUpperCase() +
+												product.metalType.slice(1)}
+										</Badge>
+									</TableCell>
+									<TableCell className="text-right text-sm">
+										<span className="font-medium text-adam-tinted-black">
+											{product.weight ? product.weight.toFixed(2) : "0.00"}
+										</span>
+										<span className="text-adam-grey"> g</span>
+									</TableCell>
+									<TableCell className="text-right text-sm">
+										<span className={getStockColor(product.stock)}>
+											{product.stock}
+										</span>
+									</TableCell>
 									<TableCell className="text-right">
-										{product.weight ? product.weight.toFixed(2) : "0.00"}g
+										<span className="font-semibold text-adam-tinted-black">
+											₹{product.price.toLocaleString()}
+										</span>
 									</TableCell>
-									<TableCell className="text-right">
-										{getStockBadge(product.stock)}
+									<TableCell>
+										<Badge
+											className={`border font-medium text-xs ${getStatusStyles(product.status)}`}
+											variant="outline"
+										>
+											{product.status === "out_of_stock"
+												? "Out of Stock"
+												: product.status.charAt(0).toUpperCase() +
+													product.status.slice(1)}
+										</Badge>
 									</TableCell>
-									<TableCell className="text-right font-medium">
-										₹{product.price.toLocaleString()}
-									</TableCell>
-									<TableCell>{getStatusBadge(product.status)}</TableCell>
-									<TableCell className="text-right">
-										<div className="flex justify-end gap-2">
+									<TableCell>
+										<div className="flex justify-end gap-1">
 											<Button
-												className="h-8 px-3 text-xs"
+												className="h-8 w-8 p-0 text-adam-grey hover:bg-adam-scaffold-background hover:text-adam-secondary"
 												onClick={() => handleEdit(product)}
-												variant="outline"
+												variant="ghost"
 											>
-												Edit
+												<Pencil className="h-4 w-4" />
 											</Button>
 											<Button
-												className="h-8 px-3 text-red-600 text-xs hover:bg-red-50"
+												className="h-8 w-8 p-0 text-adam-grey hover:bg-red-50 hover:text-red-600"
 												onClick={() => deleteMutation.mutate(product.id)}
 												variant="ghost"
 											>
-												Delete
+												<Trash2 className="h-4 w-4" />
 											</Button>
 										</div>
 									</TableCell>
@@ -657,7 +734,7 @@ export default function ProductsPage() {
 							))}
 						</TableBody>
 					</Table>
-				</div>
+				</Card>
 			)}
 			<Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
 				<DialogContent className="max-h-[90vh] w-full max-w-6xl overflow-y-auto">

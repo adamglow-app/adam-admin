@@ -1,11 +1,22 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, BarChart3, Minus, Plus } from "lucide-react";
+import {
+	ArrowDown,
+	ArrowUp,
+	BarChart3,
+	Coins,
+	History,
+	Minus,
+	RefreshCw,
+	Sparkles,
+	TrendingUp,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,18 +34,16 @@ import type { MetalPrice, PriceHistoryEntry } from "@/lib/api/types";
 
 function PriceCardSkeleton() {
 	return (
-		<Card className="border border-adam-border bg-white">
-			<CardHeader className="pb-3">
-				<div className="flex items-center justify-between">
-					<div className="space-y-2">
-						<Skeleton className="h-4 w-16" />
-						<Skeleton className="h-8 w-32" />
+		<Card className="group relative overflow-hidden border-0 bg-white shadow-sm">
+			<CardContent className="p-6">
+				<div className="flex items-start justify-between">
+					<div className="space-y-3">
+						<Skeleton className="h-4 w-20" />
+						<Skeleton className="h-10 w-36" />
+						<Skeleton className="h-6 w-28 rounded-full" />
 					</div>
-					<Skeleton className="h-10 w-10 rounded-lg" />
+					<Skeleton className="h-14 w-14 rounded-2xl" />
 				</div>
-			</CardHeader>
-			<CardContent className="space-y-4">
-				<Skeleton className="h-6 w-32" />
 			</CardContent>
 		</Card>
 	);
@@ -69,66 +78,95 @@ function PriceCard({
 			? ((priceChange / previousPrice) * 100).toFixed(2)
 			: "0";
 
-	let priceChangeClass: string;
-	if (isUp) {
-		priceChangeClass = "text-green-600";
-	} else if (isDown) {
-		priceChangeClass = "text-red-600";
-	} else {
-		priceChangeClass = "text-adam-grey";
+	function getTrendStyles() {
+		if (isUp) {
+			return "border-emerald-200 bg-emerald-50 text-emerald-600";
+		}
+		if (isDown) {
+			return "border-red-200 bg-red-50 text-red-600";
+		}
+		return "border-gray-200 bg-gray-50 text-gray-600";
 	}
 
-	let priceChangeIcon: React.ReactNode;
-	if (isUp) {
-		priceChangeIcon = <ArrowUp className="h-4 w-4" />;
-	} else if (isDown) {
-		priceChangeIcon = <ArrowDown className="h-4 w-4" />;
-	} else {
-		priceChangeIcon = <Minus className="h-4 w-4" />;
+	function getTrendIcon() {
+		if (isUp) {
+			return <ArrowUp className="h-3.5 w-3.5" />;
+		}
+		if (isDown) {
+			return <ArrowDown className="h-3.5 w-3.5" />;
+		}
+		return <Minus className="h-3.5 w-3.5" />;
 	}
 
 	return (
-		<Card className="border border-adam-border bg-white shadow-sm hover:shadow-md">
-			<CardHeader className="pb-3">
-				<div className="flex items-center justify-between">
-					<div>
-						<p className="font-medium text-adam-grey text-sm uppercase tracking-wide">
-							{metal}
-						</p>
-						<p className="font-bold text-2xl text-adam-tinted-black">
+		<Card className="group relative overflow-hidden border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg">
+			{/* Decorative gradient overlay */}
+			<div
+				className={`absolute inset-0 opacity-[0.03] ${
+					isGold
+						? "bg-gradient-to-br from-amber-400 to-yellow-600"
+						: "bg-gradient-to-br from-slate-400 to-gray-600"
+				}`}
+			/>
+
+			<CardContent className="relative p-6">
+				<div className="flex items-start justify-between">
+					<div className="space-y-2">
+						<div className="flex items-center gap-2">
+							<p className="font-medium text-adam-grey text-sm">{metal} Price</p>
+							<Badge
+								className="border-0 bg-adam-scaffold-background px-2 py-0.5 font-normal text-[10px] text-adam-trailing"
+								variant="outline"
+							>
+								per gram
+							</Badge>
+						</div>
+						<p className="font-bold text-4xl text-adam-tinted-black tracking-tight">
 							{price?.pricePerGram
-								? `₹${price.pricePerGram.toLocaleString()}`
+								? `₹${price.pricePerGram.toLocaleString("en-IN")}`
 								: "---"}
 						</p>
+						{price && previousPrice && (
+							<div
+								className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 ${getTrendStyles()}`}
+							>
+								{getTrendIcon()}
+								<span className="font-semibold text-xs">
+									₹{Math.abs(priceChange).toFixed(2)}
+								</span>
+								<span className="text-[10px] opacity-80">
+									({isUp && "+"}
+									{isDown && "-"}
+									{priceChangePercent}%)
+								</span>
+							</div>
+						)}
 					</div>
 					<div
-						className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+						className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${
 							isGold
-								? "border border-amber-200 bg-amber-50"
-								: "border border-slate-200 bg-white"
+								? "bg-gradient-to-br from-amber-100 to-yellow-50"
+								: "bg-gradient-to-br from-slate-100 to-gray-50"
 						}`}
 					>
-						<span
-							className={`font-bold ${
-								isGold ? "text-amber-700" : "text-slate-700"
-							}`}
-						>
-							{metal.charAt(0)}
-						</span>
+						{isGold ? (
+							<Coins className="h-7 w-7 text-amber-600" />
+						) : (
+							<Sparkles className="h-7 w-7 text-slate-500" />
+						)}
 					</div>
 				</div>
-			</CardHeader>
-			<CardContent className="space-y-3">
-				{price && previousPrice && (
-					<div
-						className={`flex items-center gap-2 rounded-lg bg-white px-3 py-2 ${priceChangeClass}`}
-					>
-						{priceChangeIcon}
-						<span className="font-medium text-sm">
-							₹{Math.abs(priceChange).toFixed(2)}
-						</span>
-						<span className="text-xs">
-							({priceChangePercent}%) vs yesterday
+
+				{/* Last updated */}
+				{price?.updatedAt && (
+					<div className="mt-4 flex items-center gap-1.5 border-t border-adam-border/50 pt-4 text-xs text-adam-trailing">
+						<RefreshCw className="h-3 w-3" />
+						<span>
+							Updated{" "}
+							{new Date(price.updatedAt).toLocaleTimeString("en-IN", {
+								hour: "2-digit",
+								minute: "2-digit",
+							})}
 						</span>
 					</div>
 				)}
@@ -137,7 +175,7 @@ function PriceCard({
 	);
 }
 
-function AddPriceForm() {
+function UpdatePriceCard() {
 	const queryClient = useQueryClient();
 	const [metalType, setMetalType] = useState<"gold" | "silver">("gold");
 	const [buyPrice, setBuyPrice] = useState("");
@@ -172,47 +210,56 @@ function AddPriceForm() {
 	}
 
 	return (
-		<Card className="border border-adam-border bg-gradient-to-br from-white to-adam-muted/20 shadow-sm">
-			<CardHeader className="pb-3">
-				<CardTitle className="font-semibold text-adam-tinted-black text-base">
-					Update Price
-				</CardTitle>
-				<p className="mt-1 text-adam-grey text-xs">
-					Set the current buy and sell prices
-				</p>
-			</CardHeader>
-			<CardContent>
+		<Card className="overflow-hidden border-0 bg-gradient-to-br from-adam-secondary to-adam-gradient-top shadow-sm">
+			<CardContent className="p-6">
+				<div className="mb-5 flex items-center gap-3">
+					<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+						<TrendingUp className="h-5 w-5 text-white" />
+					</div>
+					<div>
+						<h3 className="font-semibold text-white">Update Price</h3>
+						<p className="text-white/70 text-xs">Set current market rates</p>
+					</div>
+				</div>
+
 				<form className="space-y-4" onSubmit={handleSubmit}>
-					<div className="grid gap-4 sm:grid-cols-3">
-						<div className="space-y-2">
-							<Label
-								className="font-semibold text-adam-tinted-black text-xs"
-								htmlFor="metal-type"
+					<div className="space-y-2">
+						<Label className="font-medium text-white/90 text-xs">
+							Metal Type
+						</Label>
+						<div className="flex gap-2">
+							<button
+								className={`flex-1 rounded-lg px-4 py-2.5 font-medium text-sm transition-all ${
+									metalType === "gold"
+										? "bg-white text-adam-secondary shadow-sm"
+										: "bg-white/10 text-white hover:bg-white/20"
+								}`}
+								onClick={() => setMetalType("gold")}
+								type="button"
 							>
-								Metal
-							</Label>
-							<select
-								className="w-full rounded-lg border border-adam-border bg-white px-3 py-2 font-medium text-sm focus:border-adam-secondary focus:outline-none focus:ring-2 focus:ring-adam-secondary/30"
-								id="metal-type"
-								onChange={(e) =>
-									setMetalType(e.target.value as "gold" | "silver")
-								}
-								value={metalType}
+								Gold
+							</button>
+							<button
+								className={`flex-1 rounded-lg px-4 py-2.5 font-medium text-sm transition-all ${
+									metalType === "silver"
+										? "bg-white text-adam-secondary shadow-sm"
+										: "bg-white/10 text-white hover:bg-white/20"
+								}`}
+								onClick={() => setMetalType("silver")}
+								type="button"
 							>
-								<option value="gold">Gold</option>
-								<option value="silver">Silver</option>
-							</select>
+								Silver
+							</button>
 						</div>
+					</div>
+
+					<div className="grid gap-3 sm:grid-cols-2">
 						<div className="space-y-2">
-							<Label
-								className="font-semibold text-adam-tinted-black text-xs"
-								htmlFor="buy-price"
-							>
+							<Label className="font-medium text-white/90 text-xs">
 								Buy Price (₹)
 							</Label>
 							<Input
-								className="border-adam-border font-medium focus:border-adam-secondary focus:ring-2 focus:ring-adam-secondary/30"
-								id="buy-price"
+								className="border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-white/40 focus:ring-white/20"
 								onChange={(e) => setBuyPrice(e.target.value)}
 								placeholder="0.00"
 								type="number"
@@ -220,15 +267,11 @@ function AddPriceForm() {
 							/>
 						</div>
 						<div className="space-y-2">
-							<Label
-								className="font-semibold text-adam-tinted-black text-xs"
-								htmlFor="sell-price"
-							>
+							<Label className="font-medium text-white/90 text-xs">
 								Sell Price (₹)
 							</Label>
 							<Input
-								className="border-adam-border font-medium focus:border-adam-secondary focus:ring-2 focus:ring-adam-secondary/30"
-								id="sell-price"
+								className="border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-white/40 focus:ring-white/20"
 								onChange={(e) => setSellPrice(e.target.value)}
 								placeholder="0.00"
 								type="number"
@@ -236,15 +279,70 @@ function AddPriceForm() {
 							/>
 						</div>
 					</div>
+
 					<Button
-						className="w-full bg-adam-secondary font-semibold text-white shadow-sm hover:bg-adam-secondary/90 sm:w-auto"
+						className="w-full bg-white font-semibold text-adam-secondary shadow-sm hover:bg-white/90"
 						disabled={createMutation.isPending}
 						type="submit"
 					>
-						<Plus className="mr-2 h-4 w-4" />
 						{createMutation.isPending ? "Updating..." : "Update Price"}
 					</Button>
 				</form>
+			</CardContent>
+		</Card>
+	);
+}
+
+function HistoryTableSkeleton() {
+	return (
+		<Card className="overflow-hidden border-0 shadow-sm">
+			<Table>
+				<TableHeader>
+					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
+						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Date
+						</TableHead>
+						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Metal
+						</TableHead>
+						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Price / Gram
+						</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{["hskel-1", "hskel-2", "hskel-3", "hskel-4", "hskel-5"].map((key) => (
+						<TableRow className="border-adam-border/30" key={key}>
+							<TableCell>
+								<Skeleton className="h-4 w-28" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-6 w-16 rounded-full" />
+							</TableCell>
+							<TableCell className="text-right">
+								<Skeleton className="ml-auto h-4 w-24" />
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+		</Card>
+	);
+}
+
+function EmptyHistory() {
+	return (
+		<Card className="border-0 shadow-sm">
+			<CardContent className="flex flex-col items-center justify-center py-16">
+				<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-adam-scaffold-background">
+					<BarChart3 className="h-8 w-8 text-adam-trailing" />
+				</div>
+				<h3 className="font-semibold text-adam-tinted-black">
+					No price history
+				</h3>
+				<p className="mt-1 text-center text-adam-grey text-sm">
+					Price history will appear here as prices are updated
+				</p>
 			</CardContent>
 		</Card>
 	);
@@ -279,107 +377,75 @@ function HistoryTable({ metalType }: { metalType: "gold" | "silver" }) {
 	}
 
 	if (isLoading) {
-		return (
-			<Card className="border border-adam-border bg-white">
-				<CardContent className="p-0">
-					<Table>
-						<TableHeader>
-							<TableRow className="border-adam-border border-b bg-white">
-								<TableHead className="font-semibold">Date</TableHead>
-								<TableHead className="font-semibold">Metal</TableHead>
-								<TableHead className="font-semibold">Price / Gram</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{["skel-1", "skel-2", "skel-3", "skel-4", "skel-5"].map((key) => (
-								<TableRow
-									className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
-									key={key}
-								>
-									<TableCell>
-										<Skeleton className="h-4 w-24" />
-									</TableCell>
-									<TableCell>
-										<Skeleton className="h-4 w-16" />
-									</TableCell>
-									<TableCell>
-										<Skeleton className="h-4 w-20" />
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</CardContent>
-			</Card>
-		);
+		return <HistoryTableSkeleton />;
 	}
 
 	if (!history || history.length === 0) {
-		return (
-			<Card className="border border-adam-border bg-white">
-				<CardContent className="p-12 text-center">
-					<BarChart3 className="mx-auto h-12 w-12 text-adam-muted" />
-					<p className="mt-3 font-medium text-adam-grey">
-						No price history available
-					</p>
-					<p className="mt-1 text-adam-muted text-sm">
-						Price history will appear here as prices are updated
-					</p>
-				</CardContent>
-			</Card>
-		);
+		return <EmptyHistory />;
 	}
 
 	return (
-		<Card className="border border-adam-border bg-white">
-			<CardContent className="p-0">
-				<Table>
-					<TableHeader>
-						<TableRow className="border-adam-border border-b bg-white">
-							<TableHead className="font-semibold">Date</TableHead>
-							<TableHead className="font-semibold">Metal</TableHead>
-							<TableHead className="text-right font-semibold">
-								Price / Gram
-							</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{history.map((entry) => (
-							<TableRow
-								className="border-adam-border/30 border-b hover:bg-adam-secondary/5"
-								key={`${entry.date}-${entry.metalType}`}
-							>
-								<TableCell className="text-adam-tinted-black">
-									{new Date(entry.date).toLocaleDateString("en-US", {
-										year: "numeric",
-										month: "short",
-										day: "numeric",
-									})}
-								</TableCell>
-								<TableCell>
-									<span
-										className={`inline-flex items-center rounded-full px-3 py-1 font-semibold text-xs ${
-											(entry.metalType ?? "unknown") === "gold"
-												? "bg-amber-100 text-amber-800"
-												: "bg-slate-100 text-slate-800"
-										}`}
-									>
-										{(entry.metalType ?? "unknown").charAt(0).toUpperCase() +
-											(entry.metalType ?? "unknown").slice(1)}
+		<Card className="overflow-hidden border-0 shadow-sm">
+			<Table>
+				<TableHeader>
+					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
+						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Date
+						</TableHead>
+						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Metal
+						</TableHead>
+						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Price / Gram
+						</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{history.map((entry, index) => (
+						<TableRow
+							className="border-adam-border/30 transition-colors hover:bg-adam-scaffold-background/50"
+							key={`${entry.date}-${entry.metalType}-${index}`}
+						>
+							<TableCell className="py-4">
+								<div className="flex items-center gap-2">
+									<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-adam-scaffold-background">
+										<History className="h-4 w-4 text-adam-trailing" />
+									</div>
+									<span className="font-medium text-adam-tinted-black text-sm">
+										{new Date(entry.date).toLocaleDateString("en-IN", {
+											day: "numeric",
+											month: "short",
+											year: "numeric",
+										})}
 									</span>
-								</TableCell>
-								<TableCell className="text-right font-bold text-adam-tinted-black">
+								</div>
+							</TableCell>
+							<TableCell>
+								<Badge
+									className={`border font-medium text-xs ${
+										(entry.metalType ?? "unknown") === "gold"
+											? "border-amber-200 bg-amber-50 text-amber-700"
+											: "border-slate-200 bg-slate-50 text-slate-700"
+									}`}
+									variant="outline"
+								>
+									{(entry.metalType ?? "unknown").charAt(0).toUpperCase() +
+										(entry.metalType ?? "unknown").slice(1)}
+								</Badge>
+							</TableCell>
+							<TableCell className="text-right">
+								<span className="font-semibold text-adam-tinted-black">
 									₹
 									{entry.price?.toLocaleString("en-IN", {
 										minimumFractionDigits: 2,
 										maximumFractionDigits: 2,
 									})}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</CardContent>
+								</span>
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
 		</Card>
 	);
 }
@@ -400,15 +466,19 @@ export default function PricingPage() {
 	const isLoading = goldLoading || silverLoading;
 
 	return (
-		<div className="space-y-6">
-			<div className="border-adam-border border-b pb-4">
-				<h1 className="font-semibold text-adam-tinted-black text-xl">
+		<div className="space-y-8">
+			{/* Header */}
+			<div className="flex flex-col gap-1">
+				<h1 className="font-bold text-2xl text-adam-tinted-black tracking-tight">
 					Pricing
 				</h1>
-				<p className="mt-0.5 text-adam-grey text-sm">Manage metal prices</p>
+				<p className="text-adam-grey text-sm">
+					Manage metal prices and view historical data
+				</p>
 			</div>
 
-			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{/* Price Cards Grid */}
+			<div className="grid gap-6 lg:grid-cols-3">
 				{isLoading ? (
 					<>
 						<PriceCardSkeleton />
@@ -434,39 +504,45 @@ export default function PricingPage() {
 						/>
 					</>
 				)}
-				<AddPriceForm />
+				<UpdatePriceCard />
 			</div>
 
-			<div className="rounded-lg border border-adam-border bg-white">
-				<div className="border-adam-border border-b px-4 py-3">
-					<h3 className="font-medium text-adam-tinted-black">Price History</h3>
-					<p className="text-adam-grey text-xs">
-						Recent price changes (last 30 days)
-					</p>
-				</div>
-				<Tabs className="w-full" defaultValue="gold">
-					<div className="pt-2">
-						<TabsList className="h-12 w-fit gap-1 border-0 bg-white p-0 pl-4">
-							<TabsTrigger
-								className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
-								value="gold"
-							>
-								Gold
-							</TabsTrigger>
-							<TabsTrigger
-								className="px-4 py-2 text-sm data-[state=active]:bg-adam-muted data-[state=active]:text-adam-tinted-black"
-								value="silver"
-							>
-								Silver
-							</TabsTrigger>
-						</TabsList>
+			{/* Price History Section */}
+			<div>
+				<div className="mb-4 flex items-center justify-between">
+					<div>
+						<h2 className="font-semibold text-adam-tinted-black text-lg">
+							Price History
+						</h2>
+						<p className="text-adam-grey text-sm">
+							Recent price changes over the last 30 days
+						</p>
 					</div>
+				</div>
 
-					<TabsContent className="m-0 p-4" value="gold">
+				<Tabs className="w-full" defaultValue="gold">
+					<TabsList className="mb-4 h-11 w-fit gap-1 rounded-xl border border-adam-border bg-white p-1">
+						<TabsTrigger
+							className="rounded-lg px-6 py-2 font-medium text-sm data-[state=active]:bg-adam-secondary data-[state=active]:text-white data-[state=active]:shadow-sm"
+							value="gold"
+						>
+							<Coins className="mr-2 h-4 w-4" />
+							Gold
+						</TabsTrigger>
+						<TabsTrigger
+							className="rounded-lg px-6 py-2 font-medium text-sm data-[state=active]:bg-adam-secondary data-[state=active]:text-white data-[state=active]:shadow-sm"
+							value="silver"
+						>
+							<Sparkles className="mr-2 h-4 w-4" />
+							Silver
+						</TabsTrigger>
+					</TabsList>
+
+					<TabsContent className="mt-0" value="gold">
 						<HistoryTable metalType="gold" />
 					</TabsContent>
 
-					<TabsContent className="m-0 p-4" value="silver">
+					<TabsContent className="mt-0" value="silver">
 						<HistoryTable metalType="silver" />
 					</TabsContent>
 				</Tabs>
