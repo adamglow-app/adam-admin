@@ -137,7 +137,6 @@ export interface RefundStatus {
 
 export interface ReferralConfig {
 	metalType: "gold" | "silver";
-	referrerBonus: number;
-	refereeBonus: number;
-	minInvestment: number;
+	rewardPercentage: number | string;
+	isActive?: boolean;
 }

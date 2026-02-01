@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Coins, Gift, Info, Save, Sparkles, Users, Wallet } from "lucide-react";
+import { Coins, Gift, Percent, Save, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -25,61 +25,12 @@ function ConfigCardSkeleton() {
 						<Skeleton className="h-3 w-48" />
 					</div>
 				</div>
-				<div className="grid gap-6 md:grid-cols-3">
-					<div className="space-y-2">
-						<Skeleton className="h-4 w-24" />
-						<Skeleton className="h-11 w-full rounded-lg" />
-					</div>
-					<div className="space-y-2">
-						<Skeleton className="h-4 w-24" />
-						<Skeleton className="h-11 w-full rounded-lg" />
-					</div>
-					<div className="space-y-2">
-						<Skeleton className="h-4 w-24" />
-						<Skeleton className="h-11 w-full rounded-lg" />
-					</div>
+				<div className="space-y-2">
+					<Skeleton className="h-4 w-24" />
+					<Skeleton className="h-11 w-full max-w-xs rounded-lg" />
 				</div>
 			</CardContent>
 		</Card>
-	);
-}
-
-function ConfigField({
-	label,
-	value,
-	onChange,
-	disabled,
-	icon: Icon,
-	hint,
-}: {
-	label: string;
-	value: string;
-	onChange: (value: string) => void;
-	disabled?: boolean;
-	icon: React.ComponentType<{ className?: string }>;
-	hint?: string;
-}) {
-	return (
-		<div className="space-y-2">
-			<Label className="flex items-center gap-2 font-medium text-adam-tinted-black text-sm">
-				<Icon className="h-4 w-4 text-adam-trailing" />
-				{label}
-			</Label>
-			<Input
-				className="h-11 border-adam-border bg-white shadow-sm focus:border-adam-secondary focus:ring-adam-secondary/20"
-				disabled={disabled}
-				onChange={(e) => onChange(e.target.value)}
-				placeholder="0.00"
-				type="number"
-				value={value}
-			/>
-			{hint && (
-				<p className="flex items-center gap-1 text-adam-trailing text-xs">
-					<Info className="h-3 w-3" />
-					{hint}
-				</p>
-			)}
-		</div>
 	);
 }
 
@@ -96,24 +47,22 @@ function ReferralCard({
 	isLoading: boolean;
 	isSaving: boolean;
 }) {
-	const [referrerBonus, setReferrerBonus] = useState("");
-	const [refereeBonus, setRefereeBonus] = useState("");
-	const [minInvestment, setMinInvestment] = useState("");
+	const [rewardPercentage, setRewardPercentage] = useState("");
 
 	useEffect(() => {
 		if (config) {
-			setReferrerBonus(config.referrerBonus?.toString() ?? "");
-			setRefereeBonus(config.refereeBonus?.toString() ?? "");
-			setMinInvestment(config.minInvestment?.toString() ?? "");
+			const percentage =
+				typeof config.rewardPercentage === "string"
+					? config.rewardPercentage
+					: config.rewardPercentage?.toString() ?? "";
+			setRewardPercentage(percentage);
 		}
 	}, [config]);
 
 	function handleSubmit() {
 		onSave({
 			metalType,
-			referrerBonus: Number.parseFloat(referrerBonus) || 0,
-			refereeBonus: Number.parseFloat(refereeBonus) || 0,
-			minInvestment: Number.parseFloat(minInvestment) || 0,
+			rewardPercentage: Number.parseFloat(rewardPercentage) || 0,
 		});
 	}
 
@@ -156,45 +105,54 @@ function ReferralCard({
 								{metalType} Referrals
 							</h3>
 							<p className="text-adam-grey text-sm">
-								Configure bonus settings for {metalType} investments
+								Configure reward percentage for {metalType} referrals
 							</p>
 						</div>
 					</div>
-					<Badge
-						className={`border font-medium text-xs ${
-							isGold
-								? "border-amber-200 bg-amber-50 text-amber-700"
-								: "border-slate-200 bg-slate-50 text-slate-700"
-						}`}
-						variant="outline"
-					>
-						{isGold ? "24K Premium" : "999 Fine"}
-					</Badge>
+					<div className="flex items-center gap-2">
+						{config?.isActive && (
+							<Badge
+								className="border-emerald-200 bg-emerald-50 font-medium text-emerald-700 text-xs"
+								variant="outline"
+							>
+								Active
+							</Badge>
+						)}
+						<Badge
+							className={`border font-medium text-xs ${
+								isGold
+									? "border-amber-200 bg-amber-50 text-amber-700"
+									: "border-slate-200 bg-slate-50 text-slate-700"
+							}`}
+							variant="outline"
+						>
+							{isGold ? "24K Premium" : "999 Fine"}
+						</Badge>
+					</div>
 				</div>
 
-				{/* Config Fields */}
-				<div className="grid gap-6 md:grid-cols-3">
-					<ConfigField
-						hint="Bonus given to the referrer"
-						icon={Users}
-						label="Referrer Bonus (₹)"
-						onChange={setReferrerBonus}
-						value={referrerBonus}
-					/>
-					<ConfigField
-						hint="Bonus given to the new user"
-						icon={Gift}
-						label="Referee Bonus (₹)"
-						onChange={setRefereeBonus}
-						value={refereeBonus}
-					/>
-					<ConfigField
-						hint="Minimum amount to qualify"
-						icon={Wallet}
-						label="Min Investment (₹)"
-						onChange={setMinInvestment}
-						value={minInvestment}
-					/>
+				{/* Config Field */}
+				<div className="max-w-xs space-y-2">
+					<Label className="flex items-center gap-2 font-medium text-adam-tinted-black text-sm">
+						<Percent className="h-4 w-4 text-adam-trailing" />
+						Reward Percentage
+					</Label>
+					<div className="relative">
+						<Input
+							className="h-11 border-adam-border bg-white pr-10 shadow-sm focus:border-adam-secondary focus:ring-adam-secondary/20"
+							onChange={(e) => setRewardPercentage(e.target.value)}
+							placeholder="0.00"
+							step="0.01"
+							type="number"
+							value={rewardPercentage}
+						/>
+						<span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-medium text-adam-grey text-sm">
+							%
+						</span>
+					</div>
+					<p className="text-adam-trailing text-xs">
+						Percentage of investment given as referral reward
+					</p>
 				</div>
 
 				{/* Action Button */}
@@ -238,9 +196,9 @@ function InfoCard() {
 							How Referrals Work
 						</h3>
 						<p className="mt-1 text-sm text-white/80">
-							When a user refers someone and the referee makes their first
-							investment meeting the minimum threshold, both parties receive
-							their respective bonuses automatically.
+							When a user refers someone and the referee makes an investment,
+							both parties receive a percentage-based reward automatically based
+							on the configured reward percentage.
 						</p>
 						<div className="mt-4 grid gap-3 sm:grid-cols-3">
 							<div className="rounded-lg bg-white/10 p-3 backdrop-blur-sm">
@@ -308,7 +266,7 @@ export default function ReferralsPage() {
 					Referral Configuration
 				</h1>
 				<p className="text-adam-grey text-sm">
-					Manage referral bonus settings for gold and silver investments
+					Manage referral reward percentages for gold and silver investments
 				</p>
 			</div>
 
