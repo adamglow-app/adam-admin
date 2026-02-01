@@ -767,14 +767,23 @@ export default function ProductsPage() {
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="category">Category</Label>
-								<Input
-									id="category"
-									onChange={(e) =>
-										setFormData({ ...formData, category: e.target.value })
+								<Select
+									onValueChange={(value) =>
+										setFormData({ ...formData, category: value || "" })
 									}
-									required
 									value={formData.category}
-								/>
+								>
+									<SelectTrigger className="w-full" id="category">
+										<SelectValue placeholder="Select category" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="rings">Rings</SelectItem>
+										<SelectItem value="earings">Earrings</SelectItem>
+										<SelectItem value="necklace">Necklace</SelectItem>
+										<SelectItem value="bangles">Bangles</SelectItem>
+										<SelectItem value="chains">Chains</SelectItem>
+									</SelectContent>
+								</Select>
 							</div>
 							<div className="space-y-2 md:col-span-2">
 								<Label htmlFor="description">Description</Label>
