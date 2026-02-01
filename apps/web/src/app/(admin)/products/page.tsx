@@ -882,7 +882,7 @@ export default function ProductsPage() {
 									value={formData.weight}
 								/>
 							</div>
-							<div className="space-y-2 md:col-span-2 lg:col-span-1">
+							<div className="space-y-2">
 								<Label htmlFor="purity">Purity</Label>
 								<Select
 									onValueChange={(value) =>
@@ -902,7 +902,7 @@ export default function ProductsPage() {
 									</SelectContent>
 								</Select>
 							</div>
-							<div className="space-y-2 md:col-span-2 lg:col-span-1">
+							<div className="space-y-2">
 								<Label htmlFor="metalType">Metal Type</Label>
 								<Select
 									onValueChange={(value) =>
@@ -922,7 +922,7 @@ export default function ProductsPage() {
 									</SelectContent>
 								</Select>
 							</div>
-							<div className="space-y-2 md:col-span-2 lg:col-span-1">
+							<div className="space-y-2">
 								<Label htmlFor="status">Status</Label>
 								<Select
 									onValueChange={(value) =>
