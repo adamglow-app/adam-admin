@@ -78,7 +78,9 @@ export const adminProductsApi = {
 		);
 		const data = response.data.data;
 		return {
-			...data,
+			total: data.total,
+			skip: data.skip,
+			limit: data.limit,
 			products: data.products.map(normalizeProduct),
 		};
 	},

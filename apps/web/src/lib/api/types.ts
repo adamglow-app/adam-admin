@@ -56,27 +56,21 @@ export interface Product {
 	quantity?: number;
 	photoUrls?: string[];
 	certificateUrl?: string;
-	grossWeight?: number | string;
-	netWeight?: number | string;
-	stoneWeight?: number | string;
-	makingCharge?: number | string;
-	gst?: number | string;
-	discountPercentage?: number | string;
+	grossWeight?: string | number | null;
+	netWeight?: string | number | null;
+	stoneWeight?: string | number | null;
+	makingCharge?: string | number;
+	gst?: string | number;
+	discountPercentage?: string | number;
 	discountType?: string;
-	// Calculated fields (new)
-	basePrice?: string;
-	metalPrice?: string;
-	totalPrice?: string;
-	discountAmount?: string;
-	finalPrice?: string;
-	wastagePercentage?: number | string;
+	wastagePercentage?: string | number;
 }
 
 export interface ProductListResponse {
 	products: Product[];
-	total: number;
-	skip: number;
-	limit: number;
+	total?: number;
+	skip?: number;
+	limit?: number;
 }
 
 export interface MetalPrice {

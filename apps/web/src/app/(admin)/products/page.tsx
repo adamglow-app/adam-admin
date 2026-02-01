@@ -254,7 +254,7 @@ export default function ProductsPage() {
 	}
 
 	function parseNumber(
-		value: string | number | undefined,
+		value: string | number | null | undefined,
 		defaultVal = 0
 	): number {
 		if (value === undefined || value === null) {
@@ -748,9 +748,9 @@ export default function ProductsPage() {
 									<TableCell className="text-right">
 										<span className="font-semibold text-adam-tinted-black">
 											₹
-											{product.finalPrice
+											{product.price
 												? Number.parseFloat(
-														String(product.finalPrice)
+														String(product.price)
 													).toLocaleString()
 												: "0"}
 										</span>
