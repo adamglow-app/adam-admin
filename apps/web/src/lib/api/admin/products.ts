@@ -32,34 +32,16 @@ function createProductFormData(
 ): FormData {
 	const formData = new FormData();
 
-	// Map camelCase to snake_case and add to FormData
-	if (data.name) {
-		formData.append("name", data.name);
-	}
-	if (data.price !== undefined) {
-		formData.append("price", String(data.price));
-	}
-	if (data.weight !== undefined) {
-		formData.append("grams", String(data.weight));
-	}
-	if (data.category) {
-		formData.append("category", data.category);
-	}
-	if (data.description) {
-		formData.append("description", data.description);
-	}
-	if (data.sku) {
-		formData.append("product_code", data.sku);
-	}
-	if (data.purity) {
-		formData.append("metal_purity", data.purity);
-	}
-	if (data.metalType) {
-		formData.append("metal_type", data.metalType);
-	}
-	if (data.stock !== undefined) {
-		formData.append("quantity", String(data.stock));
-	}
+	// All fields must be present for the API (even if empty)
+	// Required fields
+	formData.append("name", data.name ?? "");
+	formData.append("price", String(data.price ?? 0));
+	formData.append("grams", String(data.weight ?? 0));
+	formData.append("category", data.category ?? "");
+	formData.append("product_code", data.sku ?? "");
+	formData.append("metal_purity", data.purity ?? "999");
+	formData.append("metal_type", data.metalType ?? "gold");
+	formData.append("quantity", String(data.stock ?? 0));
 
 	// Optional fields with defaults
 	formData.append("discount_percentage", "0");
@@ -70,14 +52,14 @@ function createProductFormData(
 	formData.append("making_charge", "0");
 	formData.append("gst", "0");
 
-	// Handle photo files
+	// Handle photo files - required by API
 	if (photoFiles && photoFiles.length > 0) {
 		for (const file of photoFiles) {
 			formData.append("photos", file);
 		}
 	}
 
-	// Handle certificate file
+	// Handle certificate file - optional
 	if (certificateFile) {
 		formData.append("certificate", certificateFile);
 	}
