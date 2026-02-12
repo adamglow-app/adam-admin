@@ -834,7 +834,7 @@ export default function ProductsPage() {
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem value="rings">Rings</SelectItem>
-										<SelectItem value="earings">Earrings</SelectItem>
+										<SelectItem value="earrings">Earrings</SelectItem>
 										<SelectItem value="necklace">Necklace</SelectItem>
 										<SelectItem value="bangles">Bangles</SelectItem>
 										<SelectItem value="chains">Chains</SelectItem>
