@@ -219,3 +219,24 @@ export interface ReferralConfig {
 	rewardPercentage: number | string;
 	isActive?: boolean;
 }
+
+export interface WalletTransaction {
+	id: string;
+	walletId: string;
+	userId: string;
+	transactionType: string;
+	transactionCategory: string;
+	amount: number;
+	balanceBefore: number;
+	balanceAfter: number;
+	description: string;
+	orderId: string;
+	createdAt: string;
+}
+
+export interface WalletTransactionListResponse {
+	transactions: WalletTransaction[];
+	total: number;
+	skip: number;
+	limit: number;
+}
