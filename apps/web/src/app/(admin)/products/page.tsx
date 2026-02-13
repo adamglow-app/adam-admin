@@ -1066,8 +1066,7 @@ export default function ProductsPage() {
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem value="overall">Overall</SelectItem>
-										<SelectItem value="metal">Metal Only</SelectItem>
-										<SelectItem value="making">Making Only</SelectItem>
+										<SelectItem value="making_charge">Making Only</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
