@@ -48,6 +48,7 @@ function ReferralCard({
 	isSaving: boolean;
 }) {
 	const [rewardPercentage, setRewardPercentage] = useState("");
+	const [welcomeBonus, setWelcomeBonus] = useState("");
 
 	useEffect(() => {
 		if (config) {
@@ -56,6 +57,12 @@ function ReferralCard({
 					? config.rewardPercentage
 					: (config.rewardPercentage?.toString() ?? "");
 			setRewardPercentage(percentage);
+
+			const bonus =
+				typeof config.welcomeBonus === "string"
+					? config.welcomeBonus
+					: (config.welcomeBonus?.toString() ?? "");
+			setWelcomeBonus(bonus);
 		}
 	}, [config]);
 
@@ -63,6 +70,7 @@ function ReferralCard({
 		onSave({
 			metalType,
 			rewardPercentage: Number.parseFloat(rewardPercentage) || 0,
+			welcomeBonus: Number.parseFloat(welcomeBonus) || 0,
 		});
 	}
 
@@ -131,7 +139,7 @@ function ReferralCard({
 					</div>
 				</div>
 
-				{/* Config Field */}
+				{/* Reward Percentage Field */}
 				<div className="max-w-xs space-y-2">
 					<Label className="flex items-center gap-2 font-medium text-adam-tinted-black text-sm">
 						<Percent className="h-4 w-4 text-adam-trailing" />
@@ -152,6 +160,30 @@ function ReferralCard({
 					</div>
 					<p className="text-adam-trailing text-xs">
 						Percentage of investment given as referral reward
+					</p>
+				</div>
+
+				{/* Welcome Bonus Field */}
+				<div className="mt-6 max-w-xs space-y-2">
+					<Label className="flex items-center gap-2 font-medium text-adam-tinted-black text-sm">
+						<Gift className="h-4 w-4 text-adam-trailing" />
+						Welcome Bonus (₹)
+					</Label>
+					<div className="relative">
+						<Input
+							className="h-11 border-adam-border bg-white pr-10 shadow-sm focus:border-adam-secondary focus:ring-adam-secondary/20"
+							onChange={(e) => setWelcomeBonus(e.target.value)}
+							placeholder="0"
+							step="1"
+							type="number"
+							value={welcomeBonus}
+						/>
+						<span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-medium text-adam-grey text-sm">
+							₹
+						</span>
+					</div>
+					<p className="text-adam-trailing text-xs">
+						One-time bonus for new users joining with a referrer code
 					</p>
 				</div>
 

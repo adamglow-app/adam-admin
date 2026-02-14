@@ -833,11 +833,24 @@ export default function ProductsPage() {
 										<SelectValue placeholder="Select category" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="rings">Rings</SelectItem>
 										<SelectItem value="earrings">Earrings</SelectItem>
-										<SelectItem value="necklace">Necklace</SelectItem>
-										<SelectItem value="bangles">Bangles</SelectItem>
+										<SelectItem value="pendants">Pendants</SelectItem>
+										<SelectItem value="rings">Rings</SelectItem>
+										<SelectItem value="bangle_bracelets">
+											Bangle & Bracelets
+										</SelectItem>
+										<SelectItem value="mangalsutra">Mangalsutra</SelectItem>
 										<SelectItem value="chains">Chains</SelectItem>
+										<SelectItem value="necklace">Necklace</SelectItem>
+										<SelectItem value="gold_coins_bars">
+											Gold coins and Bars
+										</SelectItem>
+										<SelectItem value="silver_articles">
+											Silver articles
+										</SelectItem>
+										<SelectItem value="toe_rings">Toe Rings</SelectItem>
+										<SelectItem value="anklets">Anklets</SelectItem>
+										<SelectItem value="others">Others</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
@@ -898,7 +911,9 @@ export default function ProductsPage() {
 										<SelectItem value="995">995 (23K)</SelectItem>
 										<SelectItem value="916">916 (22K)</SelectItem>
 										<SelectItem value="875">875 (21K)</SelectItem>
+										<SelectItem value="750">750 (18K)</SelectItem>
 										<SelectItem value="585">585 (14K)</SelectItem>
+										<SelectItem value="375">375 (9K)</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>

@@ -217,6 +217,7 @@ export interface OrderListResponse {
 export interface ReferralConfig {
 	metalType: "gold" | "silver";
 	rewardPercentage: number | string;
+	welcomeBonus: number | string;
 	isActive?: boolean;
 }
 
