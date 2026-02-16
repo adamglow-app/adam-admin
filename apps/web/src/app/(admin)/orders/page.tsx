@@ -495,10 +495,10 @@ export default function OrdersPage() {
 	const ornamentHasMore = ornamentOrders.length + ornamentSkip < ornamentTotal;
 	const walletHasMore = walletTransactions.length + walletSkip < walletTotal;
 
-	const goldErrorOccurred = goldError !== undefined;
-	const silverErrorOccurred = silverError !== undefined;
-	const ornamentErrorOccurred = ornamentError !== undefined;
-	const walletErrorOccurred = walletError !== undefined;
+	const goldErrorOccurred = goldError !== null;
+	const silverErrorOccurred = silverError !== null;
+	const ornamentErrorOccurred = ornamentError !== null;
+	const walletErrorOccurred = walletError !== null;
 
 	return (
 		<div className="space-y-6">
