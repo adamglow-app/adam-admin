@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Coins, Package, ShoppingCart, Wallet } from "lucide-react";
 import { useState } from "react";
+import { OrnamentOrdersTable } from "@/components/ornament-orders-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +17,6 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { OrnamentOrdersTable } from "@/components/ornament-orders-table";
 import { adminOrdersApi } from "@/lib/api/admin/orders";
 import type { OrderItem, WalletTransaction } from "@/lib/api/types";
 
@@ -270,7 +270,7 @@ function WalletTransactionRow({
 			</TableCell>
 			<TableCell>
 				<Badge
-					className="border font-medium text-xs border-blue-200 bg-blue-50 text-blue-700"
+					className="border border-blue-200 bg-blue-50 font-medium text-blue-700 text-xs"
 					variant="outline"
 				>
 					{transaction.transactionType ?? "---"}
@@ -418,7 +418,10 @@ function WalletTransactionsTable({
 				</TableHeader>
 				<TableBody>
 					{transactions.map((transaction) => (
-						<WalletTransactionRow key={transaction.id} transaction={transaction} />
+						<WalletTransactionRow
+							key={transaction.id}
+							transaction={transaction}
+						/>
 					))}
 				</TableBody>
 			</Table>
@@ -653,15 +656,15 @@ export default function OrdersPage() {
 
 				<TabsContent value="ornaments">
 					<div className="space-y-4">
-						{ornamentLoading ? (
-							<OrdersSkeleton />
-						) : ornamentOrders.length === 0 ? (
+						{ornamentLoading && <OrdersSkeleton />}
+						{!ornamentLoading && ornamentOrders.length === 0 && (
 							<EmptyOrders type="ornament" />
-						) : (
-							<Card className="overflow-hidden border-0 shadow-sm">
+						)}
+						{!ornamentLoading && ornamentOrders.length > 0 && (
+							<Card className="overflow-x-auto border-0 shadow-sm">
 								<OrnamentOrdersTable
 									orders={ornamentOrders}
-									queryKey={["admin-orders-ornaments", ornamentSkip]}
+									queryKey={["admin-orders-ornaments", String(ornamentSkip)]}
 								/>
 							</Card>
 						)}
