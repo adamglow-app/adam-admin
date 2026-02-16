@@ -7,10 +7,12 @@ export interface AdminUserListItem {
 	aadhar: string;
 	referralCode: string;
 	kycStatus: "pending" | "verified" | "rejected";
-	balances: {
-		gold: number;
-		silver: number;
+	balances?: {
+		gold?: number;
+		silver?: number;
 	};
+	goldBalance?: number;
+	silverBalance?: number;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -201,7 +203,8 @@ export interface OrderItem {
 	metalPricePerGram: string;
 	status: string;
 	notes: string;
-	orderMetadata: Record<string, string>;
+	orderMetadata: Record<string, any>;
+	fulfillmentStatus?: string;
 	createdAt: string;
 	updatedAt: string;
 }

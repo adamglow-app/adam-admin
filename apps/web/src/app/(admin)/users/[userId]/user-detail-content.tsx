@@ -119,13 +119,13 @@ export function UserDetailContent({ userId }: { userId: string }) {
 						<div>
 							<p className="text-adam-grey text-sm">Gold Balance</p>
 							<p className="mt-1 font-semibold text-adam-tinted-black">
-								{user.balances?.gold?.toFixed(3) || "0.000"} g
+								{(user.balances?.gold ?? user.goldBalance ?? 0).toFixed(3)} g
 							</p>
 						</div>
 						<div>
 							<p className="text-adam-grey text-sm">Silver Balance</p>
 							<p className="mt-1 font-semibold text-adam-tinted-black">
-								{user.balances?.silver?.toFixed(3) || "0.000"} g
+								{(user.balances?.silver ?? user.silverBalance ?? 0).toFixed(3)} g
 							</p>
 						</div>
 						<div>

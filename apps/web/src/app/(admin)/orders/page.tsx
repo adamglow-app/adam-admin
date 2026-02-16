@@ -16,6 +16,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OrnamentOrdersTable } from "@/components/ornament-orders-table";
 import { adminOrdersApi } from "@/lib/api/admin/orders";
 import type { OrderItem, WalletTransaction } from "@/lib/api/types";
 
@@ -652,11 +653,18 @@ export default function OrdersPage() {
 
 				<TabsContent value="ornaments">
 					<div className="space-y-4">
-						<OrdersTable
-							isEmpty={ornamentOrders.length === 0}
-							isLoading={ornamentLoading}
-							orders={ornamentOrders}
-						/>
+						{ornamentLoading ? (
+							<OrdersSkeleton />
+						) : ornamentOrders.length === 0 ? (
+							<EmptyOrders type="ornament" />
+						) : (
+							<Card className="overflow-hidden border-0 shadow-sm">
+								<OrnamentOrdersTable
+									orders={ornamentOrders}
+									queryKey={["admin-orders-ornaments", ornamentSkip]}
+								/>
+							</Card>
+						)}
 						{ornamentHasMore && (
 							<div className="flex justify-center">
 								<Button
