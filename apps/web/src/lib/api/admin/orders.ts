@@ -61,7 +61,7 @@ export const adminOrdersApi = {
 	) => {
 		const response = await api.patch<BaseResponse<{ message: string }>>(
 			`/api/admin/payments/orders/${orderId}/fulfillment-status`,
-			{ fulfillmentStatus }
+			{ fulfillmentStatus, fulfillment_status: fulfillmentStatus }
 		);
 		return response.data.data;
 	},

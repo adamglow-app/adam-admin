@@ -301,7 +301,7 @@ export default function UsersPage() {
 							<TableBody>
 								{paginatedUsers.map((user) => (
 									<TableRow
-										className="border-adam-border/30 cursor-pointer transition-colors hover:bg-adam-scaffold-background/50"
+										className="cursor-pointer border-adam-border/30 transition-colors hover:bg-adam-scaffold-background/50"
 										key={user.id}
 										onClick={() => router.push(`/users/${user.id}`)}
 									>
@@ -336,10 +336,16 @@ export default function UsersPage() {
 											</Badge>
 										</TableCell>
 										<TableCell className="text-right text-sm">
-											{formatBalance(user.balances?.gold, "g")}
+											{formatBalance(
+												user.balances?.goldGrams ?? user.balances?.gold,
+												"g"
+											)}
 										</TableCell>
 										<TableCell className="text-right text-sm">
-											{formatBalance(user.balances?.silver, "g")}
+											{formatBalance(
+												user.balances?.silverGrams ?? user.balances?.silver,
+												"g"
+											)}
 										</TableCell>
 										<TableCell>
 											{user.referralCode ? (

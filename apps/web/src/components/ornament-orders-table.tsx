@@ -73,8 +73,15 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 			status: "pending" | "in_progress" | "ready_for_pickup" | "picked_up";
 		}) => adminOrdersApi.updateOrnamentFulfillmentStatus(orderId, status),
 		onSuccess: () => {
+			// Invalidate all related queries to refresh the data
 			queryClient.invalidateQueries({
 				queryKey,
+			});
+			queryClient.invalidateQueries({
+				queryKey: ["admin-orders-ornaments"],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ["admin-ornament-orders"],
 			});
 			toast({
 				title: "Success",
@@ -132,12 +139,31 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 			</TableHeader>
 			<TableBody>
 				{orders.map((order) => {
-					// Try multiple locations for fulfillment status
-					const fulfillmentStatus =
-						order.fulfillmentStatus ||
-						order.orderMetadata?.fulfillmentStatus ||
-						order.orderMetadata?.fulfillment_status ||
-						"pending";
+					// Try multiple locations for fulfillment status in order of priority
+					let fulfillmentStatus = "pending";
+
+					// Check direct field first
+					if (order.fulfillmentStatus) {
+						fulfillmentStatus = order.fulfillmentStatus;
+					}
+					// Check orderMetadata with camelCase
+					else if (order.orderMetadata?.fulfillmentStatus) {
+						fulfillmentStatus = order.orderMetadata.fulfillmentStatus;
+					}
+					// Check orderMetadata with snake_case
+					else if (order.orderMetadata?.fulfillment_status) {
+						fulfillmentStatus = order.orderMetadata.fulfillment_status;
+					}
+					// Check if it's in the metadata as a string
+					else if (typeof order.orderMetadata === 'object' && order.orderMetadata !== null) {
+						// Search through all metadata keys
+						for (const [key, value] of Object.entries(order.orderMetadata)) {
+							if (key.toLowerCase().includes('fulfillment')) {
+								fulfillmentStatus = String(value);
+								break;
+							}
+						}
+					}
 
 					return (
 						<TableRow

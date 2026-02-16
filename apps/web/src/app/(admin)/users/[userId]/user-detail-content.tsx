@@ -119,13 +119,31 @@ export function UserDetailContent({ userId }: { userId: string }) {
 						<div>
 							<p className="text-adam-grey text-sm">Gold Balance</p>
 							<p className="mt-1 font-semibold text-adam-tinted-black">
-								{(user.balances?.gold ?? user.goldBalance ?? 0).toFixed(3)} g
+								{(() => {
+									const goldValue =
+										user.balances?.goldGrams ??
+										user.balances?.gold ??
+										user.goldBalance ??
+										null;
+									return goldValue !== null
+										? `${Number(goldValue).toFixed(3)} g`
+										: "-";
+								})()}
 							</p>
 						</div>
 						<div>
 							<p className="text-adam-grey text-sm">Silver Balance</p>
 							<p className="mt-1 font-semibold text-adam-tinted-black">
-								{(user.balances?.silver ?? user.silverBalance ?? 0).toFixed(3)} g
+								{(() => {
+									const silverValue =
+										user.balances?.silverGrams ??
+										user.balances?.silver ??
+										user.silverBalance ??
+										null;
+									return silverValue !== null
+										? `${Number(silverValue).toFixed(3)} g`
+										: "-";
+								})()}
 							</p>
 						</div>
 						<div>

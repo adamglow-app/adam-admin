@@ -10,6 +10,8 @@ export interface AdminUserListItem {
 	balances?: {
 		gold?: number;
 		silver?: number;
+		goldGrams?: number;
+		silverGrams?: number;
 	};
 	goldBalance?: number;
 	silverBalance?: number;
