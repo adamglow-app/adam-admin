@@ -183,13 +183,13 @@ export default function UsersPage() {
 		}
 	}
 
-	function formatBalance(value: number | undefined, unit: string) {
-		if (value === undefined || value === 0) {
+	function formatBalance(value: number | string | undefined, unit: string) {
+		if (value === undefined || value === 0 || value === null) {
 			return <span className="text-adam-trailing">-</span>;
 		}
 		return (
 			<span className="font-semibold text-adam-tinted-black">
-				{value.toFixed(3)} {unit}
+				{Number(value).toFixed(3)} {unit}
 			</span>
 		);
 	}

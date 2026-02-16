@@ -8,10 +8,10 @@ export interface AdminUserListItem {
 	referralCode: string;
 	kycStatus: "pending" | "verified" | "rejected";
 	balances?: {
-		gold?: number;
-		silver?: number;
-		goldGrams?: number;
-		silverGrams?: number;
+		gold?: number | string;
+		silver?: number | string;
+		goldGrams?: number | string;
+		silverGrams?: number | string;
 	};
 	goldBalance?: number;
 	silverBalance?: number;

@@ -73,16 +73,12 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 			status: "pending" | "in_progress" | "ready_for_pickup" | "picked_up";
 		}) => adminOrdersApi.updateOrnamentFulfillmentStatus(orderId, status),
 		onSuccess: () => {
-			// Invalidate all related queries to refresh the data
-			queryClient.invalidateQueries({
-				queryKey,
-			});
-			queryClient.invalidateQueries({
-				queryKey: ["admin-orders-ornaments"],
-			});
-			queryClient.invalidateQueries({
-				queryKey: ["admin-ornament-orders"],
-			});
+			// Invalidate and refetch to ensure fresh data
+			queryClient.invalidateQueries({ queryKey });
+			queryClient.invalidateQueries({ queryKey: ["admin-orders-ornaments"] });
+			queryClient.invalidateQueries({ queryKey: ["admin-ornament-orders"] });
+			// Also refetch immediately
+			queryClient.refetchQueries({ queryKey: ["admin-ornament-orders"] });
 			toast({
 				title: "Success",
 				description: "Fulfillment status updated successfully",
@@ -155,10 +151,13 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 						fulfillmentStatus = order.orderMetadata.fulfillment_status;
 					}
 					// Check if it's in the metadata as a string
-					else if (typeof order.orderMetadata === 'object' && order.orderMetadata !== null) {
+					else if (
+						typeof order.orderMetadata === "object" &&
+						order.orderMetadata !== null
+					) {
 						// Search through all metadata keys
 						for (const [key, value] of Object.entries(order.orderMetadata)) {
-							if (key.toLowerCase().includes('fulfillment')) {
+							if (key.toLowerCase().includes("fulfillment")) {
 								fulfillmentStatus = String(value);
 								break;
 							}
@@ -182,7 +181,7 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 								{order.productQuantity}
 							</TableCell>
 							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
-								₹{parseFloat(order.amount).toLocaleString("en-IN")}
+								₹{Number.parseFloat(order.amount).toLocaleString("en-IN")}
 							</TableCell>
 							<TableCell>
 								<Badge
@@ -213,6 +212,7 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 							<TableCell>
 								<Select
 									disabled={updatingOrderId === order.id}
+									key={`${order.id}-${fulfillmentStatus}`}
 									onValueChange={(value) =>
 										handleStatusChange(
 											order.id,
