@@ -9,6 +9,7 @@ import {
 	UserCircle,
 	Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,7 @@ function getKycBadgeStyles(status: string) {
 }
 
 export default function UsersPage() {
+	const router = useRouter();
 	const [search, setSearch] = useState("");
 	const [sortBy, setSortBy] = useState<"email" | "createdAt" | null>(null);
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -299,8 +301,9 @@ export default function UsersPage() {
 							<TableBody>
 								{paginatedUsers.map((user) => (
 									<TableRow
-										className="border-adam-border/30 transition-colors hover:bg-adam-scaffold-background/50"
+										className="border-adam-border/30 cursor-pointer transition-colors hover:bg-adam-scaffold-background/50"
 										key={user.id}
+										onClick={() => router.push(`/users/${user.id}`)}
 									>
 										<TableCell className="py-4">
 											<div className="flex items-center gap-3">

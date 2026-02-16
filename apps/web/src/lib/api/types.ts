@@ -241,3 +241,27 @@ export interface WalletTransactionListResponse {
 	skip: number;
 	limit: number;
 }
+
+export interface Redemption {
+	id: string;
+	userId: string;
+	email: string;
+	metalType: "gold" | "silver";
+	grams: number;
+	pricePerGram: number;
+	totalAmount: number;
+	bankName: string;
+	accountNumber: string;
+	ifscCode: string;
+	accountHolderName: string;
+	status: "pending" | "success" | "failed";
+	razorpayPayoutId?: string;
+	failureReason?: string;
+	createdAt: string;
+	processedAt?: string;
+}
+
+export interface RedemptionListResponse {
+	redemptions: Redemption[];
+	total?: number;
+}
