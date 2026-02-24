@@ -162,9 +162,9 @@ export const adminProductsApi = {
 	},
 
 	deleteCategory: async (categoryId: string) => {
-		const response = await api.delete<
-			BaseResponse<{ message: string }>
-		>(`/api/admin/products/categories/${categoryId}`);
+		const response = await api.delete<BaseResponse<{ message: string }>>(
+			`/api/admin/products/categories/${categoryId}`
+		);
 		return response.data.data;
 	},
 };

@@ -164,6 +164,7 @@ function getStockColor(stock: number) {
 	return "text-adam-tinted-black";
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This is a complex admin page with multiple state and form management concerns
 export default function ProductsPage() {
 	const queryClient = useQueryClient();
 	const [search, setSearch] = useState("");
@@ -340,11 +341,8 @@ export default function ProductsPage() {
 		setIsDialogOpen(true);
 	}
 
-	function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
-
-		// Cast formData to Partial<Product> to match API expectations
-		const productData: Partial<Product> = {
+	function prepareProductData(): Partial<Product> {
+		return {
 			name: formData.name,
 			description: formData.description,
 			sku: formData.sku,
@@ -364,32 +362,30 @@ export default function ProductsPage() {
 			discountPercentage: String(formData.discountPercentage),
 			discountType: formData.discountType,
 		};
+	}
 
-		// Create API call with FormData - pass files to API
-		const submitMutation = new Promise<Product>((resolve, reject) => {
-			if (editingProduct) {
-				adminProductsApi
-					.update(
-						editingProduct.id,
-						productData,
-						selectedImageFiles.length > 0 ? selectedImageFiles : undefined,
-						selectedCertificateFile ?? undefined
-					)
-					.then(resolve)
-					.catch(reject);
-			} else {
-				adminProductsApi
-					.create(
-						formData,
-						selectedImageFiles.length > 0 ? selectedImageFiles : undefined,
-						selectedCertificateFile ?? undefined
-					)
-					.then(resolve)
-					.catch(reject);
-			}
-		});
+	function submitProductForm(): Promise<Product> {
+		const productData = prepareProductData();
+		const imageFiles =
+			selectedImageFiles.length > 0 ? selectedImageFiles : undefined;
+		const certificateFile = selectedCertificateFile ?? undefined;
 
-		submitMutation
+		if (editingProduct) {
+			return adminProductsApi.update(
+				editingProduct.id,
+				productData,
+				imageFiles,
+				certificateFile
+			);
+		}
+
+		return adminProductsApi.create(formData, imageFiles, certificateFile);
+	}
+
+	function handleSubmit(e: React.FormEvent) {
+		e.preventDefault();
+
+		submitProductForm()
 			.then(() => {
 				queryClient.invalidateQueries({ queryKey: ["admin-products"] });
 				toast.success(
@@ -851,12 +847,10 @@ export default function ProductsPage() {
 			{/* Categories Section */}
 			<div className="mt-8 space-y-4">
 				<div className="flex flex-col gap-1">
-					<h2 className="font-semibold text-lg text-adam-tinted-black tracking-tight">
+					<h2 className="font-semibold text-adam-tinted-black text-lg tracking-tight">
 						Categories
 					</h2>
-					<p className="text-adam-grey text-sm">
-						Manage product categories
-					</p>
+					<p className="text-adam-grey text-sm">Manage product categories</p>
 				</div>
 
 				{categoriesLoading ? (
@@ -864,25 +858,25 @@ export default function ProductsPage() {
 						<Table>
 							<TableHeader>
 								<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50 hover:bg-adam-scaffold-background/50">
-									<TableHead className="text-adam-grey text-xs font-semibold">
+									<TableHead className="font-semibold text-adam-grey text-xs">
 										Name
 									</TableHead>
-									<TableHead className="text-adam-grey text-xs font-semibold">
+									<TableHead className="font-semibold text-adam-grey text-xs">
 										Description
 									</TableHead>
-									<TableHead className="text-adam-grey text-xs font-semibold">
+									<TableHead className="font-semibold text-adam-grey text-xs">
 										Status
 									</TableHead>
-									<TableHead className="text-right text-adam-grey text-xs font-semibold">
+									<TableHead className="text-right font-semibold text-adam-grey text-xs">
 										Actions
 									</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{[...Array(3)].map((_, i) => (
+								{["skeleton-1", "skeleton-2", "skeleton-3"].map((id) => (
 									<TableRow
 										className="border-adam-border/30 hover:bg-adam-scaffold-background/50"
-										key={i}
+										key={id}
 									>
 										<TableCell>
 											<Skeleton className="h-4 w-24" />
@@ -906,16 +900,16 @@ export default function ProductsPage() {
 						<Table>
 							<TableHeader>
 								<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50 hover:bg-adam-scaffold-background/50">
-									<TableHead className="text-adam-grey text-xs font-semibold">
+									<TableHead className="font-semibold text-adam-grey text-xs">
 										Name
 									</TableHead>
-									<TableHead className="text-adam-grey text-xs font-semibold">
+									<TableHead className="font-semibold text-adam-grey text-xs">
 										Description
 									</TableHead>
-									<TableHead className="text-adam-grey text-xs font-semibold">
+									<TableHead className="font-semibold text-adam-grey text-xs">
 										Status
 									</TableHead>
-									<TableHead className="text-right text-adam-grey text-xs font-semibold">
+									<TableHead className="text-right font-semibold text-adam-grey text-xs">
 										Actions
 									</TableHead>
 								</TableRow>
@@ -930,15 +924,15 @@ export default function ProductsPage() {
 											<TableCell className="font-medium text-adam-tinted-black">
 												{category.name}
 											</TableCell>
-											<TableCell className="text-adam-grey text-sm max-w-xs truncate">
+											<TableCell className="max-w-xs truncate text-adam-grey text-sm">
 												{category.description || "---"}
 											</TableCell>
 											<TableCell>
 												<Badge
 													className={
 														category.is_active
-															? "bg-emerald-50 text-emerald-700 border-emerald-200"
-															: "bg-gray-50 text-gray-700 border-gray-200"
+															? "border-emerald-200 bg-emerald-50 text-emerald-700"
+															: "border-gray-200 bg-gray-50 text-gray-700"
 													}
 													variant="outline"
 												>
@@ -1461,13 +1455,17 @@ export default function ProductsPage() {
 			</Dialog>
 
 			{/* Delete Category Confirmation Dialog */}
-			<Dialog onOpenChange={(open) => !open && setCategoryToDelete(null)} open={!!categoryToDelete}>
+			<Dialog
+				onOpenChange={(open) => !open && setCategoryToDelete(null)}
+				open={!!categoryToDelete}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Delete Category</DialogTitle>
 					</DialogHeader>
-					<p className="text-sm text-adam-grey">
-						Are you sure you want to delete this category? This action cannot be undone.
+					<p className="text-adam-grey text-sm">
+						Are you sure you want to delete this category? This action cannot be
+						undone.
 					</p>
 					<DialogFooter className="mt-6">
 						<Button

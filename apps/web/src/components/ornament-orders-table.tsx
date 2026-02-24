@@ -144,11 +144,11 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 					}
 					// Check orderMetadata with camelCase
 					else if (order.orderMetadata?.fulfillmentStatus) {
-					fulfillmentStatus = String(order.orderMetadata.fulfillmentStatus);
-				}
-				// Check orderMetadata with snake_case
-				else if (order.orderMetadata?.fulfillment_status) {
-					fulfillmentStatus = String(order.orderMetadata.fulfillment_status);
+						fulfillmentStatus = String(order.orderMetadata.fulfillmentStatus);
+					}
+					// Check orderMetadata with snake_case
+					else if (order.orderMetadata?.fulfillment_status) {
+						fulfillmentStatus = String(order.orderMetadata.fulfillment_status);
 					}
 					// Check if it's in the metadata as a string
 					else if (
@@ -173,10 +173,10 @@ export function OrnamentOrdersTable({ orders, queryKey }: Props) {
 								{order.orderNumber}
 							</TableCell>
 							<TableCell className="font-medium text-adam-tinted-black text-sm">
-							{(String(order.orderMetadata?.productName) !== "undefined" &&
-								String(order.orderMetadata?.productName)) ||
-								(String(order.orderMetadata?.product_name) !== "undefined" &&
-									String(order.orderMetadata?.product_name)) ||
+								{(String(order.orderMetadata?.productName) !== "undefined" &&
+									String(order.orderMetadata?.productName)) ||
+									(String(order.orderMetadata?.product_name) !== "undefined" &&
+										String(order.orderMetadata?.product_name)) ||
 									"Product"}
 							</TableCell>
 							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
