@@ -167,6 +167,7 @@ export interface AnalyticsSummary {
 	total_gold_sold_grams: number;
 	total_silver_sold_grams: number;
 	total_revenue: number;
+	total_leasing_amount: number;
 }
 
 export interface AnalyticsDashboardResponse {
