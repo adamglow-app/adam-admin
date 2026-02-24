@@ -169,6 +169,7 @@ export default function ProductsPage() {
 	const [search, setSearch] = useState("");
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+	const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 	const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
 	const [selectedCertificateFile, setSelectedCertificateFile] =
@@ -277,6 +278,20 @@ export default function ProductsPage() {
 		},
 		onError: () => {
 			toast.error("Failed to delete product");
+		},
+	});
+
+	const deleteCategoryMutation = useMutation({
+		mutationFn: (categoryId: string) =>
+			adminProductsApi.deleteCategory(categoryId),
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["admin-product-categories"],
+			});
+			toast.success("Category deleted successfully");
+		},
+		onError: () => {
+			toast.error("Failed to delete category");
 		},
 	});
 
@@ -832,6 +847,133 @@ export default function ProductsPage() {
 					</Table>
 				</Card>
 			)}
+
+			{/* Categories Section */}
+			<div className="mt-8 space-y-4">
+				<div className="flex flex-col gap-1">
+					<h2 className="font-semibold text-lg text-adam-tinted-black tracking-tight">
+						Categories
+					</h2>
+					<p className="text-adam-grey text-sm">
+						Manage product categories
+					</p>
+				</div>
+
+				{categoriesLoading ? (
+					<Card className="overflow-hidden border-0 shadow-sm">
+						<Table>
+							<TableHeader>
+								<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50 hover:bg-adam-scaffold-background/50">
+									<TableHead className="text-adam-grey text-xs font-semibold">
+										Name
+									</TableHead>
+									<TableHead className="text-adam-grey text-xs font-semibold">
+										Description
+									</TableHead>
+									<TableHead className="text-adam-grey text-xs font-semibold">
+										Status
+									</TableHead>
+									<TableHead className="text-right text-adam-grey text-xs font-semibold">
+										Actions
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{[...Array(3)].map((_, i) => (
+									<TableRow
+										className="border-adam-border/30 hover:bg-adam-scaffold-background/50"
+										key={i}
+									>
+										<TableCell>
+											<Skeleton className="h-4 w-24" />
+										</TableCell>
+										<TableCell>
+											<Skeleton className="h-4 w-32" />
+										</TableCell>
+										<TableCell>
+											<Skeleton className="h-6 w-16" />
+										</TableCell>
+										<TableCell className="text-right">
+											<Skeleton className="ml-auto h-8 w-8" />
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</Card>
+				) : (
+					<Card className="overflow-hidden border-0 shadow-sm">
+						<Table>
+							<TableHeader>
+								<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50 hover:bg-adam-scaffold-background/50">
+									<TableHead className="text-adam-grey text-xs font-semibold">
+										Name
+									</TableHead>
+									<TableHead className="text-adam-grey text-xs font-semibold">
+										Description
+									</TableHead>
+									<TableHead className="text-adam-grey text-xs font-semibold">
+										Status
+									</TableHead>
+									<TableHead className="text-right text-adam-grey text-xs font-semibold">
+										Actions
+									</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{categoriesData && categoriesData.length > 0 ? (
+									categoriesData.map((category: Category) => (
+										<TableRow
+											className="border-adam-border/30 hover:bg-adam-scaffold-background/50"
+											key={category.id}
+										>
+											<TableCell className="font-medium text-adam-tinted-black">
+												{category.name}
+											</TableCell>
+											<TableCell className="text-adam-grey text-sm max-w-xs truncate">
+												{category.description || "---"}
+											</TableCell>
+											<TableCell>
+												<Badge
+													className={
+														category.is_active
+															? "bg-emerald-50 text-emerald-700 border-emerald-200"
+															: "bg-gray-50 text-gray-700 border-gray-200"
+													}
+													variant="outline"
+												>
+													{category.is_active ? "Active" : "Inactive"}
+												</Badge>
+											</TableCell>
+											<TableCell className="text-right">
+												<Button
+													className="h-8 w-8 p-0"
+													disabled={deleteCategoryMutation.isPending}
+													onClick={() => setCategoryToDelete(category.id)}
+													size="sm"
+													variant="ghost"
+												>
+													<Trash2 className="h-4 w-4 text-red-600" />
+												</Button>
+											</TableCell>
+										</TableRow>
+									))
+								) : (
+									<TableRow>
+										<TableCell
+											className="h-24 text-center text-adam-grey"
+											colSpan={4}
+										>
+											No categories found
+										</TableCell>
+									</TableRow>
+								)}
+							</TableBody>
+						</Table>
+					</Card>
+				)}
+			</div>
+
 			<Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
 				<DialogContent className="max-h-[90vh] w-full max-w-6xl overflow-y-auto">
 					<DialogHeader>
@@ -1315,6 +1457,42 @@ export default function ProductsPage() {
 							</Button>
 						</DialogFooter>
 					</form>
+				</DialogContent>
+			</Dialog>
+
+			{/* Delete Category Confirmation Dialog */}
+			<Dialog onOpenChange={(open) => !open && setCategoryToDelete(null)} open={!!categoryToDelete}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Delete Category</DialogTitle>
+					</DialogHeader>
+					<p className="text-sm text-adam-grey">
+						Are you sure you want to delete this category? This action cannot be undone.
+					</p>
+					<DialogFooter className="mt-6">
+						<Button
+							onClick={() => setCategoryToDelete(null)}
+							type="button"
+							variant="outline"
+						>
+							Cancel
+						</Button>
+						<Button
+							className="bg-red-600 hover:bg-red-700"
+							disabled={deleteCategoryMutation.isPending}
+							onClick={() => {
+								if (categoryToDelete) {
+									deleteCategoryMutation.mutate(categoryToDelete, {
+										onSuccess: () => {
+											setCategoryToDelete(null);
+										},
+									});
+								}
+							}}
+						>
+							{deleteCategoryMutation.isPending ? "Deleting..." : "Delete"}
+						</Button>
+					</DialogFooter>
 				</DialogContent>
 			</Dialog>
 		</div>

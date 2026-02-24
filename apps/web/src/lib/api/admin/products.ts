@@ -160,4 +160,11 @@ export const adminProductsApi = {
 		);
 		return response.data.data;
 	},
+
+	deleteCategory: async (categoryId: string) => {
+		const response = await api.delete<
+			BaseResponse<{ message: string }>
+		>(`/api/admin/products/categories/${categoryId}`);
+		return response.data.data;
+	},
 };
