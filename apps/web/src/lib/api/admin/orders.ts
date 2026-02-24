@@ -57,7 +57,11 @@ export const adminOrdersApi = {
 
 	updateOrnamentFulfillmentStatus: async (
 		orderId: string,
-		fulfillmentStatus: "pending" | "in_progress" | "ready_for_pickup" | "picked_up"
+		fulfillmentStatus:
+			| "pending"
+			| "in_progress"
+			| "ready_for_pickup"
+			| "picked_up"
 	) => {
 		const response = await api.patch<BaseResponse<{ message: string }>>(
 			`/api/admin/payments/orders/${orderId}/fulfillment-status`,

@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { adminUsersApi } from "@/lib/api/admin/users";
-import GoldPurchasesTab from "./tabs/GoldPurchasesTab";
-import OrnamentOrdersTab from "./tabs/OrnamentOrdersTab";
-import RedemptionsTab from "./tabs/RedemptionsTab";
-import SilverPurchasesTab from "./tabs/SilverPurchasesTab";
-import WalletTransactionsTab from "./tabs/WalletTransactionsTab";
+import GoldPurchasesTab from "./tabs/gold-purchases-tab";
+import OrnamentOrdersTab from "./tabs/ornament-orders-tab";
+import RedemptionsTab from "./tabs/redemptions-tab";
+import SilverPurchasesTab from "./tabs/silver-purchases-tab";
+import WalletTransactionsTab from "./tabs/wallet-transactions-tab";
 
 function getKycBadgeStyles(status: string) {
 	if (status === "verified") {

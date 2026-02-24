@@ -4,6 +4,7 @@ import {
 	ChevronRight,
 	CreditCard,
 	Gift,
+	Layers,
 	LayoutDashboard,
 	LogOut,
 	Package,
@@ -45,6 +46,12 @@ const navigation: Array<{
 		href: "/orders",
 		icon: ShoppingCart,
 		description: "Order management",
+	},
+	{
+		name: "Schemes",
+		href: "/schemes",
+		icon: Layers,
+		description: "Manage schemes",
 	},
 	{
 		name: "Pricing",

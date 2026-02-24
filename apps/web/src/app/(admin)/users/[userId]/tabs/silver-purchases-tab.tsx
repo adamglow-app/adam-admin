@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Package } from "lucide-react";
+import { Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,26 +36,32 @@ function getStatusBadgeStyles(status: string) {
 }
 
 function TableSkeleton() {
+	const skeletonIds = ["skel-silver-1", "skel-silver-2", "skel-silver-3"];
 	return (
 		<Card className="overflow-hidden border-0 shadow-sm">
 			<Table>
 				<TableHeader>
 					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
-						{["Order Number", "Grams", "Price/Gram", "Total Amount", "Status", "Date"].map(
-							(header) => (
-								<TableHead
-									className="font-semibold text-adam-grey text-xs uppercase tracking-wider"
-									key={header}
-								>
-									{header}
-								</TableHead>
-							)
-						)}
+						{[
+							"Order Number",
+							"Grams",
+							"Price/Gram",
+							"Total Amount",
+							"Status",
+							"Date",
+						].map((header) => (
+							<TableHead
+								className="font-semibold text-adam-grey text-xs uppercase tracking-wider"
+								key={header}
+							>
+								{header}
+							</TableHead>
+						))}
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{Array.from({ length: 3 }).map((_, i) => (
-						<TableRow className="border-adam-border/30" key={i}>
+					{skeletonIds.map((skeletId) => (
+						<TableRow className="border-adam-border/30" key={skeletId}>
 							<TableCell>
 								<Skeleton className="h-4 w-24" />
 							</TableCell>
@@ -90,20 +96,21 @@ function EmptyState() {
 					<Package className="h-8 w-8 text-adam-trailing" />
 				</div>
 				<h3 className="font-semibold text-adam-tinted-black">
-					No gold purchases found
+					No silver purchases found
 				</h3>
 				<p className="mt-1 text-adam-grey text-sm">
-					This user hasn't made any gold purchases yet
+					This user hasn't made any silver purchases yet
 				</p>
 			</CardContent>
 		</Card>
 	);
 }
 
-export default function GoldPurchasesTab({ userId }: Props) {
+export default function SilverPurchasesTab({ userId }: Props) {
 	const { data, isLoading } = useQuery({
-		queryKey: ["admin-gold-purchases", userId],
-		queryFn: () => adminOrdersApi.getGoldPurchases({ user_id: userId, limit: 100 }),
+		queryKey: ["admin-silver-purchases", userId],
+		queryFn: () =>
+			adminOrdersApi.getSilverPurchases({ user_id: userId, limit: 100 }),
 		retry: false,
 	});
 
@@ -150,13 +157,16 @@ export default function GoldPurchasesTab({ userId }: Props) {
 								{order.orderNumber}
 							</TableCell>
 							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
-								{parseFloat(order.metalGrams).toFixed(3)} g
+								{Number.parseFloat(order.metalGrams).toFixed(3)} g
 							</TableCell>
 							<TableCell className="text-right font-medium text-adam-tinted-black text-sm">
-								₹{parseFloat(order.metalPricePerGram).toLocaleString("en-IN")}
+								₹
+								{Number.parseFloat(order.metalPricePerGram).toLocaleString(
+									"en-IN"
+								)}
 							</TableCell>
 							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
-								₹{parseFloat(order.amount).toLocaleString("en-IN")}
+								₹{Number.parseFloat(order.amount).toLocaleString("en-IN")}
 							</TableCell>
 							<TableCell>
 								<Badge

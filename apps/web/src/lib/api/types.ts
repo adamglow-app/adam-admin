@@ -205,7 +205,7 @@ export interface OrderItem {
 	metalPricePerGram: string;
 	status: string;
 	notes: string;
-	orderMetadata: Record<string, any>;
+	orderMetadata: Record<string, unknown>;
 	fulfillmentStatus?: string;
 	createdAt: string;
 	updatedAt: string;
@@ -269,4 +269,21 @@ export interface Redemption {
 export interface RedemptionListResponse {
 	redemptions: Redemption[];
 	total?: number;
+}
+
+export interface Scheme {
+	id: string;
+	name: string;
+	description: string;
+	termsAndConditions: string;
+	isActive: boolean;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface SchemeListResponse {
+	schemes: Scheme[];
+	total: number;
+	skip: number;
+	limit: number;
 }

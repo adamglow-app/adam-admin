@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Package } from "lucide-react";
+import { OrnamentOrdersTable } from "@/components/ornament-orders-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -12,7 +13,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { OrnamentOrdersTable } from "@/components/ornament-orders-table";
 import { adminOrdersApi } from "@/lib/api/admin/orders";
 
 interface Props {
@@ -20,6 +20,7 @@ interface Props {
 }
 
 function TableSkeleton() {
+	const skeletonIds = ["skel-ornament-1", "skel-ornament-2", "skel-ornament-3"];
 	return (
 		<Card className="overflow-hidden border-0 shadow-sm">
 			<Table>
@@ -45,8 +46,8 @@ function TableSkeleton() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{Array.from({ length: 3 }).map((_, i) => (
-						<TableRow className="border-adam-border/30" key={i}>
+					{skeletonIds.map((skeletId) => (
+						<TableRow className="border-adam-border/30" key={skeletId}>
 							<TableCell>
 								<Skeleton className="h-4 w-24" />
 							</TableCell>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
+import { Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,29 +19,35 @@ interface Props {
 	userId: string;
 }
 
-function getTransactionTypeBadgeStyles(type: string) {
-	if (type === "credit") {
+function getStatusBadgeStyles(status: string) {
+	if (status === "completed") {
 		return "bg-emerald-50 text-emerald-700 border-emerald-200";
 	}
-	if (type === "debit") {
+	if (status === "pending") {
+		return "bg-amber-50 text-amber-700 border-amber-200";
+	}
+	if (status === "cancelled") {
 		return "bg-red-50 text-red-700 border-red-200";
+	}
+	if (status === "refunded") {
+		return "bg-blue-50 text-blue-700 border-blue-200";
 	}
 	return "bg-gray-50 text-gray-700 border-gray-200";
 }
 
 function TableSkeleton() {
+	const skeletonIds = ["skel-gold-1", "skel-gold-2", "skel-gold-3"];
 	return (
 		<Card className="overflow-hidden border-0 shadow-sm">
 			<Table>
 				<TableHeader>
 					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
 						{[
-							"Type",
-							"Category",
-							"Amount",
-							"Balance Before",
-							"Balance After",
-							"Description",
+							"Order Number",
+							"Grams",
+							"Price/Gram",
+							"Total Amount",
+							"Status",
 							"Date",
 						].map((header) => (
 							<TableHead
@@ -54,25 +60,22 @@ function TableSkeleton() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{Array.from({ length: 3 }).map((_, i) => (
-						<TableRow className="border-adam-border/30" key={i}>
+					{skeletonIds.map((skeletId) => (
+						<TableRow className="border-adam-border/30" key={skeletId}>
 							<TableCell>
-								<Skeleton className="h-6 w-16 rounded-full" />
+								<Skeleton className="h-4 w-24" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-16" />
+							</TableCell>
+							<TableCell>
+								<Skeleton className="h-4 w-20" />
 							</TableCell>
 							<TableCell>
 								<Skeleton className="h-4 w-24" />
 							</TableCell>
 							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-20" />
-							</TableCell>
-							<TableCell>
-								<Skeleton className="h-4 w-48" />
+								<Skeleton className="h-6 w-20 rounded-full" />
 							</TableCell>
 							<TableCell>
 								<Skeleton className="h-4 w-24" />
@@ -90,24 +93,24 @@ function EmptyState() {
 		<Card className="border-0 shadow-sm">
 			<CardContent className="flex flex-col items-center justify-center py-16">
 				<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-adam-scaffold-background">
-					<Wallet className="h-8 w-8 text-adam-trailing" />
+					<Package className="h-8 w-8 text-adam-trailing" />
 				</div>
 				<h3 className="font-semibold text-adam-tinted-black">
-					No wallet transactions found
+					No gold purchases found
 				</h3>
 				<p className="mt-1 text-adam-grey text-sm">
-					This user hasn't made any wallet transactions yet
+					This user hasn't made any gold purchases yet
 				</p>
 			</CardContent>
 		</Card>
 	);
 }
 
-export default function WalletTransactionsTab({ userId }: Props) {
+export default function GoldPurchasesTab({ userId }: Props) {
 	const { data, isLoading } = useQuery({
-		queryKey: ["admin-wallet-transactions", userId],
+		queryKey: ["admin-gold-purchases", userId],
 		queryFn: () =>
-			adminOrdersApi.getWalletTransactions({ user_id: userId, limit: 100 }),
+			adminOrdersApi.getGoldPurchases({ user_id: userId, limit: 100 }),
 		retry: false,
 	});
 
@@ -115,7 +118,7 @@ export default function WalletTransactionsTab({ userId }: Props) {
 		return <TableSkeleton />;
 	}
 
-	if (!data?.transactions || data.transactions.length === 0) {
+	if (!data?.orders || data.orders.length === 0) {
 		return <EmptyState />;
 	}
 
@@ -125,22 +128,19 @@ export default function WalletTransactionsTab({ userId }: Props) {
 				<TableHeader>
 					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
 						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
-							Type
+							Order Number
+						</TableHead>
+						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Grams
+						</TableHead>
+						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Price/Gram
+						</TableHead>
+						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
+							Total Amount
 						</TableHead>
 						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
-							Category
-						</TableHead>
-						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
-							Amount
-						</TableHead>
-						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
-							Balance Before
-						</TableHead>
-						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
-							Balance After
-						</TableHead>
-						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
-							Description
+							Status
 						</TableHead>
 						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
 							Date
@@ -148,44 +148,36 @@ export default function WalletTransactionsTab({ userId }: Props) {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{data.transactions.map((transaction) => (
+					{data.orders.map((order) => (
 						<TableRow
 							className="border-adam-border/30 transition-colors hover:bg-adam-scaffold-background/50"
-							key={transaction.id}
+							key={order.id}
 						>
+							<TableCell className="font-mono text-sm">
+								{order.orderNumber}
+							</TableCell>
+							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
+								{Number.parseFloat(order.metalGrams).toFixed(3)} g
+							</TableCell>
+							<TableCell className="text-right font-medium text-adam-tinted-black text-sm">
+								₹
+								{Number.parseFloat(order.metalPricePerGram).toLocaleString(
+									"en-IN"
+								)}
+							</TableCell>
+							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
+								₹{Number.parseFloat(order.amount).toLocaleString("en-IN")}
+							</TableCell>
 							<TableCell>
-								<div className="flex items-center gap-2">
-									{transaction.transactionType === "credit" ? (
-										<ArrowDownLeft className="h-4 w-4 text-emerald-600" />
-									) : (
-										<ArrowUpRight className="h-4 w-4 text-red-600" />
-									)}
-									<Badge
-										className={`border font-medium text-xs ${getTransactionTypeBadgeStyles(transaction.transactionType)}`}
-										variant="outline"
-									>
-										{transaction.transactionType.charAt(0).toUpperCase() +
-											transaction.transactionType.slice(1)}
-									</Badge>
-								</div>
-							</TableCell>
-							<TableCell className="font-medium text-adam-tinted-black text-sm">
-								{transaction.transactionCategory}
-							</TableCell>
-							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
-								₹{transaction.amount.toLocaleString("en-IN")}
-							</TableCell>
-							<TableCell className="text-right text-adam-grey text-sm">
-								₹{transaction.balanceBefore.toLocaleString("en-IN")}
-							</TableCell>
-							<TableCell className="text-right font-semibold text-adam-tinted-black text-sm">
-								₹{transaction.balanceAfter.toLocaleString("en-IN")}
+								<Badge
+									className={`border font-medium text-xs ${getStatusBadgeStyles(order.status)}`}
+									variant="outline"
+								>
+									{order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+								</Badge>
 							</TableCell>
 							<TableCell className="text-adam-grey text-sm">
-								{transaction.description}
-							</TableCell>
-							<TableCell className="text-adam-grey text-sm">
-								{new Date(transaction.createdAt).toLocaleDateString("en-IN", {
+								{new Date(order.createdAt).toLocaleDateString("en-IN", {
 									day: "numeric",
 									month: "short",
 									year: "numeric",
