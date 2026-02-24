@@ -1,7 +1,6 @@
 import { api } from "@/lib/axios";
 import type {
 	BaseResponse,
-	LeasingListResponse,
 	OrderListResponse,
 	RedemptionListResponse,
 	WalletTransactionListResponse,
@@ -57,17 +56,9 @@ export const adminOrdersApi = {
 	},
 
 	getLeasings: async (params?: OrderParams) => {
-		const response = await api.get<BaseResponse<LeasingListResponse>>(
+		const response = await api.get<BaseResponse<OrderListResponse>>(
 			"/api/admin/payments/leasings",
 			{ params }
-		);
-		return response.data.data;
-	},
-
-	getAllLeasings: async () => {
-		const response = await api.get<BaseResponse<LeasingListResponse>>(
-			"/api/admin/payments/leasings",
-			{ params: { limit: 10000 } } // Fetch all leasings
 		);
 		return response.data.data;
 	},

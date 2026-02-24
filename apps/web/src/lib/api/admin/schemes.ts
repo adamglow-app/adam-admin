@@ -47,7 +47,9 @@ function transformScheme(raw: RawScheme): Scheme {
 	};
 }
 
-function transformSchemeListResponse(raw: RawSchemeListResponse): SchemeListResponse {
+function transformSchemeListResponse(
+	raw: RawSchemeListResponse
+): SchemeListResponse {
 	return {
 		schemes: raw.schemes.map(transformScheme),
 		total: raw.total,

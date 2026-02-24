@@ -1,5 +1,10 @@
 import { api } from "@/lib/axios";
-import type { BaseResponse, Product, ProductListResponse } from "../types";
+import type {
+	BaseResponse,
+	Category,
+	Product,
+	ProductListResponse,
+} from "../types";
 
 // Helper to normalize API response to frontend format
 function normalizeProduct(data: Product): Product {
@@ -132,6 +137,26 @@ export const adminProductsApi = {
 	delete: async (productId: string) => {
 		const response = await api.delete<BaseResponse<null>>(
 			`/api/admin/products/${productId}`
+		);
+		return response.data.data;
+	},
+
+	// Category management
+	listCategories: async () => {
+		const response = await api.get<BaseResponse<Category[]>>(
+			"/api/admin/products/categories/"
+		);
+		return response.data.data;
+	},
+
+	createCategory: async (data: {
+		name: string;
+		description: string;
+		isActive: boolean;
+	}) => {
+		const response = await api.post<BaseResponse<Category>>(
+			"/api/admin/products/categories/",
+			data
 		);
 		return response.data.data;
 	},

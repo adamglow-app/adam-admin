@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Coins, Package, ShoppingCart, Wallet } from "lucide-react";
+import { Briefcase, Coins, Package, ShoppingCart, Wallet } from "lucide-react";
 import { useState } from "react";
 import { OrnamentOrdersTable } from "@/components/ornament-orders-table";
 import { Badge } from "@/components/ui/badge";
@@ -434,6 +434,7 @@ export default function OrdersPage() {
 	const [silverSkip, setSilverSkip] = useState(0);
 	const [ornamentSkip, setOrnamentSkip] = useState(0);
 	const [walletSkip, setWalletSkip] = useState(0);
+	const [leasingSkip, setLeasingSkip] = useState(0);
 	const LIMIT = 50;
 
 	const {
@@ -480,25 +481,40 @@ export default function OrdersPage() {
 		retry: false,
 	});
 
+	const {
+		data: leasingData,
+		isLoading: leasingLoading,
+		error: leasingError,
+	} = useQuery({
+		queryKey: ["admin-orders-leasings", leasingSkip],
+		queryFn: () =>
+			adminOrdersApi.getLeasings({ skip: leasingSkip, limit: LIMIT }),
+		retry: false,
+	});
+
 	const goldOrders = goldData?.orders ?? [];
 	const silverOrders = silverData?.orders ?? [];
 	const ornamentOrders = ornamentData?.orders ?? [];
 	const walletTransactions = walletData?.transactions ?? [];
+	const leasingOrders = leasingData?.orders ?? [];
 
 	const goldTotal = goldData?.total ?? 0;
 	const silverTotal = silverData?.total ?? 0;
 	const ornamentTotal = ornamentData?.total ?? 0;
 	const walletTotal = walletData?.total ?? 0;
+	const leasingTotal = leasingData?.total ?? 0;
 
 	const goldHasMore = goldOrders.length + goldSkip < goldTotal;
 	const silverHasMore = silverOrders.length + silverSkip < silverTotal;
 	const ornamentHasMore = ornamentOrders.length + ornamentSkip < ornamentTotal;
 	const walletHasMore = walletTransactions.length + walletSkip < walletTotal;
+	const leasingHasMore = leasingOrders.length + leasingSkip < leasingTotal;
 
 	const goldErrorOccurred = goldError !== null;
 	const silverErrorOccurred = silverError !== null;
 	const ornamentErrorOccurred = ornamentError !== null;
 	const walletErrorOccurred = walletError !== null;
+	const leasingErrorOccurred = leasingError !== null;
 
 	return (
 		<div className="space-y-6">
@@ -574,13 +590,29 @@ export default function OrdersPage() {
 						</div>
 					</CardContent>
 				</Card>
+				<Card className="border-0 bg-white shadow-sm">
+					<CardContent className="flex items-center gap-4 p-5">
+						<div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
+							<Briefcase className="h-5 w-5 text-blue-600" />
+						</div>
+						<div>
+							<p className="font-medium text-adam-grey text-xs uppercase tracking-wide">
+								Leasing Orders
+							</p>
+							<p className="font-bold text-adam-tinted-black text-xl">
+								{leasingTotal.toLocaleString()}
+							</p>
+						</div>
+					</CardContent>
+				</Card>
 			</div>
 
 			{/* Error State */}
 			{(goldErrorOccurred ||
 				silverErrorOccurred ||
 				ornamentErrorOccurred ||
-				walletErrorOccurred) && (
+				walletErrorOccurred ||
+				leasingErrorOccurred) && (
 				<Card className="border-0 border-l-4 border-l-red-500 bg-red-50 shadow-sm">
 					<CardContent className="py-4">
 						<p className="font-medium text-red-800">Error loading data</p>
@@ -609,6 +641,10 @@ export default function OrdersPage() {
 					<TabsTrigger className="gap-2" value="wallet">
 						<Wallet className="h-4 w-4" />
 						Wallet Transactions
+					</TabsTrigger>
+					<TabsTrigger className="gap-2" value="leasings">
+						<Briefcase className="h-4 w-4" />
+						Leasing Orders
 					</TabsTrigger>
 				</TabsList>
 
@@ -694,6 +730,27 @@ export default function OrdersPage() {
 								<Button
 									className="bg-adam-secondary hover:bg-adam-gradient-top"
 									onClick={() => setWalletSkip((prev) => prev + LIMIT)}
+									variant="outline"
+								>
+									Load More
+								</Button>
+							</div>
+						)}
+					</div>
+				</TabsContent>
+
+				<TabsContent value="leasings">
+					<div className="space-y-4">
+						<OrdersTable
+							isEmpty={leasingOrders.length === 0}
+							isLoading={leasingLoading}
+							orders={leasingOrders}
+						/>
+						{leasingHasMore && (
+							<div className="flex justify-center">
+								<Button
+									className="bg-adam-secondary hover:bg-adam-gradient-top"
+									onClick={() => setLeasingSkip((prev) => prev + LIMIT)}
 									variant="outline"
 								>
 									Load More

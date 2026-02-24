@@ -42,7 +42,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { adminProductsApi } from "@/lib/api/admin/products";
-import type { Product } from "@/lib/api/types";
+import type { Category, Product } from "@/lib/api/types";
 
 function ProductsTableSkeleton() {
 	return (
@@ -168,6 +168,7 @@ export default function ProductsPage() {
 	const queryClient = useQueryClient();
 	const [search, setSearch] = useState("");
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 	const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
 	const [selectedCertificateFile, setSelectedCertificateFile] =
@@ -175,6 +176,11 @@ export default function ProductsPage() {
 	const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 	const [imagesDragActive, setImagesDragActive] = useState(false);
 	const [certificateDragActive, setCertificateDragActive] = useState(false);
+	const [categoryFormData, setCategoryFormData] = useState({
+		name: "",
+		description: "",
+		isActive: true,
+	});
 	const [formData, setFormData] = useState<{
 		name: string;
 		description: string;
@@ -224,6 +230,11 @@ export default function ProductsPage() {
 		queryFn: () => adminProductsApi.list({ limit: 100 }),
 	});
 
+	const { data: categoriesData, isLoading: categoriesLoading } = useQuery({
+		queryKey: ["admin-product-categories"],
+		queryFn: () => adminProductsApi.listCategories(),
+	});
+
 	const createMutation = useMutation({
 		mutationFn: (data: Partial<Product>) => adminProductsApi.create(data),
 		onSuccess: () => {
@@ -234,6 +245,27 @@ export default function ProductsPage() {
 		},
 		onError: () => {
 			toast.error("Failed to create product");
+		},
+	});
+
+	const createCategoryMutation = useMutation({
+		mutationFn: (data: {
+			name: string;
+			description: string;
+			isActive: boolean;
+		}) => adminProductsApi.createCategory(data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["admin-product-categories"] });
+			toast.success("Category created successfully");
+			setIsCategoryDialogOpen(false);
+			setCategoryFormData({
+				name: "",
+				description: "",
+				isActive: true,
+			});
+		},
+		onError: () => {
+			toast.error("Failed to create category");
 		},
 	});
 
@@ -630,13 +662,23 @@ export default function ProductsPage() {
 						</span>
 						<span className="text-adam-grey text-sm">products</span>
 					</div>
-					<Button
-						className="h-11 bg-adam-secondary px-5 shadow-sm hover:bg-adam-gradient-top"
-						onClick={handleOpenCreate}
-					>
-						<Plus className="mr-2 h-4 w-4" />
-						Add Product
-					</Button>
+					<div className="flex gap-2">
+						<Button
+							className="h-11 bg-adam-secondary px-5 shadow-sm hover:bg-adam-gradient-top"
+							onClick={() => setIsCategoryDialogOpen(true)}
+							variant="outline"
+						>
+							<Plus className="mr-2 h-4 w-4" />
+							New Category
+						</Button>
+						<Button
+							className="h-11 bg-adam-secondary px-5 shadow-sm hover:bg-adam-gradient-top"
+							onClick={handleOpenCreate}
+						>
+							<Plus className="mr-2 h-4 w-4" />
+							Add Product
+						</Button>
+					</div>
 				</div>
 			</div>
 
@@ -833,24 +875,17 @@ export default function ProductsPage() {
 										<SelectValue placeholder="Select category" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="earrings">Earrings</SelectItem>
-										<SelectItem value="pendants">Pendants</SelectItem>
-										<SelectItem value="rings">Rings</SelectItem>
-										<SelectItem value="bangle_bracelets">
-											Bangle & Bracelets
-										</SelectItem>
-										<SelectItem value="mangalsutra">Mangalsutra</SelectItem>
-										<SelectItem value="chains">Chains</SelectItem>
-										<SelectItem value="necklace">Necklace</SelectItem>
-										<SelectItem value="gold_coins_bars">
-											Gold coins and Bars
-										</SelectItem>
-										<SelectItem value="silver_articles">
-											Silver articles
-										</SelectItem>
-										<SelectItem value="toe_rings">Toe Rings</SelectItem>
-										<SelectItem value="anklets">Anklets</SelectItem>
-										<SelectItem value="others">Others</SelectItem>
+										{categoriesLoading ? (
+											<SelectItem disabled value="">
+												Loading categories...
+											</SelectItem>
+										) : (
+											categoriesData?.map((category: Category) => (
+												<SelectItem key={category.id} value={category.name}>
+													{category.name}
+												</SelectItem>
+											))
+										)}
 									</SelectContent>
 								</Select>
 							</div>
@@ -1193,6 +1228,90 @@ export default function ProductsPage() {
 								type="submit"
 							>
 								{buttonText}
+							</Button>
+						</DialogFooter>
+					</form>
+				</DialogContent>
+			</Dialog>
+
+			{/* Category Creation Dialog */}
+			<Dialog
+				onOpenChange={setIsCategoryDialogOpen}
+				open={isCategoryDialogOpen}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Create New Category</DialogTitle>
+					</DialogHeader>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							createCategoryMutation.mutate(categoryFormData);
+						}}
+					>
+						<div className="space-y-4">
+							<div className="space-y-2">
+								<Label htmlFor="category-name">Category Name</Label>
+								<Input
+									id="category-name"
+									onChange={(e) =>
+										setCategoryFormData({
+											...categoryFormData,
+											name: e.target.value,
+										})
+									}
+									placeholder="e.g., Earrings, Rings, etc."
+									required
+									value={categoryFormData.name}
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="category-description">Description</Label>
+								<Input
+									id="category-description"
+									onChange={(e) =>
+										setCategoryFormData({
+											...categoryFormData,
+											description: e.target.value,
+										})
+									}
+									placeholder="Category description"
+									value={categoryFormData.description}
+								/>
+							</div>
+							<div className="flex items-center gap-2">
+								<input
+									checked={categoryFormData.isActive}
+									id="is-active"
+									onChange={(e) =>
+										setCategoryFormData({
+											...categoryFormData,
+											isActive: e.target.checked,
+										})
+									}
+									type="checkbox"
+								/>
+								<Label className="mb-0 cursor-pointer" htmlFor="is-active">
+									Active
+								</Label>
+							</div>
+						</div>
+						<DialogFooter className="mt-6">
+							<Button
+								onClick={() => setIsCategoryDialogOpen(false)}
+								type="button"
+								variant="outline"
+							>
+								Cancel
+							</Button>
+							<Button
+								className="bg-adam-secondary hover:bg-adam-gradient-top"
+								disabled={createCategoryMutation.isPending}
+								type="submit"
+							>
+								{createCategoryMutation.isPending
+									? "Creating..."
+									: "Create Category"}
 							</Button>
 						</DialogFooter>
 					</form>

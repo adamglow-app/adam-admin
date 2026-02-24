@@ -42,20 +42,16 @@ function TableSkeleton() {
 			<Table>
 				<TableHeader>
 					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
-						{[
-							"Leasing Number",
-							"Amount",
-							"Currency",
-							"Status",
-							"Date",
-						].map((header) => (
-							<TableHead
-								className="font-semibold text-adam-grey text-xs uppercase tracking-wider"
-								key={header}
-							>
-								{header}
-							</TableHead>
-						))}
+						{["Leasing Number", "Amount", "Currency", "Status", "Date"].map(
+							(header) => (
+								<TableHead
+									className="font-semibold text-adam-grey text-xs uppercase tracking-wider"
+									key={header}
+								>
+									{header}
+								</TableHead>
+							)
+						)}
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -105,8 +101,7 @@ function EmptyState() {
 export default function LeasingPurchasesTab({ userId }: Props) {
 	const { data, isLoading } = useQuery({
 		queryKey: ["admin-leasing-purchases", userId],
-		queryFn: () =>
-			adminOrdersApi.getLeasings({ user_id: userId, limit: 100 }),
+		queryFn: () => adminOrdersApi.getLeasings({ user_id: userId, limit: 100 }),
 		retry: false,
 	});
 
@@ -114,7 +109,7 @@ export default function LeasingPurchasesTab({ userId }: Props) {
 		return <TableSkeleton />;
 	}
 
-	if (!data?.leasings || data.leasings.length === 0) {
+	if (!data?.orders || data.orders.length === 0) {
 		return <EmptyState />;
 	}
 
@@ -124,7 +119,7 @@ export default function LeasingPurchasesTab({ userId }: Props) {
 				<TableHeader>
 					<TableRow className="border-adam-border/30 bg-adam-scaffold-background/50">
 						<TableHead className="font-semibold text-adam-grey text-xs uppercase tracking-wider">
-							Leasing Number
+							Order Number
 						</TableHead>
 						<TableHead className="text-right font-semibold text-adam-grey text-xs uppercase tracking-wider">
 							Amount
@@ -141,40 +136,32 @@ export default function LeasingPurchasesTab({ userId }: Props) {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{data.leasings.map((leasing) => (
-						<TableRow
-							className="border-adam-border/30"
-							key={leasing.id}
-						>
+					{data.orders.map((order) => (
+						<TableRow className="border-adam-border/30" key={order.id}>
 							<TableCell className="font-medium text-adam-tinted-black">
-								{leasing.leasingNumber}
+								{order.orderNumber}
 							</TableCell>
 							<TableCell className="text-right font-medium text-adam-tinted-black">
-								{Number(leasing.amount).toFixed(2)}
+								{Number(order.amount).toFixed(2)}
 							</TableCell>
 							<TableCell className="text-adam-grey text-sm">
-								{leasing.currency}
+								{order.currency}
 							</TableCell>
 							<TableCell>
 								<Badge
-									className={`border font-medium text-xs ${getStatusBadgeStyles(leasing.status)}`}
+									className={`border font-medium text-xs ${getStatusBadgeStyles(order.status)}`}
 									variant="outline"
 								>
-									{leasing.status
-										.charAt(0)
-										.toUpperCase() +
-										leasing.status.slice(1)}
+									{order.status.charAt(0).toUpperCase() +
+										order.status.slice(1).replace(/_/g, " ")}
 								</Badge>
 							</TableCell>
 							<TableCell className="text-adam-grey text-sm">
-								{new Date(leasing.createdAt).toLocaleDateString(
-									"en-IN",
-									{
-										day: "numeric",
-										month: "short",
-										year: "numeric",
-									}
-								)}
+								{new Date(order.createdAt).toLocaleDateString("en-IN", {
+									day: "numeric",
+									month: "short",
+									year: "numeric",
+								})}
 							</TableCell>
 						</TableRow>
 					))}

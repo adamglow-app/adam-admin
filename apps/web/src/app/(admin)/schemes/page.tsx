@@ -170,7 +170,9 @@ export default function SchemesPage() {
 								<TableCell className="py-3 font-medium">
 									<button
 										className="text-adam-secondary hover:underline"
-										onClick={() => router.push(`/schemes/${scheme.id}` as never)}
+										onClick={() =>
+											router.push(`/schemes/${scheme.id}` as never)
+										}
 										type="button"
 									>
 										{scheme.name}
