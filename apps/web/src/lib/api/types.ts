@@ -287,3 +287,21 @@ export interface SchemeListResponse {
 	skip: number;
 	limit: number;
 }
+export interface LeasingItem {
+	id: string;
+	userId: string;
+	schemeId: string;
+	leasingNumber: string;
+	amount: string;
+	currency: string;
+	status: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface LeasingListResponse {
+	leasings: LeasingItem[];
+	total: number;
+	skip: number;
+	limit: number;
+}

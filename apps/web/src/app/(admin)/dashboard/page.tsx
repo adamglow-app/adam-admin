@@ -18,6 +18,7 @@ import { adminAnalyticsApi } from "@/lib/api/admin/analytics";
 import { adminPricesApi } from "@/lib/api/admin/prices";
 import { adminProductsApi } from "@/lib/api/admin/products";
 import { adminUsersApi } from "@/lib/api/admin/users";
+import { adminOrdersApi } from "@/lib/api/admin/orders";
 
 function StatCardSkeleton() {
 	return (
@@ -201,6 +202,18 @@ export default function DashboardPage() {
 		retry: false,
 	});
 
+	const { data: leasingData, isLoading: leasingLoading } = useQuery({
+		queryKey: ["admin-leasings-total"],
+		queryFn: async () => {
+			const response = await adminOrdersApi.getAllLeasings();
+			const total = response.leasings.reduce((sum, leasing) => {
+				return sum + Number(leasing.amount);
+			}, 0);
+			return { total, count: response.leasings.length };
+		},
+		retry: false,
+	});
+
 	const goldPrice = goldPriceData?.pricePerGram;
 	const silverPrice = silverPriceData?.pricePerGram;
 	const analytics = analyticsData?.analytics;
@@ -292,7 +305,7 @@ export default function DashboardPage() {
 				<h2 className="mb-4 font-semibold text-adam-tinted-black text-lg">
 					Key Metrics
 				</h2>
-				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
 					<MetricCard
 						icon={Wallet}
 						iconBg="bg-emerald-50"
@@ -335,6 +348,18 @@ export default function DashboardPage() {
 							analytics?.total_silver_sold_grams
 								? `${Number(analytics.total_silver_sold_grams).toFixed(2)} g`
 								: "0 g"
+						}
+					/>
+					<MetricCard
+						icon={Coins}
+						iconBg="bg-purple-50"
+						iconColor="text-purple-600"
+						isLoading={leasingLoading}
+						title="Total Leasing"
+						value={
+							leasingData?.total
+								? `₹${leasingData.total.toLocaleString()}`
+								: "₹0"
 						}
 					/>
 				</div>

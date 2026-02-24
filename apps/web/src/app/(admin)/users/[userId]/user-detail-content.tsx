@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { adminUsersApi } from "@/lib/api/admin/users";
 import GoldPurchasesTab from "./tabs/gold-purchases-tab";
+import LeasingPurchasesTab from "./tabs/leasing-purchases-tab";
 import OrnamentOrdersTab from "./tabs/ornament-orders-tab";
 import RedemptionsTab from "./tabs/redemptions-tab";
 import SilverPurchasesTab from "./tabs/silver-purchases-tab";
@@ -174,10 +175,11 @@ export function UserDetailContent({ userId }: { userId: string }) {
 
 			{/* Tabs */}
 			<Tabs className="w-full" onValueChange={setActiveTab} value={activeTab}>
-				<TabsList className="grid w-full grid-cols-5">
+				<TabsList className="grid w-full grid-cols-6">
 					<TabsTrigger value="gold-purchases">Gold Purchases</TabsTrigger>
 					<TabsTrigger value="silver-purchases">Silver Purchases</TabsTrigger>
 					<TabsTrigger value="ornament-orders">Ornament Orders</TabsTrigger>
+					<TabsTrigger value="leasing-purchases">Leasing</TabsTrigger>
 					<TabsTrigger value="wallet-transactions">
 						Wallet Transactions
 					</TabsTrigger>
@@ -194,6 +196,10 @@ export function UserDetailContent({ userId }: { userId: string }) {
 
 				<TabsContent className="mt-6" value="ornament-orders">
 					<OrnamentOrdersTab userId={userId} />
+				</TabsContent>
+
+				<TabsContent className="mt-6" value="leasing-purchases">
+					<LeasingPurchasesTab userId={userId} />
 				</TabsContent>
 
 				<TabsContent className="mt-6" value="wallet-transactions">
